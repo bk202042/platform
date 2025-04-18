@@ -1,10 +1,16 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getPropertyById } from '@/lib/data/property-listing';
+import { getPropertyById, getSimilarProperties } from '@/lib/data/property-listing';
 import Container from '@/components/Container';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PropertyImageGallery } from '@/components/property/PropertyImageGallery';
+import { PropertyFeatures } from '@/components/property/PropertyFeatures';
+import { PropertyLocation } from '@/components/property/PropertyLocation';
+import { PropertyContact } from '@/components/property/PropertyContact';
+import { SimilarProperties } from '@/components/property/SimilarProperties';
 
 // Format price based on property type
 const formatPrice = (price: number, type: string) => {
@@ -38,6 +44,17 @@ async function PropertyDetails({ id }: { id: string }) {
     notFound();
   }
 
+  // Fetch similar properties
+  const similarProperties = await getSimilarProperties(property);
+
+  // Mock images for the gallery (in a real app, these would come from the database)
+  const mockImages = [
+    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1470&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1470&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?q=80&w=1470&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1600585154526-990dced4db0d?q=80&w=1470&auto=format&fit=crop'
+  ];
+
   return (
     <div className="py-8">
       <div className="mb-6">
@@ -53,67 +70,102 @@ async function PropertyDetails({ id }: { id: string }) {
           <h1 className="text-3xl font-bold mb-2">{property.title}</h1>
           <p className="text-xl mb-6">{property.address}</p>
 
-          {/* Property Image Placeholder */}
-          <div className="bg-muted h-96 rounded-lg mb-8 flex items-center justify-center">
-            <p className="text-muted-foreground">Property Image</p>
+          {/* Property Image Gallery */}
+          <PropertyImageGallery images={mockImages} alt={property.title} />
+
+          <div className="mt-8">
+            <Tabs defaultValue="description" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="description">Description</TabsTrigger>
+                <TabsTrigger value="features">Features</TabsTrigger>
+                <TabsTrigger value="location">Location</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="description" className="mt-6">
+                <div className="space-y-4">
+                  <h2 className="text-2xl font-semibold">About This Property</h2>
+                  <p className="text-muted-foreground whitespace-pre-line">{property.description}</p>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    <div className="border rounded-md p-4 text-center">
+                      <p className="text-2xl font-semibold">{property.bedrooms}</p>
+                      <p className="text-sm text-muted-foreground">Bedrooms</p>
+                    </div>
+                    <div className="border rounded-md p-4 text-center">
+                      <p className="text-2xl font-semibold">{property.bathrooms}</p>
+                      <p className="text-sm text-muted-foreground">Bathrooms</p>
+                    </div>
+                    <div className="border rounded-md p-4 text-center">
+                      <p className="text-2xl font-semibold">{property.square_footage}</p>
+                      <p className="text-sm text-muted-foreground">Sq Ft</p>
+                    </div>
+                    <div className="border rounded-md p-4 text-center">
+                      <p className="text-2xl font-semibold">{property.property_type}</p>
+                      <p className="text-sm text-muted-foreground">Type</p>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="features" className="mt-6">
+                <div className="space-y-4">
+                  <h2 className="text-2xl font-semibold">Property Features</h2>
+                  <PropertyFeatures features={property.features} />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="location" className="mt-6">
+                <div className="space-y-4">
+                  <h2 className="text-2xl font-semibold">Location</h2>
+                  <PropertyLocation
+                    address={property.address}
+                    lat={property.location?.lat}
+                    lng={property.location?.lng}
+                  />
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
 
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">Description</h2>
-              <p className="text-muted-foreground whitespace-pre-line">{property.description}</p>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">Features</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {Object.entries(property.features).map(([key, value]) => {
-                  if (value === true) {
-                    return (
-                      <div key={key} className="flex items-center">
-                        <div className="h-2 w-2 rounded-full bg-primary mr-2"></div>
-                        <span>{formatFeatureName(key)}</span>
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
-              </div>
-            </div>
+          {/* Similar Properties Section */}
+          <div className="mt-12">
+            <SimilarProperties properties={similarProperties} />
           </div>
         </div>
 
         <div className="lg:col-span-4">
-          <Card className="sticky top-8">
-            <CardHeader>
-              <CardTitle className="text-2xl">
-                {formatPrice(property.price, property.property_type)}
-              </CardTitle>
-              <CardDescription>
-                {property.property_type === '월세' ? 'Monthly Rent' : 'Purchase'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <p className="text-2xl font-semibold">{property.bedrooms}</p>
-                    <p className="text-sm text-muted-foreground">Bedrooms</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-semibold">{property.bathrooms}</p>
-                    <p className="text-sm text-muted-foreground">Bathrooms</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-semibold">{property.square_footage}</p>
-                    <p className="text-sm text-muted-foreground">Sq Ft</p>
+          <div className="space-y-6">
+            <Card className="sticky top-8">
+              <CardHeader>
+                <CardTitle className="text-2xl">
+                  {formatPrice(property.price, property.property_type)}
+                </CardTitle>
+                <CardDescription>
+                  {property.property_type === '월세' ? 'Monthly Rent' : 'Purchase'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                      <p className="text-2xl font-semibold">{property.bedrooms}</p>
+                      <p className="text-sm text-muted-foreground">Bedrooms</p>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-semibold">{property.bathrooms}</p>
+                      <p className="text-sm text-muted-foreground">Bathrooms</p>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-semibold">{property.square_footage}</p>
+                      <p className="text-sm text-muted-foreground">Sq Ft</p>
+                    </div>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
 
-                <Button className="w-full">Contact Agent</Button>
-              </div>
-            </CardContent>
-          </Card>
+            <PropertyContact propertyId={property.id} propertyTitle={property.title} />
+          </div>
         </div>
       </div>
     </div>

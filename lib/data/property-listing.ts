@@ -135,6 +135,36 @@ export async function getPropertyById(id: string) {
   return getCachedPropertyById(id);
 }
 
+// Get similar properties based on property type, price range, and location
+export async function getSimilarProperties(property: any, limit = 3) {
+  const supabase = await createClient();
+
+  // Don't include the current property
+  let query = supabase
+    .from('property_listings')
+    .select('*')
+    .neq('id', property.id)
+    .eq('property_type', property.property_type);
+
+  // Price range: +/- 30%
+  const minPrice = property.price * 0.7;
+  const maxPrice = property.price * 1.3;
+  query = query.gte('price', minPrice).lte('price', maxPrice);
+
+  // If we have bedrooms, try to match similar properties
+  if (property.bedrooms) {
+    query = query.or(`bedrooms.eq.${property.bedrooms},bedrooms.eq.${property.bedrooms - 1},bedrooms.eq.${property.bedrooms + 1}`);
+  }
+
+  // Limit results
+  query = query.limit(limit);
+
+  const { data, error } = await query;
+
+  if (error) throw error;
+  return data || [];
+}
+
 export async function createProperty(property: any) {
   const supabase = await createClient();
   const { data, error } = await supabase

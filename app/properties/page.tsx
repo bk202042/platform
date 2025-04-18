@@ -1,9 +1,30 @@
 import { Suspense } from 'react';
+import { Metadata } from 'next';
 import { getPropertyListings } from '@/lib/data/property-listing';
 import Container from '@/components/Container';
 import { PropertyCard } from '@/components/property/PropertyCard';
 import { PropertyCardSkeleton } from '@/components/property/PropertyCardSkeleton';
 import { PropertySearchParams } from '@/types/property';
+
+// Generate metadata for the properties page
+export const metadata: Metadata = {
+  title: 'Property Listings | Find Your Dream Home in Vietnam',
+  description: 'Browse our curated selection of properties for rent and sale in Vietnam. Find apartments, houses, and villas in popular locations with features tailored for Korean expatriates.',
+  openGraph: {
+    title: 'Property Listings | Find Your Dream Home in Vietnam',
+    description: 'Browse our curated selection of properties for rent and sale in Vietnam. Find apartments, houses, and villas in popular locations with features tailored for Korean expatriates.',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1470&auto=format&fit=crop',
+        width: 1200,
+        height: 630,
+        alt: 'Property Listings',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+};
 
 // This component handles the actual data fetching and rendering
 async function PropertyListings({
