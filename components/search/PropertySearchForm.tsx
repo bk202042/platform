@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useTransition } from 'react';
 import { PropertyType } from '@/types/property';
+import { usePropertyData } from '@/components/providers/PropertyDataProvider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -20,75 +20,75 @@ interface PropertySearchFormProps {
 }
 
 export default function PropertySearchForm({ className, onSearch }: PropertySearchFormProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  
+  const { searchParams, updateSearchParams, resetSearchParams } = usePropertyData();
+  const [isPending, startTransition] = useTransition();
+
   // Initialize form state from URL search params
-  const [searchText, setSearchText] = useState(searchParams.get('search') || '');
-  const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
-  const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
+  const [searchText, setSearchText] = useState(searchParams.search || '');
+  const [minPrice, setMinPrice] = useState(searchParams.minPrice || '');
+  const [maxPrice, setMaxPrice] = useState(searchParams.maxPrice || '');
   const [propertyType, setPropertyType] = useState<PropertyType | ''>(
-    (searchParams.get('propertyType') as PropertyType) || ''
+    (searchParams.propertyType as PropertyType) || ''
   );
-  const [minBedrooms, setMinBedrooms] = useState(searchParams.get('minBedrooms') || '');
-  const [minBathrooms, setMinBathrooms] = useState(searchParams.get('minBathrooms') || '');
-  const [lat, setLat] = useState(searchParams.get('lat') || '');
-  const [lng, setLng] = useState(searchParams.get('lng') || '');
-  const [radiusMeters, setRadiusMeters] = useState(searchParams.get('radiusMeters') || '5000');
-  
+  const [minBedrooms, setMinBedrooms] = useState(searchParams.minBedrooms || '');
+  const [minBathrooms, setMinBathrooms] = useState(searchParams.minBathrooms || '');
+  const [lat, setLat] = useState(searchParams.lat || '');
+  const [lng, setLng] = useState(searchParams.lng || '');
+  const [radiusMeters, setRadiusMeters] = useState(searchParams.radiusMeters || '5000');
+
   // Form validation
   const [errors, setErrors] = useState<Record<string, string>>({});
-  
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    
+
     // Validate numeric fields
     if (minPrice && isNaN(Number(minPrice))) {
       newErrors.minPrice = 'Must be a valid number';
     }
-    
+
     if (maxPrice && isNaN(Number(maxPrice))) {
       newErrors.maxPrice = 'Must be a valid number';
     }
-    
+
     if (minBedrooms && isNaN(Number(minBedrooms))) {
       newErrors.minBedrooms = 'Must be a valid number';
     }
-    
+
     if (minBathrooms && isNaN(Number(minBathrooms))) {
       newErrors.minBathrooms = 'Must be a valid number';
     }
-    
+
     if ((lat && !lng) || (!lat && lng)) {
       newErrors.location = 'Both latitude and longitude are required';
     }
-    
+
     if (lat && isNaN(Number(lat))) {
       newErrors.lat = 'Must be a valid number';
     }
-    
+
     if (lng && isNaN(Number(lng))) {
       newErrors.lng = 'Must be a valid number';
     }
-    
+
     if (radiusMeters && isNaN(Number(radiusMeters))) {
       newErrors.radiusMeters = 'Must be a valid number';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     // Build search params
     const params: Record<string, string> = {};
-    
+
     if (searchText) params.search = searchText;
     if (minPrice) params.minPrice = minPrice;
     if (maxPrice) params.maxPrice = maxPrice;
@@ -100,17 +100,18 @@ export default function PropertySearchForm({ className, onSearch }: PropertySear
       params.lng = lng;
       params.radiusMeters = radiusMeters;
     }
-    
+
     // If onSearch prop is provided, call it with the search params
     if (onSearch) {
       onSearch(params);
     } else {
-      // Otherwise, navigate to the search page with the search params
-      const searchQuery = new URLSearchParams(params).toString();
-      router.push(`/search?${searchQuery}`);
+      // Otherwise, update the search params using the provider
+      startTransition(() => {
+        updateSearchParams(params);
+      });
     }
   };
-  
+
   const handleReset = () => {
     setSearchText('');
     setMinPrice('');
@@ -122,8 +123,13 @@ export default function PropertySearchForm({ className, onSearch }: PropertySear
     setLng('');
     setRadiusMeters('5000');
     setErrors({});
+
+    // Reset search params in the URL
+    startTransition(() => {
+      resetSearchParams();
+    });
   };
-  
+
   return (
     <Card className={className}>
       <CardHeader>
@@ -146,7 +152,7 @@ export default function PropertySearchForm({ className, onSearch }: PropertySear
               onChange={(e) => setSearchText(e.target.value)}
             />
           </div>
-          
+
           {/* Property Type */}
           <div className="space-y-2">
             <label htmlFor="propertyType" className="text-sm font-medium">
@@ -166,7 +172,7 @@ export default function PropertySearchForm({ className, onSearch }: PropertySear
               </SelectContent>
             </Select>
           </div>
-          
+
           {/* Price Range */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -200,7 +206,7 @@ export default function PropertySearchForm({ className, onSearch }: PropertySear
               )}
             </div>
           </div>
-          
+
           {/* Bedrooms & Bathrooms */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -234,7 +240,7 @@ export default function PropertySearchForm({ className, onSearch }: PropertySear
               )}
             </div>
           </div>
-          
+
           {/* Location Search */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Location (Optional)</label>
@@ -268,7 +274,7 @@ export default function PropertySearchForm({ className, onSearch }: PropertySear
               <p className="text-xs text-red-500">{errors.location}</p>
             )}
           </div>
-          
+
           {/* Radius */}
           <div className="space-y-2">
             <label htmlFor="radiusMeters" className="text-sm font-medium">
