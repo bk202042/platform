@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { getPropertyById, deleteProperty } from '@/lib/data/property';
 
 interface RouteParams {
   params: {
@@ -13,7 +13,7 @@ interface RouteParams {
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = params;
-    
+
     // Validate UUID format
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {
@@ -22,34 +22,20 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         { status: 400 }
       );
     }
-    
-    const supabase = await createClient();
-    
+
     // Check if property exists
-    const { data: existingProperty, error: checkError } = await supabase
-      .from('property_listings')
-      .select('id')
-      .eq('id', id)
-      .single();
-    
-    if (checkError) {
-      if (checkError.code === 'PGRST116') {
-        return NextResponse.json(
-          { success: false, message: 'Property not found' },
-          { status: 404 }
-        );
-      }
-      throw checkError;
+    const existingProperty = await getPropertyById(id);
+
+    if (!existingProperty) {
+      return NextResponse.json(
+        { success: false, message: 'Property not found' },
+        { status: 404 }
+      );
     }
-    
-    // Delete property
-    const { error } = await supabase
-      .from('property_listings')
-      .delete()
-      .eq('id', id);
-    
-    if (error) throw error;
-    
+
+    // Delete property using the data access layer
+    await deleteProperty(id);
+
     return NextResponse.json({
       success: true,
       message: 'Property deleted successfully'

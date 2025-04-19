@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
-interface PropertySearchResultsProps {
+interface SearchResultsProps {
   searchParams: Record<string, string>;
   className?: string;
 }
@@ -22,7 +22,7 @@ interface SearchResponse {
   };
 }
 
-export default function PropertySearchResults({ searchParams, className }: PropertySearchResultsProps) {
+export default function SearchResults({ searchParams, className }: SearchResultsProps) {
   const [results, setResults] = useState<PropertyListing[]>([]);
   const [pagination, setPagination] = useState({
     total: 0,

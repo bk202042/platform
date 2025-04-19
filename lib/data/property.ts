@@ -1,6 +1,6 @@
 import 'server-only';
 import { createClient } from '@/lib/supabase/server';
-import { PropertyType } from '@/types/supabase';
+import { PropertyType } from '@/types/property';
 import { unstable_cache } from 'next/cache';
 
 export interface PropertySearchParams {

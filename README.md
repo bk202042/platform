@@ -1,17 +1,17 @@
-# Next.js Minimal Boilerplate
+# Vietnam Property Platform
 
-A clean, minimal Next.js boilerplate with TypeScript, Tailwind CSS, and shadcn/ui, designed to be a flexible starting point for your projects.
+A property listing platform designed for Korean expatriates in Vietnam.
 
 ## Features
 
 - [Next.js](https://nextjs.org) with App Router
 - [TypeScript](https://www.typescriptlang.org/) for type safety
-- [Tailwind CSS v4](https://tailwindcss.com/) for styling
+- [Tailwind CSS v4.1.4](https://tailwindcss.com/) for styling
 - [shadcn/ui](https://ui.shadcn.com/) for beautiful, accessible components
-- Minimal dependencies
-- Clean project structure
+- [Supabase](https://supabase.com/) for backend services
+- Feature-based project structure
 - Dark mode support
-- Consistent file casing enforced by TypeScript
+- Performance-optimized
 
 ## Getting Started
 
@@ -40,51 +40,89 @@ pnpm dev
 
 ## Project Structure
 
+The project follows a feature-based structure with the Next.js App Router:
+
 ```
-/
-├── app/                # Next.js App Router
-│   ├── layout.tsx     # Root layout
-│   ├── page.tsx       # Home page
-│   └── globals.css    # Global styles with Tailwind v4 config
-├── components/        # React components
-│   ├── Container.tsx  # Layout container component
-│   └── ui/            # shadcn/ui components
-├── lib/               # Utility functions
-│   └── utils.ts       # Helper functions for shadcn/ui
-├── public/            # Static assets
-└── ...                # Config files
+/app
+  /(main)                     # Route group for main public pages
+    /layout.tsx               # Layout for main pages
+    /page.tsx                 # Home page
+    /properties               # Properties feature
+      /[id]                   # Property detail page
+        /_components          # Property detail components
+          /PropertyDetail.tsx
+          /PropertyGallery.tsx
+        /page.tsx
+      /page.tsx               # Properties listing page
+    /search                   # Search feature
+      /_components            # Search-specific components
+        /SearchForm.tsx
+        /SearchResults.tsx
+      /page.tsx
+  /api                        # API routes
+    /properties               # Properties API
+      /[id]                   # Property by ID
+        /route.ts
+      /search                 # Search endpoint
+        /route.ts
+      /route.ts               # List properties
+/components                   # Shared components
+  /ui                         # UI primitives
+    /button.tsx
+    /card.tsx
+    /input.tsx
+    /select.tsx
+  /layout                     # Layout components
+    /Container.tsx
+  /providers                  # Context providers
+    /PropertyDataProvider.tsx
+/lib                          # Shared utilities
+  /data                       # Data Access Layer
+    /property.ts              # Property data functions
+  /supabase                   # Supabase client
+    /client.ts
+    /server.ts
+  /utils.ts                   # Utility functions
+/types                        # TypeScript types
+  /property.ts
+  /supabase.ts
 ```
 
-## Customization
+## Core Features
 
-This boilerplate is intentionally minimal but includes shadcn/ui for beautiful UI components. You can easily add more features as needed:
+1. **Property Search**: Search for properties by various criteria including location, price, and property type.
+2. **Property Listings**: Browse all available properties with filtering options.
+3. **Property Details**: View detailed information about a specific property.
 
-- State management (Redux, Zustand, etc.)
-- Additional shadcn/ui components
-- API clients (React Query, SWR, etc.)
-- Authentication
-- Database connections
+## Technology Stack
 
-### Adding More shadcn/ui Components
+- **Frontend**: Next.js with App Router, React, Tailwind CSS v4.1.4, shadcn/ui
+- **Backend**: Supabase (PostgreSQL, PostGIS, Authentication)
+- **Styling**: Tailwind CSS v4.1.4 with zinc color theme
 
-To add more shadcn/ui components, you can manually copy them from the [shadcn/ui documentation](https://ui.shadcn.com/docs/components) or use the CLI if you have it installed:
+## Data Access Layer
 
-```bash
-npx shadcn@latest add [component-name]
-```
+The project uses a data access layer to abstract database operations:
 
-For example, to add the Dialog component:
+- `lib/data/property.ts`: Functions for property data operations
+- API routes use the data access layer instead of direct database access
 
-```bash
-npx shadcn@latest add dialog
-```
+## API Routes
+
+- `GET /api/properties`: List properties with filtering options
+- `GET /api/properties/[id]`: Get a specific property by ID
+- `PATCH /api/properties/[id]`: Update a property
+- `DELETE /api/properties/[id]/delete`: Delete a property
+
+## Project Philosophy
+
+- **Simplicity**: Focus on core features only (search, list, detail)
+- **Performance**: Optimize for speed throughout development
+- **Minimal Dependencies**: Use built-in Next.js capabilities whenever possible
 
 ## Learn More
 
-To learn more about the technologies used in this boilerplate:
-
 - [Next.js Documentation](https://nextjs.org/docs)
-- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+- [Supabase Documentation](https://supabase.com/docs)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 - [shadcn/ui Documentation](https://ui.shadcn.com/docs)
-- [Radix UI Documentation](https://www.radix-ui.com/docs/primitives/overview/introduction)

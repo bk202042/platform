@@ -1,4 +1,4 @@
-export type PropertyType = '월세' | '전세' | '매매';
+import { PropertyType } from './property';
 
 export interface PropertyListing {
   id: string;

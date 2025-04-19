@@ -14,12 +14,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface PropertySearchFormProps {
+interface SearchFormProps {
   className?: string;
   onSearch?: (searchParams: Record<string, string>) => void;
 }
 
-export default function PropertySearchForm({ className, onSearch }: PropertySearchFormProps) {
+export default function SearchForm({ className, onSearch }: SearchFormProps) {
   const { searchParams, updateSearchParams, resetSearchParams } = usePropertyData();
   const [isPending, startTransition] = useTransition();
 
