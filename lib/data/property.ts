@@ -1,5 +1,6 @@
 import 'server-only';
 import { createClient } from '@/lib/supabase/server';
+import { createAnonClient } from '@/lib/supabase/server-anon';
 import { PropertyType } from '@/types/property';
 import { unstable_cache } from 'next/cache';
 
@@ -26,7 +27,8 @@ export interface PropertySearchResult {
 // Cache the property listings for 1 minute
 const getCachedPropertyListings = unstable_cache(
   async (params: PropertySearchParams = {}): Promise<PropertySearchResult> => {
-    const supabase = await createClient();
+    const supabase = await createAnonClient();
+    // Rest of the function remains the same
     const {
       searchText,
       minPrice,
@@ -109,7 +111,7 @@ export async function getPropertyListings(params: PropertySearchParams = {}): Pr
 // Cache property details for 5 minutes
 const getCachedPropertyById = unstable_cache(
   async (id: string) => {
-    const supabase = await createClient();
+    const supabase = await createAnonClient();
     const { data, error } = await supabase
       .from('property_listings')
       .select('*')
@@ -130,14 +132,14 @@ const getCachedPropertyById = unstable_cache(
   { revalidate: 300 } // Cache for 5 minutes
 );
 
-// Public function that uses the cached version
+// Public function to get property by ID
 export async function getPropertyById(id: string) {
   return getCachedPropertyById(id);
 }
 
 // Get similar properties based on property type, price range, and location
 export async function getSimilarProperties(property: any, limit = 3) {
-  const supabase = await createClient();
+  const supabase = await createAnonClient();
 
   // Don't include the current property
   let query = supabase
@@ -166,7 +168,7 @@ export async function getSimilarProperties(property: any, limit = 3) {
 }
 
 export async function createProperty(property: any) {
-  const supabase = await createClient();
+  const supabase = await createClient(); // Keep using authenticated client for write operations
   const { data, error } = await supabase
     .from('property_listings')
     .insert(property)
@@ -178,7 +180,7 @@ export async function createProperty(property: any) {
 }
 
 export async function updateProperty(id: string, updates: any) {
-  const supabase = await createClient();
+  const supabase = await createClient(); // Keep using authenticated client for write operations
   const { data, error } = await supabase
     .from('property_listings')
     .update(updates)
@@ -191,7 +193,7 @@ export async function updateProperty(id: string, updates: any) {
 }
 
 export async function deleteProperty(id: string) {
-  const supabase = await createClient();
+  const supabase = await createClient(); // Keep using authenticated client for write operations
   const { error } = await supabase
     .from('property_listings')
     .delete()

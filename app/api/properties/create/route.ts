@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server'; // Keep using authenticated client for write operations
 import { validatePropertyListing } from '@/lib/validation/property';
 
 /**
@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   try {
     // Parse request body
     const propertyData = await request.json();
-    
+
     // Validate property data
     const validation = validatePropertyListing(propertyData);
     if (!validation.valid) {
@@ -18,18 +18,18 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     const supabase = await createClient();
-    
+
     // Insert property
     const { data, error } = await supabase
       .from('property_listings')
       .insert(propertyData)
       .select()
       .single();
-    
+
     if (error) throw error;
-    
+
     return NextResponse.json({
       success: true,
       data,

@@ -13,14 +13,14 @@ interface PropertyPageProps {
 
 export async function generateMetadata({ params }: PropertyPageProps) {
   const property = await getPropertyById(params.id);
-  
+
   if (!property) {
     return {
       title: 'Property Not Found',
       description: 'The requested property could not be found',
     };
   }
-  
+
   return {
     title: `${property.title} | Vietnam Property Platform`,
     description: property.description.substring(0, 160),
@@ -29,29 +29,29 @@ export async function generateMetadata({ params }: PropertyPageProps) {
 
 export default async function PropertyPage({ params }: PropertyPageProps) {
   const property = await getPropertyById(params.id);
-  
+
   if (!property) {
     notFound();
   }
-  
+
   const similarProperties = await getSimilarProperties(property);
-  
+
   return (
     <div className="py-8">
       <div className="mb-6">
-        <Link href="/search">
+        <Link href="/">
           <Button variant="outline" size="sm">
-            ← Back to Search
+            ← Back to Home
           </Button>
         </Link>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           <PropertyGallery property={property} />
           <PropertyDetail property={property} />
         </div>
-        
+
         <div className="lg:col-span-1 space-y-8">
           {/* Contact information card */}
           <div className="bg-muted p-6 rounded-lg">
@@ -67,15 +67,15 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             </p>
             <Button className="w-full">Contact Agent</Button>
           </div>
-          
+
           {/* Similar properties */}
           {similarProperties.length > 0 && (
             <div>
               <h3 className="text-xl font-semibold mb-4">Similar Properties</h3>
               <div className="space-y-4">
                 {similarProperties.map((similarProperty) => (
-                  <Link 
-                    key={similarProperty.id} 
+                  <Link
+                    key={similarProperty.id}
                     href={`/properties/${similarProperty.id}`}
                     className="block"
                   >

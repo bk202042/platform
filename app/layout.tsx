@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Next.js Boilerplate",
-  description: "A minimal, clean starting point for your Next.js project",
+  title: "Vietnam Property Platform | Find Your Perfect Home",
+  description: "Discover properties tailored for Korean expatriates in Vietnam's most popular locations",
 };
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
+      <body suppressHydrationWarning className="antialiased bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
         {children}
       </body>
     </html>

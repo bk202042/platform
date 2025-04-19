@@ -1,21 +1,21 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createApiClient } from '@/lib/supabase/server-api';
 
 export async function GET() {
   try {
-    const supabase = await createClient();
-    
+    const supabase = await createApiClient();
+
     // Simple query to test connection
     const { data, error } = await supabase
       .from('property_listings')
       .select('count()', { count: 'exact' })
       .limit(1);
-    
+
     if (error) throw error;
-    
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Database connection successful', 
+
+    return NextResponse.json({
+      success: true,
+      message: 'Database connection successful',
       count: data.length > 0 ? data[0].count : 0
     });
   } catch (error) {

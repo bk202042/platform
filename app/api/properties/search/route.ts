@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createApiClient } from '@/lib/supabase/server-api';
 import { PropertyType } from '@/types/property';
 
 /**
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
   try {
     // Parse request body
     const searchCriteria = await request.json();
-    
+
     // Extract search parameters
     const {
       searchText,
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       limit = 10,
       offset = 0
     } = searchCriteria;
-    
+
     // Validate property type
     if (propertyType && !['월세', '매매'].includes(propertyType)) {
       return NextResponse.json(
@@ -34,39 +34,39 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
-    const supabase = await createClient();
-    
+
+    const supabase = await createApiClient();
+
     // Start building the query
     let query = supabase
       .from('property_listings')
       .select('*', { count: 'exact' });
-    
+
     // Apply basic filters
     if (searchText) {
       query = query.or(`title.ilike.%${searchText}%,description.ilike.%${searchText}%`);
     }
-    
+
     if (minPrice !== undefined) {
       query = query.gte('price', minPrice);
     }
-    
+
     if (maxPrice !== undefined) {
       query = query.lte('price', maxPrice);
     }
-    
+
     if (propertyType) {
       query = query.eq('property_type', propertyType);
     }
-    
+
     if (minBedrooms !== undefined) {
       query = query.gte('bedrooms', minBedrooms);
     }
-    
+
     if (minBathrooms !== undefined) {
       query = query.gte('bathrooms', minBathrooms);
     }
-    
+
     // Apply feature filters
     if (features && Object.keys(features).length > 0) {
       // For each feature, add a containment check
@@ -77,15 +77,15 @@ export async function POST(request: NextRequest) {
         }
       });
     }
-    
+
     // If location parameters are provided, we need to use a different approach
     // since we can't easily combine the RPC function with other filters
     if (lat !== undefined && lng !== undefined) {
       // First, get all properties that match our filters
       const { data: filteredProperties, error: filterError } = await query;
-      
+
       if (filterError) throw filterError;
-      
+
       if (!filteredProperties || filteredProperties.length === 0) {
         return NextResponse.json({
           success: true,
@@ -98,10 +98,10 @@ export async function POST(request: NextRequest) {
           }
         });
       }
-      
+
       // Get the IDs of the filtered properties
       const propertyIds = filteredProperties.map(p => p.id);
-      
+
       // Now use the search_properties function to get properties with distance
       const { data, error, count } = await supabase
         .rpc('search_properties', {
@@ -118,9 +118,9 @@ export async function POST(request: NextRequest) {
         .in('id', propertyIds) // Only include properties that matched our filters
         .range(offset, offset + limit - 1)
         .order('distance_meters', { ascending: true });
-      
+
       if (error) throw error;
-      
+
       return NextResponse.json({
         success: true,
         data,
@@ -132,14 +132,14 @@ export async function POST(request: NextRequest) {
         }
       });
     }
-    
+
     // Apply pagination and ordering
     const { data, error, count } = await query
       .range(offset, offset + limit - 1)
       .order('created_at', { ascending: false });
-    
+
     if (error) throw error;
-    
+
     return NextResponse.json({
       success: true,
       data,

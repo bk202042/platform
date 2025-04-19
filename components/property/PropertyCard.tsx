@@ -14,20 +14,22 @@ interface PropertyCardProps {
 
 // Format price based on property type
 const formatPrice = (price: number, type: string) => {
+  // Use a fixed locale to avoid hydration mismatches
   if (type === '월세') {
-    return `$${price.toLocaleString()}/month`;
+    return `$${price.toLocaleString('en-US')}/month`;
   } else {
-    return `$${price.toLocaleString()}`;
+    return `$${price.toLocaleString('en-US')}`;
   }
 };
 
 // Format distance in a human-readable way
 const formatDistance = (meters: number) => {
+  // Use fixed precision to avoid hydration mismatches
   if (meters < 1000) {
-    return `${meters.toFixed(0)}m away`;
+    return `${Math.floor(meters)}m away`;
   } else {
     const km = meters / 1000;
-    return `${km.toFixed(1)}km away`;
+    return `${(Math.floor(km * 10) / 10).toFixed(1)}km away`;
   }
 };
 

@@ -27,8 +27,8 @@ export default function SearchForm({ className, onSearch }: SearchFormProps) {
   const [searchText, setSearchText] = useState(searchParams.search || '');
   const [minPrice, setMinPrice] = useState(searchParams.minPrice || '');
   const [maxPrice, setMaxPrice] = useState(searchParams.maxPrice || '');
-  const [propertyType, setPropertyType] = useState<PropertyType | ''>(
-    (searchParams.propertyType as PropertyType) || ''
+  const [propertyType, setPropertyType] = useState<PropertyType | 'any'>(
+    (searchParams.propertyType as PropertyType) || 'any'
   );
   const [minBedrooms, setMinBedrooms] = useState(searchParams.minBedrooms || '');
   const [minBathrooms, setMinBathrooms] = useState(searchParams.minBathrooms || '');
@@ -92,7 +92,7 @@ export default function SearchForm({ className, onSearch }: SearchFormProps) {
     if (searchText) params.search = searchText;
     if (minPrice) params.minPrice = minPrice;
     if (maxPrice) params.maxPrice = maxPrice;
-    if (propertyType) params.propertyType = propertyType;
+    if (propertyType && propertyType !== 'any') params.propertyType = propertyType;
     if (minBedrooms) params.minBedrooms = minBedrooms;
     if (minBathrooms) params.minBathrooms = minBathrooms;
     if (lat && lng) {
@@ -116,7 +116,7 @@ export default function SearchForm({ className, onSearch }: SearchFormProps) {
     setSearchText('');
     setMinPrice('');
     setMaxPrice('');
-    setPropertyType('');
+    setPropertyType('any');
     setMinBedrooms('');
     setMinBathrooms('');
     setLat('');
@@ -166,7 +166,7 @@ export default function SearchForm({ className, onSearch }: SearchFormProps) {
                 <SelectValue placeholder="Select property type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Any</SelectItem>
+                <SelectItem value="any">Any</SelectItem>
                 <SelectItem value="월세">Monthly Rent (월세)</SelectItem>
                 <SelectItem value="매매">Purchase (매매)</SelectItem>
               </SelectContent>
