@@ -35,6 +35,7 @@ export interface PropertyListing {
   created_at?: string;
   updated_at?: string;
   created_by?: string; // User ID of creator
+  images: PropertyImage[];
 }
 
 /**
@@ -89,4 +90,15 @@ export interface PropertySearchParams {
 export interface ValidationResult {
   valid: boolean;
   errors: string[];
+}
+
+export interface PropertyImage {
+  id: string;
+  property_id: string;
+  url: string;
+  alt_text: string | null;
+  order: number;
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
 }

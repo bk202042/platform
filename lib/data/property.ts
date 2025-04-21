@@ -1,8 +1,19 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { createAnonClient } from "@/lib/supabase/server-anon";
-import { PropertyType } from "@/types/property";
+import { PropertyListing, PropertyType } from "@/types/property";
 import { unstable_cache } from "next/cache";
+import { PostgrestError } from '@supabase/supabase-js';
+
+interface PropertyImage {
+  id: string;
+  property_id: string;
+  url: string;
+  alt_text: string | null;
+  order: number;
+  created_at: string;
+  created_by: string;
+}
 
 export interface PropertySearchParams {
   searchText?: string;
@@ -19,7 +30,7 @@ export interface PropertySearchParams {
 }
 
 export interface PropertySearchResult {
-  data: any[];
+  data: PropertyListing[];
   total: number;
   hasMore: boolean;
 }
@@ -115,7 +126,7 @@ export async function getPropertyListings(
 
 // Cache property details for 5 minutes
 const getCachedPropertyById = unstable_cache(
-  async (id: string) => {
+  async (id: string): Promise<PropertyListing | null> => {
     const supabase = await createAnonClient();
     const { data, error } = await supabase
       .from("property_listings")
@@ -138,12 +149,12 @@ const getCachedPropertyById = unstable_cache(
 );
 
 // Public function to get property by ID
-export async function getPropertyById(id: string) {
+export async function getPropertyById(id: string): Promise<PropertyListing | null> {
   return getCachedPropertyById(id);
 }
 
 // Get similar properties based on property type, price range, and location
-export async function getSimilarProperties(property: any, limit = 3) {
+export async function getSimilarProperties(property: PropertyListing, limit = 3): Promise<PropertyListing[]> {
   const supabase = await createAnonClient();
 
   // Don't include the current property
@@ -174,7 +185,7 @@ export async function getSimilarProperties(property: any, limit = 3) {
   return data || [];
 }
 
-export async function createProperty(property: any) {
+export async function createProperty(property: Omit<PropertyListing, 'id' | 'created_at'>): Promise<PropertyListing> {
   const supabase = await createClient(); // Keep using authenticated client for write operations
   const { data, error } = await supabase
     .from("property_listings")
@@ -186,7 +197,7 @@ export async function createProperty(property: any) {
   return data;
 }
 
-export async function updateProperty(id: string, updates: any) {
+export async function updateProperty(id: string, updates: Partial<PropertyListing>): Promise<PropertyListing> {
   const supabase = await createClient(); // Keep using authenticated client for write operations
   const { data, error } = await supabase
     .from("property_listings")
@@ -199,7 +210,7 @@ export async function updateProperty(id: string, updates: any) {
   return data;
 }
 
-export async function deleteProperty(id: string) {
+export async function deleteProperty(id: string): Promise<boolean> {
   const supabase = await createClient(); // Keep using authenticated client for write operations
   const { error } = await supabase
     .from("property_listings")
@@ -208,4 +219,49 @@ export async function deleteProperty(id: string) {
 
   if (error) throw error;
   return true;
+}
+
+export async function getPropertyImages(propertyId: string): Promise<PropertyImage[]> {
+  const supabase = await createAnonClient();
+  const { data, error } = await supabase
+    .from('property_images')
+    .select('*')
+    .eq('property_id', propertyId)
+    .order('order');
+
+  if (error) {
+    console.error('Error fetching property images:', error);
+    return [];
+  }
+
+  return data;
+}
+
+export async function addPropertyImage(propertyId: string, imageData: Omit<PropertyImage, 'id' | 'created_at'>): Promise<{ data: PropertyImage | null; error: PostgrestError | null }> {
+  const supabase = await createClient();
+  return await supabase
+    .from('property_images')
+    .insert(imageData)
+    .select()
+    .single();
+}
+
+export async function updatePropertyImageOrder(imageId: string, newOrder: number): Promise<{ data: PropertyImage | null; error: PostgrestError | null }> {
+  const supabase = await createClient();
+  return await supabase
+    .from('property_images')
+    .update({ order: newOrder })
+    .eq('id', imageId)
+    .select()
+    .single();
+}
+
+export async function deletePropertyImage(imageId: string): Promise<{ data: PropertyImage | null; error: PostgrestError | null }> {
+  const supabase = await createClient();
+  return await supabase
+    .from('property_images')
+    .delete()
+    .eq('id', imageId)
+    .select()
+    .single();
 }

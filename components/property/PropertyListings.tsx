@@ -5,9 +5,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { PropertyCard } from "@/components/property/PropertyCard";
 import { PropertyCardSkeleton } from "@/components/property/PropertyCardSkeleton";
 import { Button } from "@/components/ui/button";
+import { PropertyListing } from '@/types/property';
+
+// Extend PropertyListing to include optional distance_meters
+type PropertyListingWithDistance = PropertyListing & {
+  distance_meters?: number;
+};
 
 interface PropertyListingsProps {
-  properties: any[];
+  properties: PropertyListingWithDistance[];
   total?: number;
   initialLimit?: number;
   hasMore?: boolean;
@@ -70,12 +76,8 @@ export function PropertyListings({
           <PropertyCard
             key={property.id}
             property={property}
-            showDistance={"distance_meters" in property}
-            distanceMeters={
-              "distance_meters" in property
-                ? property.distance_meters
-                : undefined
-            }
+            showDistance={property.distance_meters !== undefined}
+            distanceMeters={property.distance_meters}
           />
         ))}
 

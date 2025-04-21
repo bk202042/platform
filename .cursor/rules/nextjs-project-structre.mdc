@@ -1,0 +1,126 @@
+---
+description: Next.js project structure guide
+globs: 
+alwaysApply: false
+---
+**Subject: Next.js Project Structure Rules (v3 - API Routes Focused, No Server Actions)**
+
+**Objective:** Structure the Next.js project using the App Router, prioritizing feature co-location where appropriate, while centralizing core data and business logic in a type-safe, server-only Data Access Layer (DAL). **Mutations initiated from the client MUST be handled via API Routes (`route.ts`).**
+
+**Core Principles:**
+
+1.  **App Router Foundation:** The `app/` directory is the primary location for routing, layouts, and UI components.
+2.  **Feature/Domain Organization:** Group related files (UI, client logic) by feature or domain rather than solely by file type.
+3.  **Co-location:** Place components, hooks, or utilities *specific* to a single feature alongside that feature's route files using private folders (`_components`, `_lib`, etc.).
+4.  **Centralized Data Access Layer (DAL):** Abstract *all* direct data source interactions (database queries, external API calls) into a dedicated, server-only DAL (`lib/data/`).
+5.  **`server-only` Enforcement:** Strictly use the `import 'server-only';` directive in the DAL and any other sensitive server-side logic files to prevent accidental client-side usage.
+6.  **API Route Strategy:** Use `app/api/` for *all* data fetching (needed by client components) and mutation endpoints. Keep handlers thin and rely on the DAL for core logic.
+7.  **Server Components:** Leverage Server Components to fetch data directly via the DAL for UI rendering when a public API endpoint isn't required for *that specific page render*.
+8.  **Shared Globals:** Use root-level `components/` and `lib/` for *truly* application-wide, generic UI elements and utilities/types/config, respectively.
+9.  **TypeScript:** Use TypeScript (`.ts`/`.tsx`) for all files.
+
+**Project Structure Rules:**
+
+1.  **Root Directory:** Standard project files (`package.json`, `next.config.js`, `tsconfig.json`, `.env.local`, `drizzle.config.ts` etc.).
+2.  **`app/` Directory (Core):**
+    *   **MUST** contain all UI routes and API routes (`route.ts`).
+    *   **Route Groups (`(folderName)/`)**: **SHOULD** be used to organize sections of the application (e.g., `(marketing)`, `(app)`, `(admin)`) without affecting URL paths. Use them to apply specific layouts, loading/error boundaries.
+    *   **Feature/Route Folders (e.g., `app/(app)/settings/`):**
+        *   **MUST** contain standard route files: `page.tsx`, `layout.tsx` (if needed), `loading.tsx`, `error.tsx`.
+        *   **`_components/`**: **SHOULD** contain React components used *only* within this specific feature/route segment. Mark as private (`_`) to prevent routing. Client components initiating mutations **MUST** call API routes (e.g., using `fetch`).
+        *   **`_lib/` | `_hooks/` | `_utils/`**: **SHOULD** contain client-side hooks or utility functions used *only* within this specific feature/route segment. Mark as private (`_`).
+3.  **API Routes (`app/api/...`):**
+    *   **MUST** be used for all data fetching required by Client Components and *all* mutation operations (create, update, delete) initiated from the client.
+    *   **RECOMMENDED:** Consolidate endpoints under `app/api/`.
+    *   **Organization:** Structure sub-folders within `app/api/` by resource or feature (e.g., `app/api/users/`, `app/api/webhooks/stripe/`).
+    *   **Route Handlers (`route.ts`)**:
+        *   **MUST** use `route.ts` (or `.js`).
+        *   **MUST** export named async functions for HTTP methods (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`, etc.).
+        *   **MUST** use standard Web `Request`/`Response` APIs (or `NextRequest`/`NextResponse` for extensions).
+        *   **MUST** keep logic minimal: handle HTTP concerns (parsing, validation, status codes, headers).
+        *   **MUST** call functions from the Data Access Layer (DAL) for all data fetching and mutations.
+        *   **Dynamic Routes:** **MUST** use `[paramName]` folders; access params via the second argument `({ params })`.
+    *   **Use Cases:** Data fetching for Client Components, handling all form submissions/mutations from the client, building public APIs, proxying backends, handling webhooks, custom auth flows.
+4.  **Shared UI Components (`components/` or `src/components/`):**
+    *   **Purpose:** For generic, reusable UI components (design system primitives, global layout atoms) used across *multiple unrelated features*.
+    *   **Organization:** Subdivide logically (e.g., `components/ui/`, `components/layout/`).
+    *   **MUST NOT** contain feature-specific UI logic.
+5.  **Data Access Layer (DAL) (`lib/data/` or `src/lib/data/`):**
+    *   **Purpose:** The *single source of truth* for interacting with databases or external data APIs.
+    *   **MUST** abstract all data fetching and mutation logic.
+    *   **Organization:** Group by data resource/domain (e.g., `lib/data/users.ts`, `lib/data/products.ts`).
+    *   **`server-only`:** **MUST** include `import 'server-only';` at the top of *every* file in this directory.
+    *   **Called By:** Server Components, API Route Handlers.
+6.  **Shared Library (`lib/` or `src/lib/`):**
+    *   **Purpose:** Global utilities, type definitions, constants, configuration loaders, DB client initialization (`lib/db.ts`).
+    *   **`lib/utils.ts`**: General helper functions usable on client and server.
+    *   **`lib/types.ts`**: Shared TypeScript types/interfaces.
+    *   **`lib/config.ts`**: Application configuration constants/logic.
+    *   **`lib/db.ts`**: Database client instantiation (e.g., Drizzle/Prisma client). Mark `server-only` if it contains secrets or should never run client-side.
+7.  **Shared API/Middleware Logic (`lib/middleware/` or `lib/api-helpers/`):**
+    *   **Purpose:** Reusable functions specifically for wrapping API Route Handlers (e.g., HOFs for authentication `withAuth`, request/response validation wrappers, logging).
+    *   **MUST** be distinct from Next.js Middleware (`middleware.ts` at the root).
+8.  **Next.js Middleware (`middleware.ts`):**
+    *   Located at the root (or `src/`).
+    *   **Purpose:** Edge-based request interception for tasks like authentication redirects, path rewriting, setting request headers *before* hitting the route handler or page.
+9.  **Configuration Files:**
+    *   `.env.local`: **MUST** store secrets and environment-specific variables.
+    *   `next.config.js`, `tsconfig.json`, `drizzle.config.ts`, `package.json`: Standard configurations.
+10. **Testing (`tests/`):**
+    *   **SHOULD** contain integration and end-to-end tests. Unit tests can be co-located with the code they test using `*.test.ts` naming convention if preferred.
+
+**Example Structure (Revised - No `actions.ts`):**
+
+```
+.
+├── app/
+│   ├── (app)/                 # Main authenticated application section
+│   │   ├── settings/
+│   │   │   ├── _components/
+│   │   │   │   └── SettingsForm.tsx  # This form would fetch('/api/settings', { method: 'POST', ... })
+│   │   │   └── page.tsx
+│   │   ├── dashboard/
+│   │   │   └── page.tsx
+│   │   └── layout.tsx            # Layout for the authenticated app section
+│   ├── (marketing)/           # Public marketing pages
+│   │   ├── page.tsx            # Homepage
+│   │   └── layout.tsx            # Layout for marketing pages
+│   └── api/                   # Centralized API routes
+│       ├── users/
+│       │   ├── route.ts        # Handles GET /api/users, POST /api/users
+│       │   └── [id]/
+│       │       └── route.ts    # Handles GET /api/users/[id], DELETE /api/users/[id]
+│       ├── settings/
+│       │   └── route.ts        # Handles POST /api/settings (called by SettingsForm.tsx)
+│       └── webhooks/
+│           └── stripe/
+│               └── route.ts    # Handles /api/webhooks/stripe
+├── components/                # SHARED, GENERIC UI components
+│   ├── ui/
+│   │   ├── Button.tsx
+│   │   └── Card.tsx
+│   └── layout/
+│       ├── Header.tsx
+│       └── Footer.tsx
+├── lib/                       # SHARED Lib for Core Logic, Utils, Config
+│   ├── data/                  # Data Access Layer (DAL) - SERVER ONLY
+│   │   ├── users.ts           # import 'server-only'; export async function getUserById(...) {...}
+│   │   └── settings.ts        # import 'server-only'; export async function updateSettings(...) {...}
+│   ├── db/                    # Database specific setup
+│   │   ├── index.ts           # DB client instance (e.g., Drizzle) - potentially server-only
+│   │   └── schema.ts          # Drizzle schema
+│   ├── middleware/            # Reusable wrappers for API Route Handlers
+│   │   └── withAuth.ts
+│   ├── utils.ts               # General shared utilities
+│   └── types.ts               # Shared TypeScript types
+├── public/                    # Static assets
+├── supabase/                  # Supabase CLI specific files
+│   └── migrations/            # Database migrations
+├── tests/                     # E2E / Integration tests
+├── .env.local                 # Environment variables
+├── drizzle.config.ts          # Drizzle configuration
+├── middleware.ts              # Next.js Edge Middleware
+├── next.config.js
+├── package.json
+└── tsconfig.json
+```
