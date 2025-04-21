@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { FeaturedPropertyTabs } from '@/components/property/FeaturedPropertyTabs';
-import { PropertyStatistics } from '@/components/property/PropertyStatistics';
-import { PropertyListing } from '@/types/property';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { FeaturedPropertyTabs } from "@/components/property/FeaturedPropertyTabs";
+import { PropertyStatistics } from "@/components/property/PropertyStatistics";
+import { PropertyListing } from "@/types/property";
 
 interface FeaturedPropertiesSectionProps {
   rentProperties: PropertyListing[];
@@ -12,10 +12,10 @@ interface FeaturedPropertiesSectionProps {
   totalProperties: number;
 }
 
-export function FeaturedPropertiesSection({ 
-  rentProperties, 
+export function FeaturedPropertiesSection({
+  rentProperties,
   buyProperties,
-  totalProperties
+  totalProperties,
 }: FeaturedPropertiesSectionProps) {
   return (
     <section className="container mx-auto px-4 mb-16">

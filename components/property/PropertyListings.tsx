@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useTransition } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { PropertyCard } from '@/components/property/PropertyCard';
-import { PropertyCardSkeleton } from '@/components/property/PropertyCardSkeleton';
-import { Button } from '@/components/ui/button';
+import { useState, useCallback, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { PropertyCard } from "@/components/property/PropertyCard";
+import { PropertyCardSkeleton } from "@/components/property/PropertyCardSkeleton";
+import { Button } from "@/components/ui/button";
 
 interface PropertyListingsProps {
   properties: any[];
@@ -17,7 +17,7 @@ export function PropertyListings({
   properties,
   total = 0,
   initialLimit = 12,
-  hasMore = false
+  hasMore = false,
 }: PropertyListingsProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -31,7 +31,7 @@ export function PropertyListings({
       params.set(name, value);
       return params.toString();
     },
-    [searchParams]
+    [searchParams],
   );
 
   const loadMore = () => {
@@ -39,7 +39,10 @@ export function PropertyListings({
     setLimit(newLimit);
 
     startTransition(() => {
-      router.push(`/properties?${createQueryString('limit', newLimit.toString())}`, { scroll: false });
+      router.push(
+        `/properties?${createQueryString("limit", newLimit.toString())}`,
+        { scroll: false },
+      );
     });
   };
 
@@ -58,7 +61,7 @@ export function PropertyListings({
     <div>
       <div className="mb-6">
         <h2 className="text-xl font-semibold">
-          {total} {total === 1 ? 'Property' : 'Properties'} Found
+          {total} {total === 1 ? "Property" : "Properties"} Found
         </h2>
       </div>
 
@@ -67,8 +70,12 @@ export function PropertyListings({
           <PropertyCard
             key={property.id}
             property={property}
-            showDistance={'distance_meters' in property}
-            distanceMeters={'distance_meters' in property ? property.distance_meters : undefined}
+            showDistance={"distance_meters" in property}
+            distanceMeters={
+              "distance_meters" in property
+                ? property.distance_meters
+                : undefined
+            }
           />
         ))}
 
@@ -89,7 +96,7 @@ export function PropertyListings({
             disabled={isPending}
             className="min-w-[150px]"
           >
-            {isPending ? 'Loading...' : 'Load More'}
+            {isPending ? "Loading..." : "Load More"}
           </Button>
         </div>
       )}

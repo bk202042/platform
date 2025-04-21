@@ -1,12 +1,14 @@
-'use client';
+"use client";
 
-import { Home, Building, MapPin } from 'lucide-react';
+import { Home, Building, MapPin } from "lucide-react";
 
 interface PropertyStatisticsProps {
   totalProperties: number;
 }
 
-export function PropertyStatistics({ totalProperties }: PropertyStatisticsProps) {
+export function PropertyStatistics({
+  totalProperties,
+}: PropertyStatisticsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div className="bg-muted rounded-lg p-6 flex items-center">

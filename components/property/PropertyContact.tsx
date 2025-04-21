@@ -1,39 +1,50 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Phone, Mail, User } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+import { useState } from "react";
+import { Phone, Mail, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 interface PropertyContactProps {
   propertyId: string;
   propertyTitle: string;
 }
 
-export function PropertyContact({ propertyId, propertyTitle }: PropertyContactProps) {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [message, setMessage] = useState(`I'm interested in this property: ${propertyTitle}`);
+export function PropertyContact({
+  propertyId,
+  propertyTitle,
+}: PropertyContactProps) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState(
+    `I'm interested in this property: ${propertyTitle}`,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     setIsSubmitting(true);
-    
+
     // In a real implementation, this would send the data to an API
     // For now, we'll just simulate a delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     setIsSubmitting(false);
     setIsSubmitted(true);
   };
-  
+
   if (isSubmitted) {
     return (
       <Card>
@@ -52,9 +63,9 @@ export function PropertyContact({ propertyId, propertyTitle }: PropertyContactPr
           </div>
         </CardContent>
         <CardFooter>
-          <Button 
-            variant="outline" 
-            className="w-full" 
+          <Button
+            variant="outline"
+            className="w-full"
             onClick={() => setIsSubmitted(false)}
           >
             Send Another Message
@@ -63,7 +74,7 @@ export function PropertyContact({ propertyId, propertyTitle }: PropertyContactPr
       </Card>
     );
   }
-  
+
   return (
     <Card>
       <CardHeader>
@@ -85,7 +96,7 @@ export function PropertyContact({ propertyId, propertyTitle }: PropertyContactPr
               />
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="email">Email Address</Label>
             <div className="relative">
@@ -101,7 +112,7 @@ export function PropertyContact({ propertyId, propertyTitle }: PropertyContactPr
               />
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="phone">Phone Number</Label>
             <div className="relative">
@@ -115,7 +126,7 @@ export function PropertyContact({ propertyId, propertyTitle }: PropertyContactPr
               />
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="message">Message</Label>
             <Textarea
@@ -127,13 +138,9 @@ export function PropertyContact({ propertyId, propertyTitle }: PropertyContactPr
               required
             />
           </div>
-          
-          <Button 
-            type="submit" 
-            className="w-full" 
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Sending...' : 'Send Message'}
+
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? "Sending..." : "Send Message"}
           </Button>
         </form>
       </CardContent>

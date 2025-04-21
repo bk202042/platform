@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { PropertyListing } from '@/types/property';
-import { Card, CardContent } from '@/components/ui/card';
+import { useState } from "react";
+import { PropertyListing } from "@/types/property";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface PropertyGalleryProps {
   property: PropertyListing;
@@ -10,7 +10,7 @@ interface PropertyGalleryProps {
 
 export default function PropertyGallery({ property }: PropertyGalleryProps) {
   const [selectedImage, setSelectedImage] = useState(0);
-  
+
   // For now, we'll use placeholder images
   const images = [
     `https://placehold.co/800x500/e2e8f0/1e293b?text=${encodeURIComponent(property.title)}`,
@@ -30,13 +30,15 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
               className="w-full h-full object-cover"
             />
           </div>
-          
+
           <div className="grid grid-cols-4 gap-2">
             {images.map((image, index) => (
               <div
                 key={index}
                 className={`aspect-video bg-muted rounded-lg overflow-hidden cursor-pointer transition-all ${
-                  selectedImage === index ? 'ring-2 ring-primary' : 'opacity-70 hover:opacity-100'
+                  selectedImage === index
+                    ? "ring-2 ring-primary"
+                    : "opacity-70 hover:opacity-100"
                 }`}
                 onClick={() => setSelectedImage(index)}
               >

@@ -1,6 +1,11 @@
-'use client';
+"use client";
 
-import { Card, CardContent, CardHeader, CardFooter } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardFooter,
+} from "@/components/ui/card";
 
 export function PropertyCardSkeleton() {
   return (

@@ -1,5 +1,5 @@
-import { PropertyCardSkeleton } from '@/components/property/PropertyCardSkeleton';
-import { Card } from '@/components/ui/card';
+import { PropertyCardSkeleton } from "@/components/property/PropertyCardSkeleton";
+import { Card } from "@/components/ui/card";
 
 export default function Loading() {
   return (
@@ -23,7 +23,10 @@ export default function Loading() {
         {/* City Cards Skeleton */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {Array.from({ length: 6 }).map((_, index) => (
-            <div key={index} className="h-[240px] bg-muted rounded-lg animate-pulse"></div>
+            <div
+              key={index}
+              className="h-[240px] bg-muted rounded-lg animate-pulse"
+            ></div>
           ))}
         </div>
       </section>

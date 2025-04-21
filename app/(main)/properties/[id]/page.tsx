@@ -1,9 +1,9 @@
-import { notFound } from 'next/navigation';
-import { getPropertyById, getSimilarProperties } from '@/lib/data/property';
-import PropertyDetail from './_components/PropertyDetail';
-import PropertyGallery from './_components/PropertyGallery';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { notFound } from "next/navigation";
+import { getPropertyById, getSimilarProperties } from "@/lib/data/property";
+import PropertyDetail from "./_components/PropertyDetail";
+import PropertyGallery from "./_components/PropertyGallery";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface PropertyPageProps {
   params: {
@@ -16,8 +16,8 @@ export async function generateMetadata({ params }: PropertyPageProps) {
 
   if (!property) {
     return {
-      title: 'Property Not Found',
-      description: 'The requested property could not be found',
+      title: "Property Not Found",
+      description: "The requested property could not be found",
     };
   }
 
@@ -80,13 +80,17 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     className="block"
                   >
                     <div className="border rounded-lg p-4 hover:bg-muted transition-colors">
-                      <h4 className="font-medium line-clamp-1">{similarProperty.title}</h4>
+                      <h4 className="font-medium line-clamp-1">
+                        {similarProperty.title}
+                      </h4>
                       <p className="text-sm text-muted-foreground line-clamp-1">
                         {similarProperty.address}
                       </p>
                       <p className="font-medium mt-2">
                         ${similarProperty.price.toLocaleString()}
-                        {similarProperty.property_type === '월세' ? '/month' : ''}
+                        {similarProperty.property_type === "월세"
+                          ? "/month"
+                          : ""}
                       </p>
                     </div>
                   </Link>

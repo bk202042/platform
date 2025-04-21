@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getPropertyById, updateProperty } from '@/lib/data/property';
+import { NextRequest, NextResponse } from "next/server";
+import { getPropertyById, updateProperty } from "@/lib/data/property";
 
 interface RouteParams {
   params: {
@@ -15,11 +15,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const { id } = params;
 
     // Validate UUID format
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {
       return NextResponse.json(
-        { success: false, message: 'Invalid property ID format' },
-        { status: 400 }
+        { success: false, message: "Invalid property ID format" },
+        { status: 400 },
       );
     }
 
@@ -28,20 +29,20 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     if (!data) {
       return NextResponse.json(
-        { success: false, message: 'Property not found' },
-        { status: 404 }
+        { success: false, message: "Property not found" },
+        { status: 404 },
       );
     }
 
     return NextResponse.json({
       success: true,
-      data
+      data,
     });
   } catch (error) {
-    console.error('Error fetching property:', error);
+    console.error("Error fetching property:", error);
     return NextResponse.json(
-      { success: false, message: 'Failed to fetch property', error },
-      { status: 500 }
+      { success: false, message: "Failed to fetch property", error },
+      { status: 500 },
     );
   }
 }
@@ -54,11 +55,12 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const { id } = params;
 
     // Validate UUID format
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {
       return NextResponse.json(
-        { success: false, message: 'Invalid property ID format' },
-        { status: 400 }
+        { success: false, message: "Invalid property ID format" },
+        { status: 400 },
       );
     }
 
@@ -67,23 +69,33 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     // Validate updates
     const allowedFields = [
-      'title', 'description', 'price', 'property_type',
-      'bedrooms', 'bathrooms', 'square_footage',
-      'location', 'address', 'features'
+      "title",
+      "description",
+      "price",
+      "property_type",
+      "bedrooms",
+      "bathrooms",
+      "square_footage",
+      "location",
+      "address",
+      "features",
     ];
 
     // Filter out any fields that are not allowed to be updated
     const filteredUpdates = Object.keys(updates)
-      .filter(key => allowedFields.includes(key))
-      .reduce((obj, key) => {
-        obj[key] = updates[key];
-        return obj;
-      }, {} as Record<string, any>);
+      .filter((key) => allowedFields.includes(key))
+      .reduce(
+        (obj, key) => {
+          obj[key] = updates[key];
+          return obj;
+        },
+        {} as Record<string, any>,
+      );
 
     if (Object.keys(filteredUpdates).length === 0) {
       return NextResponse.json(
-        { success: false, message: 'No valid fields to update' },
-        { status: 400 }
+        { success: false, message: "No valid fields to update" },
+        { status: 400 },
       );
     }
 
@@ -92,8 +104,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     if (!existingProperty) {
       return NextResponse.json(
-        { success: false, message: 'Property not found' },
-        { status: 404 }
+        { success: false, message: "Property not found" },
+        { status: 404 },
       );
     }
 
@@ -103,13 +115,13 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({
       success: true,
       data,
-      message: 'Property updated successfully'
+      message: "Property updated successfully",
     });
   } catch (error) {
-    console.error('Error updating property:', error);
+    console.error("Error updating property:", error);
     return NextResponse.json(
-      { success: false, message: 'Failed to update property', error },
-      { status: 500 }
+      { success: false, message: "Failed to update property", error },
+      { status: 500 },
     );
   }
 }

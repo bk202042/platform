@@ -1,4 +1,4 @@
-import { PropertyType } from './property';
+import { PropertyType } from "./property";
 
 export interface PropertyListing {
   id: string;
@@ -22,13 +22,22 @@ export interface Database {
     Tables: {
       property_listings: {
         Row: PropertyListing;
-        Insert: Omit<PropertyListing, 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<PropertyListing, 'id' | 'created_at' | 'updated_at'>>;
+        Insert: Omit<PropertyListing, "id" | "created_at" | "updated_at">;
+        Update: Partial<
+          Omit<PropertyListing, "id" | "created_at" | "updated_at">
+        >;
       };
     };
     Functions: {
-      find_properties_within_radius: (lat: number, lng: number, radius_meters: number) => PropertyListing[];
-      get_properties_with_distance: (lat: number, lng: number) => (PropertyListing & { distance_meters: number })[];
+      find_properties_within_radius: (
+        lat: number,
+        lng: number,
+        radius_meters: number,
+      ) => PropertyListing[];
+      get_properties_with_distance: (
+        lat: number,
+        lng: number,
+      ) => (PropertyListing & { distance_meters: number })[];
       search_properties: (
         search_text?: string | null,
         min_price?: number | null,
@@ -38,7 +47,7 @@ export interface Database {
         min_bathrooms?: number | null,
         lat?: number | null,
         lng?: number | null,
-        radius_meters?: number | null
+        radius_meters?: number | null,
       ) => (PropertyListing & { distance_meters: number | null })[];
     };
   };

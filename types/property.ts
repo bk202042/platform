@@ -2,18 +2,18 @@
  * Property types available in the Vietnamese market for Korean expatriates
  * Note: No '전세' (jeonse/lease) option as this system doesn't exist in Vietnam
  */
-export type PropertyType = '월세' | '매매';  // Monthly rent or Purchase
+export type PropertyType = "월세" | "매매"; // Monthly rent or Purchase
 
 /**
  * Vietnamese cities with significant Korean expatriate populations
  */
 export type VietnamCity =
-  | 'Ho Chi Minh City'
-  | 'Hanoi'
-  | 'Da Nang'
-  | 'Nha Trang'
-  | 'Vung Tau'
-  | 'Hai Phong';
+  | "Ho Chi Minh City"
+  | "Hanoi"
+  | "Da Nang"
+  | "Nha Trang"
+  | "Vung Tau"
+  | "Hai Phong";
 
 /**
  * Property listing interface that matches the database schema
@@ -24,7 +24,7 @@ export interface PropertyListing {
   id?: string;
   title: string;
   description: string;
-  price: number;  // In USD
+  price: number; // In USD
   property_type: PropertyType;
   bedrooms: number;
   bathrooms: number;
@@ -34,7 +34,7 @@ export interface PropertyListing {
   features: PropertyFeatures;
   created_at?: string;
   updated_at?: string;
-  created_by?: string;  // User ID of creator
+  created_by?: string; // User ID of creator
 }
 
 /**
@@ -53,11 +53,11 @@ export interface PropertyFeatures {
   furnished?: boolean;
 
   // Korean expatriate specific features
-  koreanCommunity?: boolean;  // Proximity to Korean community
-  koreanRestaurants?: boolean;  // Proximity to Korean restaurants
-  internationalSchool?: boolean;  // Proximity to international schools
-  koreanSchool?: boolean;  // Proximity to Korean schools
-  koreanSupermarket?: boolean;  // Proximity to Korean supermarkets
+  koreanCommunity?: boolean; // Proximity to Korean community
+  koreanRestaurants?: boolean; // Proximity to Korean restaurants
+  internationalSchool?: boolean; // Proximity to international schools
+  koreanSchool?: boolean; // Proximity to Korean schools
+  koreanSupermarket?: boolean; // Proximity to Korean supermarkets
 
   // Additional features as key-value pairs
   [key: string]: any;

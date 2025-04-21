@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { PropertyListing } from '@/types/property';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PropertyListing } from "@/types/property";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PropertyDetailProps {
   property: PropertyListing;
@@ -10,7 +10,7 @@ interface PropertyDetailProps {
 export default function PropertyDetail({ property }: PropertyDetailProps) {
   // Format price based on property type
   const formatPrice = (price: number, type: string) => {
-    if (type === '월세') {
+    if (type === "월세") {
       return `$${price.toLocaleString()}/month`;
     } else {
       return `$${price.toLocaleString()}`;
@@ -30,7 +30,9 @@ export default function PropertyDetail({ property }: PropertyDetailProps) {
               {formatPrice(property.price, property.property_type)}
             </p>
             <p className="text-muted-foreground">
-              {property.property_type === '월세' ? 'Monthly Rent (월세)' : 'Purchase (매매)'}
+              {property.property_type === "월세"
+                ? "Monthly Rent (월세)"
+                : "Purchase (매매)"}
             </p>
           </div>
           <div className="flex space-x-6 mt-4 md:mt-0">
@@ -43,7 +45,9 @@ export default function PropertyDetail({ property }: PropertyDetailProps) {
               <p className="text-sm text-muted-foreground">Bathrooms</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-semibold">{property.square_footage}</p>
+              <p className="text-2xl font-semibold">
+                {property.square_footage}
+              </p>
               <p className="text-sm text-muted-foreground">Sq Ft</p>
             </div>
           </div>
@@ -51,7 +55,9 @@ export default function PropertyDetail({ property }: PropertyDetailProps) {
 
         <div>
           <h3 className="text-xl font-semibold mb-2">Description</h3>
-          <p className="text-muted-foreground whitespace-pre-line">{property.description}</p>
+          <p className="text-muted-foreground whitespace-pre-line">
+            {property.description}
+          </p>
         </div>
 
         {property.features && property.features.length > 0 && (

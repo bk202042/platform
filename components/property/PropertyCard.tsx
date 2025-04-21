@@ -1,10 +1,17 @@
-'use client';
+"use client";
 
-import { memo } from 'react';
-import Link from 'next/link';
-import { PropertyListing } from '@/types/property';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { memo } from "react";
+import Link from "next/link";
+import { PropertyListing } from "@/types/property";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface PropertyCardProps {
   property: PropertyListing;
@@ -15,10 +22,10 @@ interface PropertyCardProps {
 // Format price based on property type
 const formatPrice = (price: number, type: string) => {
   // Use a fixed locale to avoid hydration mismatches
-  if (type === '월세') {
-    return `$${price.toLocaleString('en-US')}/month`;
+  if (type === "월세") {
+    return `$${price.toLocaleString("en-US")}/month`;
   } else {
-    return `$${price.toLocaleString('en-US')}`;
+    return `$${price.toLocaleString("en-US")}`;
   }
 };
 
@@ -33,7 +40,11 @@ const formatDistance = (meters: number) => {
   }
 };
 
-function PropertyCardComponent({ property, showDistance = false, distanceMeters }: PropertyCardProps) {
+function PropertyCardComponent({
+  property,
+  showDistance = false,
+  distanceMeters,
+}: PropertyCardProps) {
   return (
     <Card className="h-full flex flex-col transition-shadow hover:shadow-md">
       <CardHeader className="pb-2">
@@ -52,13 +63,22 @@ function PropertyCardComponent({ property, showDistance = false, distanceMeters 
           <p className="font-semibold text-lg">
             {formatPrice(property.price, property.property_type)}
             <span className="ml-2 text-sm font-normal text-muted-foreground">
-              {property.property_type === '월세' ? 'Monthly Rent' : 'Purchase'}
+              {property.property_type === "월세" ? "Monthly Rent" : "Purchase"}
             </span>
           </p>
           <div className="flex space-x-4 text-sm">
-            <div>{property.bedrooms} <span className="text-muted-foreground">Bed</span></div>
-            <div>{property.bathrooms} <span className="text-muted-foreground">Bath</span></div>
-            <div>{property.square_footage} <span className="text-muted-foreground">sqft</span></div>
+            <div>
+              {property.bedrooms}{" "}
+              <span className="text-muted-foreground">Bed</span>
+            </div>
+            <div>
+              {property.bathrooms}{" "}
+              <span className="text-muted-foreground">Bath</span>
+            </div>
+            <div>
+              {property.square_footage}{" "}
+              <span className="text-muted-foreground">sqft</span>
+            </div>
           </div>
           <p className="text-sm line-clamp-3 text-muted-foreground">
             {property.description}
@@ -67,7 +87,9 @@ function PropertyCardComponent({ property, showDistance = false, distanceMeters 
       </CardContent>
       <CardFooter className="pt-2">
         <Link href={`/properties/${property.id}`} className="w-full">
-          <Button variant="outline" className="w-full">View Details</Button>
+          <Button variant="outline" className="w-full">
+            View Details
+          </Button>
         </Link>
       </CardFooter>
     </Card>

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface ErrorProps {
   error: Error;
@@ -12,7 +12,7 @@ interface ErrorProps {
 export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
     // Log the error to an error reporting service
-    console.error('Property page error:', error);
+    console.error("Property page error:", error);
   }, [error]);
 
   return (
@@ -26,9 +26,7 @@ export default function Error({ error, reset }: ErrorProps) {
           Try again
         </Button>
         <Link href="/properties">
-          <Button>
-            View all properties
-          </Button>
+          <Button>View all properties</Button>
         </Link>
       </div>
     </div>
