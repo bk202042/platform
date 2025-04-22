@@ -4,19 +4,19 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { PropertyTypeSelector } from "@/components/property/PropertyTypeSelector";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export function HeroSection() {
   const [searchText, setSearchText] = useState("");
+  const [activeTab, setActiveTab] = useState<"buy" | "rent" | "sold">("buy");
   const router = useRouter();
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     if (searchText.trim()) {
       router.push(
-        `/search?searchText=${encodeURIComponent(searchText.trim())}`,
+        `/search?searchText=${encodeURIComponent(searchText.trim())}&type=${activeTab}`,
       );
     }
   };
@@ -43,38 +43,69 @@ export function HeroSection() {
       {/* Content */}
       <div className="relative z-20 container mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[600px] text-center">
         <h1
-          className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 max-w-3xl"
+          className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-12 max-w-3xl leading-tight"
           style={{ textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)" }}
         >
           Discover a place
           <br />
-          you will love to live
+          you&apos;ll love to live
         </h1>
 
         {/* Search Box Container */}
-        <div className="bg-white/90 dark:bg-zinc-800/90 p-6 md:p-8 rounded-lg shadow-lg w-full max-w-3xl mt-4">
-          {/* Property Type Selector */}
-          <PropertyTypeSelector />
+        <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl">
+          {/* Toggle Buttons */}
+          <div className="flex border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab("buy")}
+              className={`flex-1 py-4 text-lg font-medium transition-colors ${
+                activeTab === "buy"
+                  ? "text-[#007882] border-b-2 border-[#007882]"
+                  : "text-[#2A2A33] hover:text-[#007882]"
+              }`}
+            >
+              Buy
+            </button>
+            <button
+              onClick={() => setActiveTab("rent")}
+              className={`flex-1 py-4 text-lg font-medium transition-colors ${
+                activeTab === "rent"
+                  ? "text-[#007882] border-b-2 border-[#007882]"
+                  : "text-[#2A2A33] hover:text-[#007882]"
+              }`}
+            >
+              Rent
+            </button>
+            <button
+              onClick={() => setActiveTab("sold")}
+              className={`flex-1 py-4 text-lg font-medium transition-colors ${
+                activeTab === "sold"
+                  ? "text-[#007882] border-b-2 border-[#007882]"
+                  : "text-[#2A2A33] hover:text-[#007882]"
+              }`}
+            >
+              Sold
+            </button>
+          </div>
 
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="mt-6 w-full">
+          <form onSubmit={handleSearch} className="p-4">
             <div className="relative flex items-center">
               <Input
                 type="text"
                 name="searchText"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
-                placeholder="Search by City, Neighborhood, Zip, Address..."
-                className="w-full h-14 pl-4 pr-16 text-lg rounded-lg border-2 border-zinc-300 dark:border-zinc-600 focus:border-primary dark:focus:border-primary focus:ring-primary dark:focus:ring-primary bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-400"
+                placeholder="Enter a location"
+                className="w-full h-14 pl-4 pr-16 text-lg rounded-lg border-2 border-gray-200 focus:border-[#007882] focus:ring-[#007882] placeholder:text-gray-500"
                 aria-label="Search Location"
               />
               <Button
                 type="submit"
                 size="icon"
-                className="absolute right-1 top-1 h-12 w-12 rounded-md flex items-center justify-center bg-primary text-white hover:bg-primary/90"
+                className="absolute right-2 top-2 h-10 w-10 rounded-lg bg-[#E95C33] hover:bg-[#D14A21] text-white"
                 aria-label="Submit Search"
               >
-                <Search className="h-6 w-6" />
+                <Search className="h-5 w-5" />
               </Button>
             </div>
           </form>

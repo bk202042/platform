@@ -2,50 +2,81 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Home, User } from "lucide-react"; // Using Home as a placeholder logo icon - Removed Search
+import { Home, User, Heart } from "lucide-react";
 
 export function Header() {
   // Placeholder for authentication status
   const isLoggedIn = false;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 max-w-screen-2xl items-center">
-        <div className="mr-4 flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Home className="h-6 w-6 text-primary" /> {/* Placeholder Logo */}
-            <span className="font-bold sm:inline-block">VinaProp</span>{" "}
-            {/* Placeholder Name */}
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        {/* Left section with logo and nav */}
+        <div className="flex items-center space-x-8">
+          <Link href="/" className="flex items-center space-x-2">
+            <Home className="h-6 w-6 text-[#007882]" />
+            <span className="text-[#2A2A33] text-xl font-bold">VinaProp</span>
           </Link>
-          <nav className="flex items-center gap-6 text-sm">
+
+          <nav className="hidden md:flex items-center space-x-6">
             <Link
               href="/search"
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
+              className="text-[#2A2A33] hover:text-[#007882] transition-colors font-medium"
             >
-              Search
+              Buy
             </Link>
             <Link
               href="/properties"
-              className="transition-colors hover:text-foreground/80 text-foreground/60"
+              className="text-[#2A2A33] hover:text-[#007882] transition-colors font-medium"
             >
-              Properties
+              Rent
             </Link>
-            {/* Add other main navigation links here */}
+            <Link
+              href="/mortgage"
+              className="text-[#2A2A33] hover:text-[#007882] transition-colors font-medium"
+            >
+              Mortgage
+            </Link>
           </nav>
         </div>
-        <div className="flex flex-1 items-center justify-end space-x-2">
+
+        {/* Right section with auth */}
+        <div className="flex items-center space-x-4">
           {isLoggedIn ? (
             <>
-              {/* Add Saved Homes/Searches icons/links here if needed */}
-              <Button variant="ghost" size="icon">
+              <Button
+                variant="ghost"
+                className="text-[#2A2A33] hover:text-[#007882] hidden md:flex items-center space-x-2"
+              >
+                <Heart className="h-5 w-5" />
+                <span>Saved Homes</span>
+              </Button>
+              <Button
+                variant="ghost"
+                className="text-[#2A2A33] hover:text-[#007882]"
+              >
                 <User className="h-5 w-5" />
                 <span className="sr-only">Profile</span>
               </Button>
             </>
           ) : (
-            <Button variant="outline" size="sm">
-              Sign Up / Log In
-            </Button>
+            <div className="flex items-center space-x-4">
+              <Link href="/auth/sign-in">
+                <Button
+                  variant="ghost"
+                  className="text-[#2A2A33] hover:text-[#007882] font-medium"
+                >
+                  Sign In
+                </Button>
+              </Link>
+              <Link href="/auth/sign-up">
+                <Button
+                  className="bg-[#007882] hover:bg-[#005F67] text-white font-medium"
+                >
+                  Sign Up
+                </Button>
+              </Link>
+            </div>
           )}
         </div>
       </div>
