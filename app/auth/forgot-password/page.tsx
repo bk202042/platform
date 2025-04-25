@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
+import { useState } from "react";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -18,7 +18,7 @@ export default function ForgotPasswordPage() {
     try {
       const supabase = createClient();
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/update-password`
+        redirectTo: `${window.location.origin}/auth/update-password`,
       });
 
       if (error) {
@@ -27,77 +27,76 @@ export default function ForgotPasswordPage() {
 
       setSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className='min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8'>
-      <div className='w-full max-w-lg'>
-        <h1 className='text-4xl font-bold text-[#2A2A33] text-center tracking-tight mb-2'>
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-lg">
+        <h1 className="text-4xl font-bold text-[#2A2A33] text-center tracking-tight mb-2">
           Reset your password
         </h1>
-        <p className='text-lg text-center text-[#54545A] mb-8'>
+        <p className="text-lg text-center text-[#54545A] mb-8">
           Enter your email address and we&apos;ll send you instructions
         </p>
 
-        <div className='bg-white rounded-xl shadow-lg p-8'>
+        <div className="bg-white rounded-xl shadow-lg p-8">
           {success ? (
-            <div className='bg-[#E6F4EA] rounded-lg p-6'>
-              <h3 className='text-[#1B5E20] text-xl font-semibold mb-3'>
+            <div className="bg-[#E6F4EA] rounded-lg p-6">
+              <h3 className="text-[#1B5E20] text-xl font-semibold mb-3">
                 Check your email
               </h3>
-              <p className='text-[#2E7D32] text-base leading-relaxed'>
-                We&apos;ve sent password reset instructions to your email address.
+              <p className="text-[#2E7D32] text-base leading-relaxed">
+                We&apos;ve sent password reset instructions to your email
+                address.
               </p>
             </div>
           ) : (
-            <form className='space-y-6' onSubmit={handleSubmit}>
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label
-                  htmlFor='email'
-                  className='block text-[#2A2A33] text-sm font-semibold mb-2'
+                  htmlFor="email"
+                  className="block text-[#2A2A33] text-sm font-semibold mb-2"
                 >
                   Email address
                 </label>
                 <input
-                  id='email'
-                  name='email'
-                  type='email'
-                  autoComplete='email'
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className='w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-[#006AFF] focus:ring-[#006AFF] focus:ring-opacity-50 focus:outline-none transition duration-150'
-                  placeholder='Enter your email'
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-[#006AFF] focus:ring-[#006AFF] focus:ring-opacity-50 focus:outline-none transition duration-150"
+                  placeholder="Enter your email"
                 />
               </div>
 
               {error && (
-                <div className='bg-[#FDE7E7] rounded-lg p-6'>
-                  <p className='text-[#B71C1C] text-base'>
-                    {error}
-                  </p>
+                <div className="bg-[#FDE7E7] rounded-lg p-6">
+                  <p className="text-[#B71C1C] text-base">{error}</p>
                 </div>
               )}
 
               <button
-                type='submit'
+                type="submit"
                 disabled={isLoading}
-                className='w-full bg-[#006AFF] hover:bg-[#0053C6] text-white font-semibold py-3 px-4 rounded-lg transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed'
+                className="w-full bg-[#006AFF] hover:bg-[#0053C6] text-white font-semibold py-3 px-4 rounded-lg transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Sending...' : 'Send reset instructions'}
+                {isLoading ? "Sending..." : "Send reset instructions"}
               </button>
             </form>
           )}
 
-          <div className='border-t border-gray-200 mt-6 pt-6'>
-            <div className='flex justify-center'>
+          <div className="border-t border-gray-200 mt-6 pt-6">
+            <div className="flex justify-center">
               <Link
-                href='/auth/sign-in'
-                className='inline-flex items-center text-[#006AFF] hover:text-[#0053C6] font-semibold'
+                href="/auth/sign-in"
+                className="inline-flex items-center text-[#006AFF] hover:text-[#0053C6] font-semibold"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

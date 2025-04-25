@@ -42,9 +42,7 @@ export function Footer() {
 
           {/* Column 2: Explore */}
           <div>
-            <h3 className="text-[#2A2A33] font-semibold mb-4">
-              Explore
-            </h3>
+            <h3 className="text-[#2A2A33] font-semibold mb-4">Explore</h3>
             <ul className="space-y-3">
               <li>
                 <Link
@@ -75,9 +73,7 @@ export function Footer() {
 
           {/* Column 3: About */}
           <div>
-            <h3 className="text-[#2A2A33] font-semibold mb-4">
-              About
-            </h3>
+            <h3 className="text-[#2A2A33] font-semibold mb-4">About</h3>
             <ul className="space-y-3">
               <li>
                 <Link
@@ -108,9 +104,7 @@ export function Footer() {
 
           {/* Column 4: Legal */}
           <div>
-            <h3 className="text-[#2A2A33] font-semibold mb-4">
-              Legal
-            </h3>
+            <h3 className="text-[#2A2A33] font-semibold mb-4">Legal</h3>
             <ul className="space-y-3">
               <li>
                 <Link
@@ -143,11 +137,13 @@ export function Footer() {
         <div className="border-t border-gray-200 pt-8">
           <div className="text-center text-sm text-[#2A2A33]">
             <p className="mb-2">
-              © {currentYear} VinaProp. All rights reserved. Equal Housing Opportunity.
+              © {currentYear} VinaProp. All rights reserved. Equal Housing
+              Opportunity.
             </p>
             <p className="text-xs">
-              VinaProp is committed to ensuring digital accessibility for individuals with disabilities.
-              We are continuously working to improve the accessibility of our web experience for everyone.
+              VinaProp is committed to ensuring digital accessibility for
+              individuals with disabilities. We are continuously working to
+              improve the accessibility of our web experience for everyone.
             </p>
           </div>
         </div>

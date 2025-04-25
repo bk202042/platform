@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { createClient } from '@/lib/supabase/client';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { createClient } from "@/lib/supabase/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const signInSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters')
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 type SignInFormData = z.infer<typeof signInSchema>;
@@ -24,9 +24,9 @@ export default function SignInForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<SignInFormData>({
-    resolver: zodResolver(signInSchema)
+    resolver: zodResolver(signInSchema),
   });
 
   const onSubmit = async (data: SignInFormData) => {
@@ -36,7 +36,7 @@ export default function SignInForm() {
 
       const { error } = await supabase.auth.signInWithPassword({
         email: data.email,
-        password: data.password
+        password: data.password,
       });
 
       if (error) {
@@ -44,72 +44,86 @@ export default function SignInForm() {
       }
 
       router.refresh();
-      router.push('/');
+      router.push("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
-        <label htmlFor='email' className='block text-sm font-medium text-gray-700'>
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-gray-700"
+        >
           Email address
         </label>
-        <div className='mt-1'>
+        <div className="mt-1">
           <input
-            id='email'
-            type='email'
-            autoComplete='email'
+            id="email"
+            type="email"
+            autoComplete="email"
             disabled={isLoading}
-            {...register('email')}
-            className='block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm'
+            {...register("email")}
+            className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
           />
           {errors.email && (
-            <p className='mt-1 text-sm text-red-600'>{errors.email.message}</p>
+            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
           )}
         </div>
       </div>
 
       <div>
-        <label htmlFor='password' className='block text-sm font-medium text-gray-700'>
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-gray-700"
+        >
           Password
         </label>
-        <div className='mt-1'>
+        <div className="mt-1">
           <input
-            id='password'
-            type='password'
-            autoComplete='current-password'
+            id="password"
+            type="password"
+            autoComplete="current-password"
             disabled={isLoading}
-            {...register('password')}
-            className='block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm'
+            {...register("password")}
+            className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
           />
           {errors.password && (
-            <p className='mt-1 text-sm text-red-600'>{errors.password.message}</p>
+            <p className="mt-1 text-sm text-red-600">
+              {errors.password.message}
+            </p>
           )}
         </div>
       </div>
 
       {error && (
-        <div className='rounded-md bg-red-50 p-4'>
-          <div className='flex'>
-            <div className='ml-3'>
-              <h3 className='text-sm font-medium text-red-800'>{error}</h3>
+        <div className="rounded-md bg-red-50 p-4">
+          <div className="flex">
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">{error}</h3>
             </div>
           </div>
         </div>
       )}
 
-      <div className='flex items-center justify-between'>
-        <div className='text-sm'>
-          <Link href='/auth/forgot-password' className='font-medium text-indigo-600 hover:text-indigo-500'>
+      <div className="flex items-center justify-between">
+        <div className="text-sm">
+          <Link
+            href="/auth/forgot-password"
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+          >
             Forgot your password?
           </Link>
         </div>
-        <div className='text-sm'>
-          <Link href='/auth/sign-up' className='font-medium text-indigo-600 hover:text-indigo-500'>
+        <div className="text-sm">
+          <Link
+            href="/auth/sign-up"
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+          >
             Dont have an account?
           </Link>
         </div>
@@ -117,11 +131,11 @@ export default function SignInForm() {
 
       <div>
         <button
-          type='submit'
+          type="submit"
           disabled={isLoading}
-          className='flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50'
+          className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
         >
-          {isLoading ? 'Signing in...' : 'Sign in'}
+          {isLoading ? "Signing in..." : "Sign in"}
         </button>
       </div>
     </form>

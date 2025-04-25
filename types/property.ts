@@ -22,11 +22,11 @@ export type VietnamCity =
 export interface PropertyImage {
   id: string;
   property_id: string;
-  url?: string | null;      // Original URL column from schema (might be unused)
-  storage_path: string;   // Path/key in Supabase Storage bucket (Confirmed from schema)
+  url?: string | null; // Original URL column from schema (might be unused)
+  storage_path: string; // Path/key in Supabase Storage bucket (Confirmed from schema)
   alt_text: string | null;
   display_order?: number; // Use schema column name
-  is_primary?: boolean;   // Use schema column name
+  is_primary?: boolean; // Use schema column name
   created_at: string;
   updated_at: string;
   created_by: string | null;

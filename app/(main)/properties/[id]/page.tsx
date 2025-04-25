@@ -105,8 +105,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
                   <div className="text-sm">
                     <p className="font-medium">John Doe</p>
-                    <p className="text-muted-foreground">Licensed Real Estate Agent</p>
-                    <p className="text-muted-foreground">john.doe@example.com</p>
+                    <p className="text-muted-foreground">
+                      Licensed Real Estate Agent
+                    </p>
+                    <p className="text-muted-foreground">
+                      john.doe@example.com
+                    </p>
                   </div>
                 </div>
               </Card>
@@ -117,7 +121,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               {/* Similar properties */}
               {similarProperties.length > 0 && (
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Similar Properties</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Similar Properties
+                  </h3>
                   <div className="space-y-4">
                     {similarProperties.map((similarProperty) => (
                       <Link
@@ -134,7 +140,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                           </p>
                           <p className="font-medium mt-2">
                             ${similarProperty.price.toLocaleString()}
-                            {similarProperty.property_type === "월세" ? "/month" : ""}
+                            {similarProperty.property_type === "월세"
+                              ? "/month"
+                              : ""}
                           </p>
                         </div>
                       </Link>

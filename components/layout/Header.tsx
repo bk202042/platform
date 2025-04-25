@@ -70,9 +70,7 @@ export function Header() {
                 </Button>
               </Link>
               <Link href="/auth/sign-up">
-                <Button
-                  className="bg-[#007882] hover:bg-[#005F67] text-white font-medium"
-                >
+                <Button className="bg-[#007882] hover:bg-[#005F67] text-white font-medium">
                   Sign Up
                 </Button>
               </Link>

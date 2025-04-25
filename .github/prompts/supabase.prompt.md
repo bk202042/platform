@@ -61,9 +61,10 @@ npm install @supabase/supabase-js
 ## 4. Configure Supabase Client
 
 **lib/db.ts**
+
 ```typescript
-import 'server-only';
-import { createClient } from '@supabase/supabase-js';
+import "server-only";
+import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -82,9 +83,10 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 ## 5. Data Access Layer (DAL)
 
 **lib/data/property-listing.ts**
+
 ```typescript
-import 'server-only';
-import { supabase } from '../db';
+import "server-only";
+import { supabase } from "../db";
 
 // Example: Fetch property listings with optional filters
 export async function getPropertyListings(params) {
@@ -92,6 +94,7 @@ export async function getPropertyListings(params) {
   // Return data or throw error
 }
 ```
+
 - Export pure, minimal functions for CRUD/search.
 - Use TypeScript interfaces inferred from the DB schema.
 
@@ -125,13 +128,13 @@ export async function getPropertyListings(params) {
 
 **Summary Table**
 
-| Step | File/Dir | Purpose |
-|------|----------|---------|
-| 1    | Supabase Dashboard | Create DB, schema, RLS |
-| 2    | .env.local | Store Supabase URL/key |
-| 3    | lib/db.ts | Supabase client config |
-| 4    | lib/data/property-listing.ts | DAL for property listings |
-| 5    | app/api/properties/route.ts | (Next step) API route using DAL |
+| Step | File/Dir                     | Purpose                         |
+| ---- | ---------------------------- | ------------------------------- |
+| 1    | Supabase Dashboard           | Create DB, schema, RLS          |
+| 2    | .env.local                   | Store Supabase URL/key          |
+| 3    | lib/db.ts                    | Supabase client config          |
+| 4    | lib/data/property-listing.ts | DAL for property listings       |
+| 5    | app/api/properties/route.ts  | (Next step) API route using DAL |
 
 ---
 

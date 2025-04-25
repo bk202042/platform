@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { PropertyListing, PropertyImage } from '@/types/property'; // Import PropertyImage
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Expand, X } from 'lucide-react';
+import { useState } from "react";
+import Image from "next/image";
+import { PropertyListing, PropertyImage } from "@/types/property"; // Import PropertyImage
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
 
 interface PropertyGalleryProps {
   // Expect the property object which includes the processed property_images array
-  property: PropertyListing & { property_images?: (PropertyImage & { publicUrl: string | null })[] };
+  property: PropertyListing & {
+    property_images?: (PropertyImage & { publicUrl: string | null })[];
+  };
 }
 
 export default function PropertyGallery({ property }: PropertyGalleryProps) {
@@ -19,8 +21,13 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
   // Use the processed property_images array
   const images = property.property_images?.length
     ? property.property_images
-    // Provide a default structure if no images exist
-    : [{ storage_path: '', publicUrl: '/assets/images/property-placeholder.jpg' } as PropertyImage];
+    : // Provide a default structure if no images exist
+      [
+        {
+          storage_path: "",
+          publicUrl: "/assets/images/property-placeholder.jpg",
+        } as PropertyImage,
+      ];
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
@@ -31,8 +38,12 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
   };
 
   // Ensure images array is not empty before accessing index
-  const currentImageUrl = images[currentImageIndex]?.publicUrl || '/assets/images/property-placeholder.jpg';
-  const currentImageAlt = images[currentImageIndex]?.alt_text || `Property image ${currentImageIndex + 1}`;
+  const currentImageUrl =
+    images[currentImageIndex]?.publicUrl ||
+    "/assets/images/property-placeholder.jpg";
+  const currentImageAlt =
+    images[currentImageIndex]?.alt_text ||
+    `Property image ${currentImageIndex + 1}`;
 
   return (
     <div className="relative">
@@ -90,12 +101,14 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
               key={image.id || `thumb-${index}`}
               onClick={() => setCurrentImageIndex(index)}
               className={`relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden ${
-                currentImageIndex === index ? 'ring-2 ring-primary' : ''
+                currentImageIndex === index ? "ring-2 ring-primary" : ""
               }`}
               aria-label={`View image ${index + 1}`}
             >
               <Image
-                src={image.publicUrl || '/assets/images/property-placeholder.jpg'} // Use publicUrl field
+                src={
+                  image.publicUrl || "/assets/images/property-placeholder.jpg"
+                } // Use publicUrl field
                 alt={image.alt_text || `Thumbnail ${index + 1}`} // Use alt_text
                 fill
                 className="object-cover"

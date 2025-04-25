@@ -1,8 +1,8 @@
 "use client";
 
-import { PropertyListing } from '@/types/property';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bath, BedDouble, Home, Maximize, Wifi } from 'lucide-react';
+import { PropertyListing } from "@/types/property";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bath, BedDouble, Home, Maximize, Wifi } from "lucide-react";
 
 interface PropertyFeaturesProps {
   property: PropertyListing;
@@ -14,29 +14,29 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
       { icon: BedDouble, label: `${property.bedrooms} Bedrooms` },
       { icon: Bath, label: `${property.bathrooms} Bathrooms` },
       { icon: Maximize, label: `${property.square_footage} Sq Ft` },
-      { icon: Home, label: 'Modern Kitchen' },
-      { icon: Wifi, label: 'High-Speed Internet' },
+      { icon: Home, label: "Modern Kitchen" },
+      { icon: Wifi, label: "High-Speed Internet" },
     ],
     building: [
-      'Elevator Access',
-      'Fitness Center',
-      'Package Receiving',
-      'Security System',
-      'Parking Available',
+      "Elevator Access",
+      "Fitness Center",
+      "Package Receiving",
+      "Security System",
+      "Parking Available",
     ],
     exterior: [
-      'Private Balcony',
-      'Garden Access',
-      'BBQ Area',
-      'Swimming Pool',
-      'Children\'s Playground',
+      "Private Balcony",
+      "Garden Access",
+      "BBQ Area",
+      "Swimming Pool",
+      "Children's Playground",
     ],
     additional: [
-      '24/7 Security',
-      'Pet Friendly',
-      'Close to Public Transport',
-      'Near International Schools',
-      'Shopping Centers Nearby',
+      "24/7 Security",
+      "Pet Friendly",
+      "Close to Public Transport",
+      "Near International Schools",
+      "Shopping Centers Nearby",
     ],
   };
 

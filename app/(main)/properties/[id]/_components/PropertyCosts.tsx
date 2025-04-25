@@ -1,8 +1,8 @@
 "use client";
 
-import { PropertyListing } from '@/types/property';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { PropertyListing } from "@/types/property";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 interface PropertyCostsProps {
   property: PropertyListing;
@@ -10,26 +10,29 @@ interface PropertyCostsProps {
 
 export default function PropertyCosts({ property }: PropertyCostsProps) {
   const monthlyCosts = [
-    { label: 'Base rent', amount: property.price },
-    { label: 'Parking fee', amount: 5 },
-    { label: 'Pet fee (if applicable)', amount: 40 },
+    { label: "Base rent", amount: property.price },
+    { label: "Parking fee", amount: 5 },
+    { label: "Pet fee (if applicable)", amount: 40 },
   ];
 
   const oneTimeCosts = [
-    { label: 'Security deposit', amount: property.price * 2 },
-    { label: 'Application fee', amount: 50 },
-    { label: 'Administrative fee', amount: 300 },
-    { label: 'Pet deposit (if applicable)', amount: 500 },
+    { label: "Security deposit", amount: property.price * 2 },
+    { label: "Application fee", amount: 50 },
+    { label: "Administrative fee", amount: 300 },
+    { label: "Pet deposit (if applicable)", amount: 500 },
   ];
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(amount);
   };
 
-  const totalMonthlyCosts = monthlyCosts.reduce((acc, cost) => acc + cost.amount, 0);
+  const totalMonthlyCosts = monthlyCosts.reduce(
+    (acc, cost) => acc + cost.amount,
+    0,
+  );
 
   return (
     <Card>
@@ -69,7 +72,9 @@ export default function PropertyCosts({ property }: PropertyCostsProps) {
         </div>
 
         <div className="text-sm text-muted-foreground">
-          <p>* Prices shown are estimates. Additional costs and fees may apply.</p>
+          <p>
+            * Prices shown are estimates. Additional costs and fees may apply.
+          </p>
           <p>* Pet fees and deposits only apply to pet owners.</p>
           <p>* Security deposit is typically two months&apos; rent.</p>
         </div>

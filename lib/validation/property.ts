@@ -1,7 +1,7 @@
 import {
   PropertyListing,
   ValidationResult,
-  PropertySearchParams
+  PropertySearchParams,
 } from "@/types/property";
 
 /**
@@ -106,7 +106,9 @@ export function validatePropertyListing(
  * @param params The search parameters to validate
  * @returns Validation result with errors if any
  */
-export function validateSearchParams(params: PropertySearchParams): ValidationResult {
+export function validateSearchParams(
+  params: PropertySearchParams,
+): ValidationResult {
   const errors: string[] = [];
 
   // Price range validation
