@@ -1,19 +1,18 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { createAnonClient } from "@/lib/supabase/server-anon";
-import { PropertyListing, PropertyType } from "@/types/property";
+import { PropertyListing, PropertyType, PropertyImage } from "@/types/property";
 import { unstable_cache } from "next/cache";
-import { PostgrestError } from '@supabase/supabase-js';
+import { PostgrestError, SupabaseClient } from '@supabase/supabase-js';
 
-interface PropertyImage {
-  id: string;
-  property_id: string;
-  url: string;
-  alt_text: string | null;
-  order: number;
-  created_at: string;
-  created_by: string;
-}
+// Define a type for the processed image object, extending the base PropertyImage
+type ProcessedPropertyImage = PropertyImage & { publicUrl: string | null };
+
+// Define the return type for processed properties, including the processed images array
+type ProcessedPropertyListing = Omit<PropertyListing, 'property_images'> & {
+  primary_image?: string | null;
+  property_images?: ProcessedPropertyImage[]; // Use processed images here
+};
 
 export interface PropertySearchParams {
   searchText?: string;
@@ -30,91 +29,151 @@ export interface PropertySearchParams {
 }
 
 export interface PropertySearchResult {
-  data: PropertyListing[];
+  data: ProcessedPropertyListing[]; // Use processed type
   total: number;
   hasMore: boolean;
 }
+
+// Helper function to process images and add public URLs + primary image
+function processPropertyImages(
+  property: PropertyListing,
+  images: PropertyImage[], // Pass fetched images separately
+  supabase: SupabaseClient // Pass Supabase client instance
+): ProcessedPropertyListing {
+  const imagesWithPublicUrls = (images || []).map((img): ProcessedPropertyImage => {
+    const imagePath = img.storage_path; // Use storage_path from type
+    if (!imagePath) return { ...img, publicUrl: null };
+
+    const { data: publicUrlData } = supabase.storage
+      .from('platform') // Use bucket name
+      .getPublicUrl(imagePath);
+    return {
+      ...img,
+      publicUrl: publicUrlData?.publicUrl || null,
+    };
+  });
+
+  const primaryImage =
+    imagesWithPublicUrls.find((img) => img.is_primary)?.publicUrl ||
+    imagesWithPublicUrls[0]?.publicUrl ||
+    '/assets/images/property-placeholder.jpg'; // Fallback
+
+  // Return property data with processed images and primary image URL
+  return {
+    ...property,
+    property_images: imagesWithPublicUrls, // Assign processed images array
+    primary_image: primaryImage,
+  };
+}
+
 
 // Cache the property listings for 1 minute
 const getCachedPropertyListings = unstable_cache(
   async (params: PropertySearchParams = {}): Promise<PropertySearchResult> => {
     const supabase = await createAnonClient();
-    // Rest of the function remains the same
     const {
-      searchText,
-      minPrice,
-      maxPrice,
-      propertyType,
-      minBedrooms,
-      minBathrooms,
-      lat,
-      lng,
-      radiusMeters,
-      limit = 10,
-      offset = 0,
+      searchText, minPrice, maxPrice, propertyType, minBedrooms, minBathrooms,
+      lat, lng, radiusMeters, limit = 10, offset = 0,
     } = params;
 
-    // If we have location parameters, use the search_properties function
+    let propertyData: PropertyListing[] = [];
+    let totalCount = 0;
+    let fetchError: PostgrestError | null = null;
+
+    // --- Fetch Main Property Data ---
     if (lat !== undefined && lng !== undefined) {
-      const { data, error, count } = await supabase
+      // RPC Call - Assuming it returns basic property data
+      const { data: rpcData, error: rpcError, count } = await supabase
         .rpc("search_properties", {
-          search_text: searchText || null,
-          min_price: minPrice || null,
-          max_price: maxPrice || null,
-          property_type_filter: propertyType || null,
-          min_bedrooms: minBedrooms || null,
-          min_bathrooms: minBathrooms || null,
-          lat,
-          lng,
-          radius_meters: radiusMeters || 5000, // Default 5km radius
+          search_text: searchText || null, min_price: minPrice || null, max_price: maxPrice || null,
+          property_type_filter: propertyType || null, min_bedrooms: minBedrooms || null, min_bathrooms: minBathrooms || null,
+          lat, lng, radius_meters: radiusMeters || 5000,
         })
         .range(offset, offset + limit - 1)
-        .order("distance_meters", { ascending: true })
-        .select("*", { count: "exact" });
+        .order("distance_meters", { ascending: true });
 
-      if (error) throw error;
+      fetchError = rpcError;
+      propertyData = (rpcData || []) as PropertyListing[];
+      totalCount = count || 0;
+    } else {
+      // Regular Query - Fetch property data
+      let query = supabase.from("property_listings").select(`*`);
 
-      return {
-        data: data || [],
-        total: count || 0,
-        hasMore: (count || 0) > offset + limit,
-      };
+      // Apply filters
+      if (searchText) { query = query.or(`title.ilike.%${searchText}%,description.ilike.%${searchText}%`); }
+      if (minPrice !== undefined) { query = query.gte("price", minPrice); }
+      if (maxPrice !== undefined) { query = query.lte("price", maxPrice); }
+      if (propertyType) { query = query.eq("property_type", propertyType); }
+      if (minBedrooms !== undefined) { query = query.gte("bedrooms", minBedrooms); }
+      if (minBathrooms !== undefined) { query = query.gte("bathrooms", minBathrooms); }
+
+      // Fetch data
+      const { data, error: dataError } = await query
+        .range(offset, offset + limit - 1)
+        .order("created_at", { ascending: false });
+
+      fetchError = dataError;
+      propertyData = (data || []) as PropertyListing[];
+
+      // Fetch count separately
+      if (!fetchError) {
+        let countQuery = supabase.from("property_listings").select('*', { count: 'exact', head: true });
+        // Re-apply filters for accurate count
+        if (searchText) { countQuery = countQuery.or(`title.ilike.%${searchText}%,description.ilike.%${searchText}%`); }
+        if (minPrice !== undefined) { countQuery = countQuery.gte("price", minPrice); }
+        if (maxPrice !== undefined) { countQuery = countQuery.lte("price", maxPrice); }
+        if (propertyType) { countQuery = countQuery.eq("property_type", propertyType); }
+        if (minBedrooms !== undefined) { countQuery = countQuery.gte("bedrooms", minBedrooms); }
+        if (minBathrooms !== undefined) { countQuery = countQuery.gte("bathrooms", minBathrooms); }
+        const { count, error: countError } = await countQuery;
+        if (countError) {
+          console.error("Error fetching count:", countError);
+        } else {
+          totalCount = count || 0;
+        }
+      }
     }
 
-    // Otherwise, use a regular query
-    let query = supabase
-      .from("property_listings")
-      .select("*", { count: "exact" });
-
-    // Apply filters
-    if (searchText) {
-      query = query.or(
-        `title.ilike.%${searchText}%,description.ilike.%${searchText}%`,
-      );
+    if (fetchError) {
+      console.error("Error fetching property data:", fetchError);
+      throw fetchError;
     }
 
-    if (minPrice !== undefined) query = query.gte("price", minPrice);
-    if (maxPrice !== undefined) query = query.lte("price", maxPrice);
-    if (propertyType) query = query.eq("property_type", propertyType);
-    if (minBedrooms !== undefined) query = query.gte("bedrooms", minBedrooms);
-    if (minBathrooms !== undefined)
-      query = query.gte("bathrooms", minBathrooms);
+    // --- Fetch Images Separately ---
+    const propertyIds = propertyData.map(p => p.id).filter(id => id !== undefined) as string[];
+    let allImages: PropertyImage[] = [];
+    if (propertyIds.length > 0) {
+      const { data: imageData, error: imageError } = await supabase
+        .from('property_images')
+        .select('*')
+        .in('property_id', propertyIds)
+        .order('display_order', { ascending: true });
 
-    // Apply pagination
-    const { data, error, count } = await query
-      .range(offset, offset + limit - 1)
-      .order("created_at", { ascending: false });
+      if (imageError) {
+        console.error("Error fetching property images:", imageError);
+      } else {
+        allImages = (imageData || []) as PropertyImage[];
+      }
+    }
 
-    if (error) throw error;
+    // --- Process and Combine Data ---
+    const processedData = propertyData.map(property => {
+      const relatedImages = allImages.filter(img => img.property_id === property.id);
+      return processPropertyImages(property, relatedImages, supabase);
+    });
 
     return {
-      data: data || [],
-      total: count || 0,
-      hasMore: (count || 0) > offset + limit,
+      data: processedData,
+      total: totalCount,
+      hasMore: totalCount > offset + limit,
     };
   },
-  ["property-listings"],
-  { revalidate: 60 }, // Cache for 1 minute
+  // Corrected cache key: Static base key array. Args (params) are automatically included by Next.js.
+  [`property-listings`],
+  {
+    tags: ['property-listings'], // Static tag for general revalidation
+    revalidate: 60
+  }
 );
 
 // Public function that uses the cached version
@@ -126,118 +185,130 @@ export async function getPropertyListings(
 
 // Cache property details for 5 minutes
 const getCachedPropertyById = unstable_cache(
-  async (id: string): Promise<PropertyListing | null> => {
+  async (id: string): Promise<ProcessedPropertyListing | null> => {
     const supabase = await createAnonClient();
-    const { data, error } = await supabase
+
+    // Fetch property data
+    const { data: propertyData, error: propertyError } = await supabase
       .from("property_listings")
-      .select("*")
+      .select(`*`) // Select only from property_listings
       .eq("id", id)
       .single();
 
-    if (error) {
-      if (error.code === "PGRST116") {
-        // No rows returned
-        return null;
-      }
-      throw error;
+    if (propertyError) {
+      if (propertyError.code === "PGRST116") { return null; }
+      console.error(`Error fetching property ${id}:`, propertyError);
+      throw propertyError;
+    }
+    if (!propertyData) { return null; }
+
+    // Fetch images separately
+    const { data: imageData, error: imageError } = await supabase
+      .from('property_images')
+      .select('*')
+      .eq('property_id', id)
+      .order('display_order', { ascending: true });
+
+    if (imageError) {
+      console.error(`Error fetching images for property ${id}:`, imageError);
     }
 
-    return data;
+    // Process images
+    const processedData = processPropertyImages(propertyData as PropertyListing, (imageData || []) as PropertyImage[], supabase);
+
+    return processedData;
   },
-  ["property-by-id"],
-  { revalidate: 300 }, // Cache for 5 minutes
+  // Corrected cache key: Base key array. Args (id) are automatically included.
+  [`property-by-id`], // Static base key
+  {
+    // Corrected tags: Static array of strings. Dynamic invalidation relies on args.
+    tags: [`property-details`],
+    revalidate: 300
+  }
 );
 
 // Public function to get property by ID
-export async function getPropertyById(id: string): Promise<PropertyListing | null> {
+export async function getPropertyById(id: string): Promise<ProcessedPropertyListing | null> {
   return getCachedPropertyById(id);
 }
 
-// Get similar properties based on property type, price range, and location
+// Get similar properties - simplified, returns basic data
 export async function getSimilarProperties(property: PropertyListing, limit = 3): Promise<PropertyListing[]> {
   const supabase = await createAnonClient();
 
-  // Don't include the current property
   let query = supabase
     .from("property_listings")
-    .select("*")
+    .select("*") // Select basic fields
     .neq("id", property.id)
     .eq("property_type", property.property_type);
 
-  // Price range: +/- 30%
   const minPrice = property.price * 0.7;
   const maxPrice = property.price * 1.3;
   query = query.gte("price", minPrice).lte("price", maxPrice);
 
-  // If we have bedrooms, try to match similar properties
   if (property.bedrooms) {
-    query = query.or(
-      `bedrooms.eq.${property.bedrooms},bedrooms.eq.${property.bedrooms - 1},bedrooms.eq.${property.bedrooms + 1}`,
-    );
+    query = query.or(`bedrooms.eq.${property.bedrooms},bedrooms.eq.${property.bedrooms - 1},bedrooms.eq.${property.bedrooms + 1}`);
   }
-
-  // Limit results
   query = query.limit(limit);
 
   const { data, error } = await query;
-
   if (error) throw error;
   return data || [];
 }
 
-export async function createProperty(property: Omit<PropertyListing, 'id' | 'created_at'>): Promise<PropertyListing> {
-  const supabase = await createClient(); // Keep using authenticated client for write operations
-  const { data, error } = await supabase
-    .from("property_listings")
-    .insert(property)
-    .select()
-    .single();
-
+// CRUD Operations
+export async function createProperty(property: Omit<PropertyListing, 'id' | 'created_at' | 'property_images' | 'primary_image'>): Promise<PropertyListing> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("property_listings").insert(property).select().single();
   if (error) throw error;
-  return data;
+  return data as PropertyListing;
 }
 
 export async function updateProperty(id: string, updates: Partial<PropertyListing>): Promise<PropertyListing> {
-  const supabase = await createClient(); // Keep using authenticated client for write operations
-  const { data, error } = await supabase
-    .from("property_listings")
-    .update(updates)
-    .eq("id", id)
-    .select()
-    .single();
-
+  const supabase = await createClient();
+  // Exclude processed fields explicitly before update
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { property_images, primary_image, ...validUpdates } = updates;
+  // Use the validUpdates object which doesn't contain the excluded fields
+  const { data, error } = await supabase.from("property_listings").update(validUpdates).eq("id", id).select().single();
   if (error) throw error;
-  return data;
+  return data as PropertyListing;
 }
 
 export async function deleteProperty(id: string): Promise<boolean> {
-  const supabase = await createClient(); // Keep using authenticated client for write operations
-  const { error } = await supabase
-    .from("property_listings")
-    .delete()
-    .eq("id", id);
-
+  const supabase = await createClient();
+  // TODO: Consider deleting related images from storage and property_images table first
+  const { error } = await supabase.from("property_listings").delete().eq("id", id);
   if (error) throw error;
   return true;
 }
 
-export async function getPropertyImages(propertyId: string): Promise<PropertyImage[]> {
+// Fetches and processes images for a specific property ID
+export async function getPropertyImages(propertyId: string): Promise<ProcessedPropertyImage[]> {
   const supabase = await createAnonClient();
   const { data, error } = await supabase
     .from('property_images')
     .select('*')
     .eq('property_id', propertyId)
-    .order('order');
+    .order('display_order');
 
   if (error) {
     console.error('Error fetching property images:', error);
     return [];
   }
 
-  return data;
+   const imagesWithPublicUrls = (data || []).map((img: PropertyImage): ProcessedPropertyImage => {
+      const imagePath = img.storage_path;
+      if (!imagePath) return { ...img, publicUrl: null };
+      const { data: publicUrlData } = supabase.storage.from('platform').getPublicUrl(imagePath);
+      return { ...img, publicUrl: publicUrlData?.publicUrl || null };
+    });
+
+  return imagesWithPublicUrls;
 }
 
-export async function addPropertyImage(propertyId: string, imageData: Omit<PropertyImage, 'id' | 'created_at'>): Promise<{ data: PropertyImage | null; error: PostgrestError | null }> {
+// Add a new image record
+export async function addPropertyImage(propertyId: string, imageData: Omit<PropertyImage, 'id' | 'created_at' | 'updated_at' | 'url' | 'publicUrl'>): Promise<{ data: PropertyImage | null; error: PostgrestError | null }> {
   const supabase = await createClient();
   return await supabase
     .from('property_images')
@@ -246,18 +317,21 @@ export async function addPropertyImage(propertyId: string, imageData: Omit<Prope
     .single();
 }
 
+// Update display order
 export async function updatePropertyImageOrder(imageId: string, newOrder: number): Promise<{ data: PropertyImage | null; error: PostgrestError | null }> {
   const supabase = await createClient();
   return await supabase
     .from('property_images')
-    .update({ order: newOrder })
+    .update({ display_order: newOrder })
     .eq('id', imageId)
     .select()
     .single();
 }
 
+// Delete image record
 export async function deletePropertyImage(imageId: string): Promise<{ data: PropertyImage | null; error: PostgrestError | null }> {
   const supabase = await createClient();
+  // TODO: Add logic to delete from storage bucket using img.storage_path before deleting DB record
   return await supabase
     .from('property_images')
     .delete()

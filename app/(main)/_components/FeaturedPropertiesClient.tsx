@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+// Removed unused Card, CardContent imports
 import {
   Carousel,
   CarouselContent,
@@ -12,14 +12,13 @@ import {
 import {
   Building2,
   Home as HomeIcon,
-  MapPin,
-  Bed,
-  Bath,
+  // Removed unused MapPin, Bed, Bath and duplicate imports
   ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PropertyListing } from "@/types/property";
-import Link from "next/link"; // Import Link
+import Link from "next/link";
+import { PropertyCard } from "@/components/property/PropertyCard"; // Import shared PropertyCard
 
 // Animated Tabs component (kept internal to this client component)
 function AnimatedTabs({
@@ -59,72 +58,7 @@ function AnimatedTabs({
   );
 }
 
-// Property Card component (kept internal to this client component)
-// Added Link wrapper
-function PropertyCard({ property }: { property: PropertyListing }) {
-  // NOTE: The PropertyListing type doesn't define 'images'. Using placeholder.
-  // NOTE: The PropertyListing type doesn't define 'deposit' or 'monthlyRent'. Using 'price'.
-  return (
-    <Link href={`/properties/${property.id}`} className="block group">
-      <Card className="overflow-hidden transition-all duration-200 hover:shadow-lg h-full flex flex-col">
-        <div className="relative aspect-video overflow-hidden">
-          <img
-            src={"/placeholder-property.jpg"} // Use placeholder consistently
-            alt={property.title}
-            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-          />
-          <div className="absolute top-3 left-3 bg-primary/90 text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
-            {property.property_type === "월세" ? "For Rent" : "For Sale"}{" "}
-            {/* Use property_type */}
-          </div>
-        </div>
-
-        <CardContent className="p-4 flex flex-col flex-grow">
-          <div className="flex items-start justify-between mb-1">
-            <h3 className="font-semibold text-lg line-clamp-1 group-hover:text-primary transition-colors">
-              {property.title}
-            </h3>
-            <p className="font-bold text-primary text-lg whitespace-nowrap pl-2">
-              {/* Adjust price display based on property_type */}
-              {property.property_type === "월세"
-                ? `$${property.price.toLocaleString()}/mo` // Assuming price is monthly rent for '월세'
-                : `$${property.price.toLocaleString()}`}{" "}
-              {/* Assuming price is sale price for '매매' */}
-            </p>
-          </div>
-
-          <div className="flex items-center text-muted-foreground text-sm mb-3">
-            <MapPin className="h-3.5 w-3.5 mr-1.5 flex-shrink-0" />
-            <span className="line-clamp-1">{property.location}</span>
-          </div>
-
-          <div className="mt-auto pt-3 border-t border-border flex items-center justify-between text-sm text-muted-foreground">
-            <div className="flex items-center gap-3">
-              {property.bedrooms && (
-                <div className="flex items-center gap-1">
-                  <Bed className="h-4 w-4" />
-                  <span>{property.bedrooms}</span>
-                  <span className="sr-only">Beds</span>
-                </div>
-              )}
-              {property.bathrooms && (
-                <div className="flex items-center gap-1">
-                  <Bath className="h-4 w-4" />
-                  <span>{property.bathrooms}</span>
-                  <span className="sr-only">Baths</span>
-                </div>
-              )}
-            </div>
-            <div>
-              {property.square_footage && `${property.square_footage} ㎡`}{" "}
-              {/* Use square_footage */}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
-  );
-}
+// Removed internal PropertyCard definition
 
 // Main Client Component for Featured Properties Section
 export function FeaturedPropertiesClient({

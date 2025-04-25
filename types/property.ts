@@ -16,6 +16,24 @@ export type VietnamCity =
   | "Hai Phong";
 
 /**
+ * Represents a single image associated with a property, matching the DB schema.
+ * Includes a dynamically added field for the public URL after processing.
+ */
+export interface PropertyImage {
+  id: string;
+  property_id: string;
+  url?: string | null;      // Original URL column from schema (might be unused)
+  storage_path: string;   // Path/key in Supabase Storage bucket (Confirmed from schema)
+  alt_text: string | null;
+  display_order?: number; // Use schema column name
+  is_primary?: boolean;   // Use schema column name
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+  publicUrl?: string | null; // Dynamically added field for processed URL
+}
+
+/**
  * Property listing interface that matches the database schema
  * Based on the columns in the property_listings table
  * Designed for Vietnamese properties targeting Korean expatriates
@@ -29,13 +47,16 @@ export interface PropertyListing {
   bedrooms: number;
   bathrooms: number;
   square_footage: number;
-  location: string; // PostGIS format: 'POINT(longitude latitude)'
+  location: any; // Type for PostGIS location data might need refinement
   address: string;
-  features: PropertyFeatures;
+  features: PropertyFeatures; // Consider defining this more strictly if possible
   created_at?: string;
   updated_at?: string;
   created_by?: string; // User ID of creator
-  images: PropertyImage[];
+  // This field holds the image data fetched from the DB, potentially processed later
+  property_images?: PropertyImage[]; // Use the correct field name matching the DB relation
+  // This field will be added dynamically after processing images
+  primary_image?: string | null;
 }
 
 /**
@@ -60,8 +81,8 @@ export interface PropertyFeatures {
   koreanSchool?: boolean; // Proximity to Korean schools
   koreanSupermarket?: boolean; // Proximity to Korean supermarkets
 
-  // Additional features as key-value pairs
-  [key: string]: any;
+  // Allow other potential features, but avoid 'any' if possible
+  [key: string]: boolean | undefined; // Changed 'any' to 'boolean | undefined'
 }
 
 /**
@@ -90,15 +111,4 @@ export interface PropertySearchParams {
 export interface ValidationResult {
   valid: boolean;
   errors: string[];
-}
-
-export interface PropertyImage {
-  id: string;
-  property_id: string;
-  url: string;
-  alt_text: string | null;
-  order: number;
-  created_at: string;
-  updated_at: string;
-  created_by: string | null;
 }

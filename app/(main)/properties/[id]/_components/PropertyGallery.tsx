@@ -2,23 +2,25 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { PropertyListing } from '@/types/property';
+import { PropertyListing, PropertyImage } from '@/types/property'; // Import PropertyImage
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Expand, X } from 'lucide-react';
 
 interface PropertyGalleryProps {
-  property: PropertyListing;
+  // Expect the property object which includes the processed property_images array
+  property: PropertyListing & { property_images?: (PropertyImage & { publicUrl: string | null })[] };
 }
 
 export default function PropertyGallery({ property }: PropertyGalleryProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Use property.images array or fallback to a default array with the main image
-  const images = property.images?.length
-    ? property.images
-    : [property.image_url];
+  // Use the processed property_images array
+  const images = property.property_images?.length
+    ? property.property_images
+    // Provide a default structure if no images exist
+    : [{ storage_path: '', publicUrl: '/assets/images/property-placeholder.jpg' } as PropertyImage];
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
@@ -28,16 +30,20 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
+  // Ensure images array is not empty before accessing index
+  const currentImageUrl = images[currentImageIndex]?.publicUrl || '/assets/images/property-placeholder.jpg';
+  const currentImageAlt = images[currentImageIndex]?.alt_text || `Property image ${currentImageIndex + 1}`;
+
   return (
     <div className="relative">
       {/* Main Image */}
       <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg">
         <Image
-          src={images[currentImageIndex]}
-          alt={`Property image ${currentImageIndex + 1}`}
+          src={currentImageUrl}
+          alt={currentImageAlt}
           fill
           className="object-cover"
-          priority
+          priority={currentImageIndex === 0} // Prioritize loading the first image
         />
         <Button
           variant="ghost"
@@ -80,7 +86,8 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
         <div className="flex gap-2 mt-2 overflow-x-auto pb-2">
           {images.map((image, index) => (
             <button
-              key={image}
+              // Use image id if available and valid, otherwise index
+              key={image.id || `thumb-${index}`}
               onClick={() => setCurrentImageIndex(index)}
               className={`relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden ${
                 currentImageIndex === index ? 'ring-2 ring-primary' : ''
@@ -88,8 +95,8 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
               aria-label={`View image ${index + 1}`}
             >
               <Image
-                src={image}
-                alt={`Thumbnail ${index + 1}`}
+                src={image.publicUrl || '/assets/images/property-placeholder.jpg'} // Use publicUrl field
+                alt={image.alt_text || `Thumbnail ${index + 1}`} // Use alt_text
                 fill
                 className="object-cover"
               />
@@ -103,8 +110,8 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
         <DialogContent className="max-w-7xl w-full h-[90vh] p-0">
           <div className="relative w-full h-full">
             <Image
-              src={images[currentImageIndex]}
-              alt={`Property image ${currentImageIndex + 1}`}
+              src={currentImageUrl} // Use variable for current image URL
+              alt={currentImageAlt} // Use variable for current image alt text
               fill
               className="object-contain"
             />

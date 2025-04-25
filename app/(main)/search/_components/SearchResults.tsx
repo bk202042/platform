@@ -2,16 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { PropertyListing } from "@/types/property";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card"; // Removed unused Card parts
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+// Removed unused Link import
+import { PropertyCard } from "@/components/property/PropertyCard"; // Corrected to named import
 
 interface SearchResultsProps {
   searchParams: Record<string, string>;
@@ -59,7 +53,8 @@ export default function SearchResults({
       const data: SearchResponse = await response.json();
 
       if (!data.success) {
-        throw new Error(data.message || "Failed to fetch properties");
+        // Throw a generic error as 'message' might not exist on the response
+        throw new Error("API returned unsuccessful status");
       }
 
       setResults(data.data);
@@ -152,56 +147,4 @@ export default function SearchResults({
   );
 }
 
-function PropertyCard({ property }: { property: PropertyListing }) {
-  // Format price based on property type
-  const formatPrice = (price: number, type: string) => {
-    if (type === "월세") {
-      return `$${price.toLocaleString()}/month`;
-    } else {
-      return `$${price.toLocaleString()}`;
-    }
-  };
-
-  return (
-    <Card className="h-full flex flex-col">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg line-clamp-2">{property.title}</CardTitle>
-        <CardDescription>{property.address}</CardDescription>
-      </CardHeader>
-      <CardContent className="py-2 flex-grow">
-        <div className="space-y-2">
-          <p className="font-semibold text-lg">
-            {formatPrice(property.price, property.property_type)}
-            <span className="ml-2 text-sm font-normal text-muted-foreground">
-              {property.property_type === "월세" ? "Monthly Rent" : "Purchase"}
-            </span>
-          </p>
-          <div className="flex space-x-4 text-sm">
-            <div>
-              {property.bedrooms}{" "}
-              <span className="text-muted-foreground">Bed</span>
-            </div>
-            <div>
-              {property.bathrooms}{" "}
-              <span className="text-muted-foreground">Bath</span>
-            </div>
-            <div>
-              {property.square_footage}{" "}
-              <span className="text-muted-foreground">sqft</span>
-            </div>
-          </div>
-          <p className="text-sm line-clamp-3 text-muted-foreground">
-            {property.description}
-          </p>
-        </div>
-      </CardContent>
-      <CardFooter className="pt-2">
-        <Link href={`/properties/${property.id}`} className="w-full">
-          <Button variant="outline" className="w-full">
-            View Details
-          </Button>
-        </Link>
-      </CardFooter>
-    </Card>
-  );
-}
+// Removed the internal PropertyCard definition
