@@ -1,12 +1,52 @@
 "use client";
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Home, User, Heart } from "lucide-react";
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Home, User, Heart } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useRouter } from 'next/navigation';
 
 export function Header() {
-  // Placeholder for authentication status
-  const isLoggedIn = false;
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<{ email?: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const supabase = createClient();
+
+  useEffect(() => {
+    const getUser = async () => {
+      setIsLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      setIsLoggedIn(!!user);
+      setIsLoading(false);
+    };
+
+    getUser();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+      setIsLoggedIn(!!session?.user);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase.auth]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.refresh();
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-200">
@@ -42,7 +82,9 @@ export function Header() {
 
         {/* Right section with auth */}
         <div className="flex items-center space-x-4">
-          {isLoggedIn ? (
+          {isLoading ? (
+            <div className="h-9 w-9 rounded-full bg-gray-200 animate-pulse"></div>
+          ) : isLoggedIn ? (
             <>
               <Button
                 variant="ghost"
@@ -51,13 +93,42 @@ export function Header() {
                 <Heart className="h-5 w-5" />
                 <span>Saved Homes</span>
               </Button>
-              <Button
-                variant="ghost"
-                className="text-[#2A2A33] hover:text-[#007882]"
-              >
-                <User className="h-5 w-5" />
-                <span className="sr-only">Profile</span>
-              </Button>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="rounded-full h-9 w-9 p-0 overflow-hidden"
+                  >
+                    <User className="h-5 w-5" />
+                    <span className="sr-only">Profile</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-2 py-1.5 text-sm font-medium">
+                    {user?.email}
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin/profile" className="cursor-pointer w-full">
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin" className="cursor-pointer w-full">
+                      Admin Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="cursor-pointer text-red-600"
+                    onClick={handleSignOut}
+                  >
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
             <div className="flex items-center space-x-4">

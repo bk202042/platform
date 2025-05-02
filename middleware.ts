@@ -24,9 +24,14 @@ export async function middleware(request: NextRequest) {
     },
   );
 
+  // Get both user and session to check authentication status
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   // List of public routes that don't require authentication
   const publicRoutes = ["/", "/search", "/properties", "/auth"];
@@ -34,8 +39,17 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith(route),
   );
 
+  // For debugging - log auth status to server console
+  console.log({
+    path: request.nextUrl.pathname,
+    isPublicRoute,
+    hasUser: !!user,
+    hasSession: !!session,
+    userId: user?.id,
+  });
+
   // Only redirect to sign-in for protected routes when user is not authenticated
-  if (!user && !isPublicRoute) {
+  if (!session && !isPublicRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/sign-in";
     return NextResponse.redirect(url);
