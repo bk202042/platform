@@ -4,8 +4,8 @@ import { createClient } from "@/lib/supabase/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 const signInSchema = z.object({
@@ -18,8 +18,18 @@ type SignInFormData = z.infer<typeof signInSchema>;
 export default function SignInForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [returnTo, setReturnTo] = useState<string>('/');
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+  
+  useEffect(() => {
+    // Get returnTo from URL parameters if it exists
+    const returnPath = searchParams.get('returnTo');
+    if (returnPath) {
+      setReturnTo(returnPath);
+    }
+  }, [searchParams]);
 
   const {
     register,
@@ -44,7 +54,7 @@ export default function SignInForm() {
       }
 
       router.refresh();
-      router.push("/");
+      router.push(returnTo);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {

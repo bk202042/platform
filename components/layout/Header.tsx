@@ -71,12 +71,6 @@ export function Header() {
             >
               Rent
             </Link>
-            <Link
-              href="/mortgage"
-              className="text-[#2A2A33] hover:text-[#007882] transition-colors font-medium"
-            >
-              Mortgage
-            </Link>
           </nav>
         </div>
 
@@ -86,14 +80,6 @@ export function Header() {
             <div className="h-9 w-9 rounded-full bg-gray-200 animate-pulse"></div>
           ) : isLoggedIn ? (
             <>
-              <Button
-                variant="ghost"
-                className="text-[#2A2A33] hover:text-[#007882] hidden md:flex items-center space-x-2"
-              >
-                <Heart className="h-5 w-5" />
-                <span>Saved Homes</span>
-              </Button>
-              
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -109,15 +95,30 @@ export function Header() {
                     {user?.email}
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin/profile" className="cursor-pointer w-full">
+                  <DropdownMenuItem>
+                    <button 
+                      onClick={() => {
+                        // Force navigation with a refresh to ensure proper auth state
+                        window.location.href = '/admin/profile';
+                      }}
+                      className="cursor-pointer w-full text-left"
+                    >
                       Profile
-                    </Link>
+                    </button>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/admin" className="cursor-pointer w-full">
                       Admin Dashboard
                     </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <button
+                      onClick={() => router.push('/saved-homes')}
+                      className="cursor-pointer w-full text-left flex items-center gap-2"
+                    >
+                      <Heart className="h-4 w-4" />
+                      <span>Saved Homes</span>
+                    </button>
                   </DropdownMenuItem>
 
                   <DropdownMenuSeparator />
