@@ -52,7 +52,7 @@ export function FeaturedPropertyTabs({
       {activeTab === "rent" && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {rentProperties.length > 0 ? (
-            rentProperties.map((property) => (
+            rentProperties.slice(0, 6).map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))
           ) : (
@@ -69,7 +69,7 @@ export function FeaturedPropertyTabs({
       {activeTab === "buy" && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {buyProperties.length > 0 ? (
-            buyProperties.map((property) => (
+            buyProperties.slice(0, 6).map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))
           ) : (
