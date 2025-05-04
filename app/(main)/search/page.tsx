@@ -14,7 +14,7 @@ interface SearchPageProps {
 
 export default function SearchPage({ searchParams }: SearchPageProps) {
   return (
-    <PropertyDataProvider initialSearchParams={searchParams}>
+    <PropertyDataProvider>
       <div className="py-8">
         <h1 className="text-3xl font-bold mb-8 text-center">
           Search Properties

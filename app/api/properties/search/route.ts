@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createApiClient } from "@/lib/supabase/server-api";
-import { PropertyType } from "@/types/property";
 
 /**
  * POST handler for advanced property search

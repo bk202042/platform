@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
   useCallback,
+  useMemo,
   ReactNode,
 } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -33,12 +34,10 @@ export function usePropertyData() {
 
 interface PropertyDataProviderProps {
   children: ReactNode;
-  initialSearchParams?: Record<string, string>;
 }
 
 export function PropertyDataProvider({
   children,
-  initialSearchParams = {},
 }: PropertyDataProviderProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -47,11 +46,14 @@ export function PropertyDataProvider({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Convert searchParams to a regular object
-  const currentSearchParams: Record<string, string> = {};
-  searchParams.forEach((value, key) => {
-    currentSearchParams[key] = value;
-  });
+  // Convert searchParams to a regular object, memoized
+  const currentSearchParams = useMemo(() => {
+    const params: Record<string, string> = {};
+    searchParams.forEach((value, key) => {
+      params[key] = value;
+    });
+    return params;
+  }, [searchParams]);
 
   // Update search parameters and navigate
   const updateSearchParams = useCallback(
