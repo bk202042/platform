@@ -92,11 +92,7 @@ export default async function AdminUsersPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {user.banned ? (
-                        <span className="inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 px-2 py-1 text-red-800">
-                          Banned
-                        </span>
-                      ) : user.confirmed_at ? (
+                      {user.confirmed_at ? (
                         <span className="inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 px-2 py-1 text-green-800">
                           Active
                         </span>
@@ -119,9 +115,6 @@ export default async function AdminUsersPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button className="text-indigo-600 hover:text-indigo-900 mr-4">
                         Edit
-                      </button>
-                      <button className="text-red-600 hover:text-red-900">
-                        {user.banned ? "Unban" : "Ban"}
                       </button>
                     </td>
                   </tr>

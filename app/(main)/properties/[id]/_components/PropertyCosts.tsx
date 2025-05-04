@@ -68,7 +68,9 @@ export default function PropertyCosts({ property }: PropertyCostsProps) {
         </div>
       </div>
       <div className="text-xs text-muted-foreground">
-        <p>* Prices shown are estimates. Additional costs and fees may apply.</p>
+        <p>
+          * Prices shown are estimates. Additional costs and fees may apply.
+        </p>
         <p>* Pet fees and deposits only apply to pet owners.</p>
         <p>* Security deposit is typically two months&apos; rent.</p>
       </div>

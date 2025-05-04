@@ -12,7 +12,9 @@ export default function SavedHomesPage() {
         <h1 className="text-4xl font-bold text-gray-800">Saved Homes</h1>
       </div>
       <div className="flex-1 flex flex-col lg:flex-row items-start justify-start bg-white pt-16">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8 block lg:hidden w-full text-left px-4">Saved Homes</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-8 block lg:hidden w-full text-left px-4">
+          Saved Homes
+        </h1>
         <div className="flex flex-col items-center lg:items-start justify-start max-w-xl w-full px-4 lg:px-0">
           <p className="text-xl text-gray-700 mb-2 text-center lg:text-left">
             You haven&apos;t added any homes yet.

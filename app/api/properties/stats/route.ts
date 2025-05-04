@@ -16,39 +16,12 @@ export async function GET() {
 
     if (countError) throw countError;
 
-    // Get count by property type
-    const { data: typeData, error: typeError } = await supabase
+    // Get all property listings (grouping to be done in JS if needed)
+    const { data: allProperties, error: allPropertiesError } = await supabase
       .from("property_listings")
-      .select("property_type, count")
-      .group("property_type");
+      .select("*");
 
-    if (typeError) throw typeError;
-
-    // Get price statistics
-    const { data: priceData, error: priceError } = await supabase
-      .from("property_listings")
-      .select("property_type, min(price), max(price), avg(price)")
-      .group("property_type");
-
-    if (priceError) throw priceError;
-
-    // Get bedroom statistics
-    const { data: bedroomData, error: bedroomError } = await supabase
-      .from("property_listings")
-      .select("bedrooms, count")
-      .group("bedrooms")
-      .order("bedrooms");
-
-    if (bedroomError) throw bedroomError;
-
-    // Get bathroom statistics
-    const { data: bathroomData, error: bathroomError } = await supabase
-      .from("property_listings")
-      .select("bathrooms, count")
-      .group("bathrooms")
-      .order("bathrooms");
-
-    if (bathroomError) throw bathroomError;
+    if (allPropertiesError) throw allPropertiesError;
 
     // Format price ranges
     const priceRanges = [
@@ -76,10 +49,7 @@ export async function GET() {
       success: true,
       data: {
         totalCount,
-        byPropertyType: typeData,
-        priceStatistics: priceData,
-        bedroomStatistics: bedroomData,
-        bathroomStatistics: bathroomData,
+        allProperties,
         priceRanges,
       },
     });

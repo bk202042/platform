@@ -15,14 +15,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
 interface PropertyContactProps {
-  propertyId: string;
   propertyTitle: string;
 }
 
-export function PropertyContact({
-  propertyId,
-  propertyTitle,
-}: PropertyContactProps) {
+export function PropertyContact({ propertyTitle }: PropertyContactProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -32,7 +28,7 @@ export function PropertyContact({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setIsSubmitting(true);
@@ -58,7 +54,7 @@ export function PropertyContact({
             </div>
             <p className="mb-2">Thank you for your interest!</p>
             <p className="text-sm text-muted-foreground">
-              We've received your message and will get back to you shortly.
+              We&apos;ve received your message and will get back to you shortly.
             </p>
           </div>
         </CardContent>
@@ -134,7 +130,9 @@ export function PropertyContact({
               placeholder="Enter your message"
               rows={4}
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setMessage(e.target.value)
+              }
               required
             />
           </div>

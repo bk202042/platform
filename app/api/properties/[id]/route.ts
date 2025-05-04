@@ -89,7 +89,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
           obj[key] = updates[key];
           return obj;
         },
-        {} as Record<string, any>,
+        {} as Record<string, unknown>,
       );
 
     if (Object.keys(filteredUpdates).length === 0) {

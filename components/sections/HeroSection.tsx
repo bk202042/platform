@@ -42,9 +42,7 @@ export function HeroSection() {
 
       {/* Content */}
       <div className="relative z-20 container mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[600px] text-center">
-        <h1
-          className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-12 max-w-3xl leading-tight drop-shadow-md"
-        >
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-12 max-w-3xl leading-tight drop-shadow-md">
           Discover a place
           <br />
           you&apos;ll love to live

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 
 export default function ClientProfilePage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -91,6 +92,7 @@ export default function ClientProfilePage() {
                   className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50"
                   value={user?.email || ""}
                   disabled
+                  placeholder="이메일"
                 />
               </div>
 
@@ -103,6 +105,7 @@ export default function ClientProfilePage() {
                   className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50"
                   value={user?.id || ""}
                   disabled
+                  placeholder="사용자 ID"
                 />
               </div>
             </div>

@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
       })
       .lt("distance_meters", radiusMeters)
       .range(offset, offset + limit - 1)
-      .select("*", { count: "exact" });
+      .select("*");
 
     if (error) throw error;
 

@@ -102,6 +102,7 @@ export function PropertyImageGallery({
         {images.map((image, index) => (
           <button
             key={index}
+            title={`View image ${index + 1}`}
             className={cn(
               "relative h-20 w-20 flex-shrink-0 rounded-md overflow-hidden border-2",
               index === currentIndex ? "border-primary" : "border-transparent",

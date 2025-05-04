@@ -45,7 +45,9 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
       {/* Interior Features */}
       <div className="bg-white border border-gray-200 rounded-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">Interior Features</CardTitle>
+          <CardTitle className="text-lg font-semibold">
+            Interior Features
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -61,7 +63,9 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
       {/* Building Amenities */}
       <div className="bg-white border border-gray-200 rounded-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">Building Amenities</CardTitle>
+          <CardTitle className="text-lg font-semibold">
+            Building Amenities
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
@@ -77,7 +81,9 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
       {/* Exterior Features */}
       <div className="bg-white border border-gray-200 rounded-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">Exterior Features</CardTitle>
+          <CardTitle className="text-lg font-semibold">
+            Exterior Features
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
@@ -93,7 +99,9 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
       {/* Additional Information */}
       <div className="bg-white border border-gray-200 rounded-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">Additional Information</CardTitle>
+          <CardTitle className="text-lg font-semibold">
+            Additional Information
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">

@@ -21,25 +21,48 @@ export default function PropertyDetail({ property }: PropertyDetailProps) {
     <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <h1 className="text-3xl font-bold text-gray-900 leading-tight">{property.title}</h1>
-          <button className="ml-2 p-2 rounded-full border border-gray-200 bg-white hover:bg-gray-100 text-[#007882] shadow-sm transition-colors" aria-label="Save property">
+          <h1 className="text-3xl font-bold text-gray-900 leading-tight">
+            {property.title}
+          </h1>
+          <button
+            className="ml-2 p-2 rounded-full border border-gray-200 bg-white hover:bg-gray-100 text-[#007882] shadow-sm transition-colors"
+            aria-label="Save property"
+          >
             <Heart className="h-5 w-5" />
           </button>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-2xl font-bold text-[#E94F1D]">{formatPrice(property.price, property.property_type)}</span>
-          <span className="ml-2 text-sm text-muted-foreground font-medium">{property.property_type === "월세" ? "Monthly Rent" : "Purchase"}</span>
+          <span className="text-2xl font-bold text-[#E94F1D]">
+            {formatPrice(property.price, property.property_type)}
+          </span>
+          <span className="ml-2 text-sm text-muted-foreground font-medium">
+            {property.property_type === "월세" ? "Monthly Rent" : "Purchase"}
+          </span>
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mt-2">
-        <span className="flex items-center gap-1"><MapPin className="h-4 w-4" />{property.address}</span>
-        <span className="flex items-center gap-1"><BedDouble className="h-4 w-4" />{property.bedrooms} Bed</span>
-        <span className="flex items-center gap-1"><Bath className="h-4 w-4" />{property.bathrooms} Bath</span>
-        <span className="flex items-center gap-1"><Maximize2 className="h-4 w-4" />{property.square_footage} sqft</span>
+        <span className="flex items-center gap-1">
+          <MapPin className="h-4 w-4" />
+          {property.address}
+        </span>
+        <span className="flex items-center gap-1">
+          <BedDouble className="h-4 w-4" />
+          {property.bedrooms} Bed
+        </span>
+        <span className="flex items-center gap-1">
+          <Bath className="h-4 w-4" />
+          {property.bathrooms} Bath
+        </span>
+        <span className="flex items-center gap-1">
+          <Maximize2 className="h-4 w-4" />
+          {property.square_footage} sqft
+        </span>
       </div>
       <div>
         <h3 className="text-lg font-semibold mb-2">Description</h3>
-        <p className="text-gray-700 whitespace-pre-line leading-relaxed">{property.description}</p>
+        <p className="text-gray-700 whitespace-pre-line leading-relaxed">
+          {property.description}
+        </p>
       </div>
       {/* Features (legacy, keep for compatibility) */}
       {Array.isArray(property.features) && property.features.length > 0 && (

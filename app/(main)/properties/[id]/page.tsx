@@ -51,27 +51,91 @@ function RequestInfoForm({ property }: { property: PropertyListing }) {
     <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
       <div className="flex gap-2">
         <div className="flex-1">
-          <label htmlFor="request-name" className="block text-sm font-semibold text-gray-700 mb-1">Name</label>
-          <input id="request-name" type="text" {...register("name")} className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]" disabled={isSubmitting} />
-          {errors.name && <p className="ml-1 mt-1 text-xs text-rose-500">{errors.name.message}</p>}
+          <label
+            htmlFor="request-name"
+            className="block text-sm font-semibold text-gray-700 mb-1"
+          >
+            Name
+          </label>
+          <input
+            id="request-name"
+            type="text"
+            {...register("name")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]"
+            disabled={isSubmitting}
+          />
+          {errors.name && (
+            <p className="ml-1 mt-1 text-xs text-rose-500">
+              {errors.name.message}
+            </p>
+          )}
         </div>
         <div className="flex-1">
-          <label htmlFor="request-phone" className="block text-sm font-semibold text-gray-700 mb-1">Phone</label>
-          <input id="request-phone" type="tel" {...register("phone")} className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]" disabled={isSubmitting} />
-          {errors.phone && <p className="ml-1 mt-1 text-xs text-rose-500">{errors.phone.message}</p>}
+          <label
+            htmlFor="request-phone"
+            className="block text-sm font-semibold text-gray-700 mb-1"
+          >
+            Phone
+          </label>
+          <input
+            id="request-phone"
+            type="tel"
+            {...register("phone")}
+            className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]"
+            disabled={isSubmitting}
+          />
+          {errors.phone && (
+            <p className="ml-1 mt-1 text-xs text-rose-500">
+              {errors.phone.message}
+            </p>
+          )}
         </div>
       </div>
       <div>
-        <label htmlFor="request-email" className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
-        <input id="request-email" type="email" {...register("email")} className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]" disabled={isSubmitting} />
-        {errors.email && <p className="ml-1 mt-1 text-xs text-rose-500">{errors.email.message}</p>}
+        <label
+          htmlFor="request-email"
+          className="block text-sm font-semibold text-gray-700 mb-1"
+        >
+          Email
+        </label>
+        <input
+          id="request-email"
+          type="email"
+          {...register("email")}
+          className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]"
+          disabled={isSubmitting}
+        />
+        {errors.email && (
+          <p className="ml-1 mt-1 text-xs text-rose-500">
+            {errors.email.message}
+          </p>
+        )}
       </div>
       <div>
-        <label htmlFor="request-message" className="block text-sm font-semibold text-gray-700 mb-1">Message</label>
-        <textarea id="request-message" rows={4} {...register("message")} className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]" disabled={isSubmitting} />
-        {errors.message && <p className="ml-1 mt-1 text-xs text-rose-500">{errors.message.message}</p>}
+        <label
+          htmlFor="request-message"
+          className="block text-sm font-semibold text-gray-700 mb-1"
+        >
+          Message
+        </label>
+        <textarea
+          id="request-message"
+          rows={4}
+          {...register("message")}
+          className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]"
+          disabled={isSubmitting}
+        />
+        {errors.message && (
+          <p className="ml-1 mt-1 text-xs text-rose-500">
+            {errors.message.message}
+          </p>
+        )}
       </div>
-      <Button type="submit" className="bg-[#E94F1D] hover:bg-[#c43e13] text-white font-semibold py-3 px-8 rounded-lg text-lg w-full transition-colors" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        className="bg-[#E94F1D] hover:bg-[#c43e13] text-white font-semibold py-3 px-8 rounded-lg text-lg w-full transition-colors"
+        disabled={isSubmitting}
+      >
         {isSubmitting ? "Sending..." : "Request Info"}
       </Button>
     </form>
@@ -96,7 +160,7 @@ export default function PropertyPage() {
     location: {}, // minimal mock for location
     features: {}, // minimal mock for features
   };
-  const similarProperties: typeof property[] = [];
+  const similarProperties: (typeof property)[] = [];
 
   return (
     <div className="min-h-screen bg-[#f7f9fa]">
@@ -104,7 +168,11 @@ export default function PropertyPage() {
         {/* Back button */}
         <div className="mb-6">
           <Link href="/">
-            <Button variant="outline" size="sm" className="rounded-full border-gray-300 bg-white shadow-sm hover:bg-gray-50">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full border-gray-300 bg-white shadow-sm hover:bg-gray-50"
+            >
               ← Back to Home
             </Button>
           </Link>
@@ -141,14 +209,29 @@ export default function PropertyPage() {
               {/* Similar properties */}
               {similarProperties.length > 0 && (
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Similar Properties</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Similar Properties
+                  </h3>
                   <div className="space-y-4">
                     {similarProperties.map((similarProperty) => (
-                      <Link key={similarProperty.id} href={`/properties/${similarProperty.id}`} className="block">
+                      <Link
+                        key={similarProperty.id}
+                        href={`/properties/${similarProperty.id}`}
+                        className="block"
+                      >
                         <div className="border rounded-lg p-4 hover:bg-muted transition-colors">
-                          <h4 className="font-medium line-clamp-1">{similarProperty.title}</h4>
-                          <p className="text-sm text-muted-foreground line-clamp-1">{similarProperty.address}</p>
-                          <p className="font-medium mt-2">${similarProperty.price.toLocaleString()}{similarProperty.property_type === "월세" ? "/month" : ""}</p>
+                          <h4 className="font-medium line-clamp-1">
+                            {similarProperty.title}
+                          </h4>
+                          <p className="text-sm text-muted-foreground line-clamp-1">
+                            {similarProperty.address}
+                          </p>
+                          <p className="font-medium mt-2">
+                            ${similarProperty.price.toLocaleString()}
+                            {similarProperty.property_type === "월세"
+                              ? "/month"
+                              : ""}
+                          </p>
                         </div>
                       </Link>
                     ))}

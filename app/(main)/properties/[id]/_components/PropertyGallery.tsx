@@ -108,7 +108,9 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
               aria-label={`View image ${index + 1}`}
             >
               <Image
-                src={image.publicUrl || "/assets/images/property-placeholder.jpg"}
+                src={
+                  image.publicUrl || "/assets/images/property-placeholder.jpg"
+                }
                 alt={image.alt_text || `Thumbnail ${index + 1}`}
                 fill
                 className="object-cover"

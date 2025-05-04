@@ -13,9 +13,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 
+interface UserWithMetadata {
+  email?: string;
+  user_metadata?: {
+    full_name?: string;
+  };
+}
+
 export function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<{ email?: string } | null>(null);
+  const [user, setUser] = useState<UserWithMetadata | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const supabase = createClient();
@@ -88,7 +95,10 @@ export function Header() {
                   <button className="flex items-center gap-2 rounded-full px-4 py-2 font-medium transition-colors bg-[rgb(0,120,130)] text-white hover:bg-[rgb(0,95,103)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgb(0,120,130)]">
                     <User className="h-5 w-5" />
                     <span>
-                      {user?.user_metadata
+                      {user &&
+                      typeof user === "object" &&
+                      "user_metadata" in user &&
+                      user.user_metadata
                         ? user.user_metadata.full_name || user.email
                         : user?.email}
                     </span>
@@ -129,9 +139,7 @@ export function Header() {
           ) : (
             <div className="flex items-center space-x-4">
               <Link href="/auth/sign-in">
-                <button
-                  className="px-3 py-2 font-medium text-sm text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors"
-                >
+                <button className="px-3 py-2 font-medium text-sm text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors">
                   Sign In
                 </button>
               </Link>

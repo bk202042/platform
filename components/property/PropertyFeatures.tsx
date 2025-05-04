@@ -1,11 +1,10 @@
 "use client";
 
 import { Check } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 interface PropertyFeaturesProps {
-  features: Record<string, any>;
+  features: Record<string, unknown>;
 }
 
 // Helper function to format feature names
@@ -24,8 +23,8 @@ function formatFeatureName(key: string): string {
 }
 
 // Group features by category
-function groupFeatures(features: Record<string, any>) {
-  const groups: Record<string, Record<string, any>> = {
+function groupFeatures(features: Record<string, unknown>) {
+  const groups: Record<string, Record<string, unknown>> = {
     "Property Features": {},
     Amenities: {},
     "Korean Features": {},
@@ -109,9 +108,9 @@ export function PropertyFeatures({ features }: PropertyFeaturesProps) {
               ) {
                 return (
                   <div key={key} className="flex items-center gap-2">
-                    <Badge variant="outline" className="px-2 py-1 text-xs">
+                    <span className="inline-block px-2 py-1 text-xs rounded border border-gray-300 bg-gray-100 mr-2">
                       {formatFeatureName(key)}
-                    </Badge>
+                    </span>
                     <span className="text-sm">{value}</span>
                   </div>
                 );

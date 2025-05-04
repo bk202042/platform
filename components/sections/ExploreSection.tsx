@@ -72,8 +72,8 @@ export function ExploreSection() {
               Vietnam Resident
             </p>
             <p className="text-muted-foreground">
-              I just moved to the neighborhood 2 years ago and love it! It's a
-              great mix of families, seniors and...
+              I just moved to the neighborhood 2 years ago and love it!
+              It&apos;s a great mix of families, seniors and...
             </p>
           </div>
         </Card>
