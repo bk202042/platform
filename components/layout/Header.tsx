@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Home, Heart } from "lucide-react";
+import { Home, Heart, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -65,13 +64,13 @@ export function Header() {
           <nav className="hidden md:flex items-center space-x-6">
             <Link
               href="/search"
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent h-9 px-4 py-2 text-[#2A2A33] hover:text-[#007882] font-medium"
+              className="px-3 py-2 font-medium text-sm text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors"
             >
               Buy
             </Link>
             <Link
               href="/properties"
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent h-9 px-4 py-2 text-[#2A2A33] hover:text-[#007882] font-medium"
+              className="px-3 py-2 font-medium text-sm text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors"
             >
               Rent
             </Link>
@@ -87,9 +86,12 @@ export function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 rounded-full px-4 py-2 font-medium transition-colors bg-[rgb(0,120,130)] text-white hover:bg-[rgb(0,95,103)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgb(0,120,130)]">
-                    {user?.user_metadata
-                      ? user.user_metadata.full_name || user.email
-                      : user?.email}
+                    <User className="h-5 w-5" />
+                    <span>
+                      {user?.user_metadata
+                        ? user.user_metadata.full_name || user.email
+                        : user?.email}
+                    </span>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -99,9 +101,7 @@ export function Header() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <button
-                      onClick={() => {
-                        window.location.href = "/admin/profile";
-                      }}
+                      onClick={() => router.push("/admin/profile")}
                       className="cursor-pointer w-full text-left"
                     >
                       Profile
@@ -109,7 +109,7 @@ export function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <button
-                      onClick={() => router.push("/saved-homes")}
+                      onClick={() => router.push("/admin/saved-homes")}
                       className="cursor-pointer w-full text-left flex items-center gap-2"
                     >
                       <Heart className="h-4 w-4" />
@@ -129,17 +129,16 @@ export function Header() {
           ) : (
             <div className="flex items-center space-x-4">
               <Link href="/auth/sign-in">
-                <Button
-                  variant="ghost"
-                  className="text-[#2A2A33] hover:text-[#007882] font-medium"
+                <button
+                  className="px-3 py-2 font-medium text-sm text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors"
                 >
                   Sign In
-                </Button>
+                </button>
               </Link>
               <Link href="/auth/sign-up">
-                <Button className="bg-[#007882] hover:bg-[#005F67] text-white font-medium">
+                <button className="px-3 py-2 font-medium text-sm text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors">
                   Sign Up
-                </Button>
+                </button>
               </Link>
             </div>
           )}

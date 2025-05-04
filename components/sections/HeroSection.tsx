@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 export function HeroSection() {
   const [searchText, setSearchText] = useState("");
-  const [activeTab, setActiveTab] = useState<"buy" | "rent" | "sold">("buy");
+  const [activeTab, setActiveTab] = useState<"buy" | "rent">("buy");
   const router = useRouter();
 
   const handleSearch = (e: FormEvent) => {
@@ -43,8 +43,7 @@ export function HeroSection() {
       {/* Content */}
       <div className="relative z-20 container mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[600px] text-center">
         <h1
-          className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-12 max-w-3xl leading-tight"
-          style={{ textShadow: "0 2px 4px rgba(0, 0, 0, 0.5)" }}
+          className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-12 max-w-3xl leading-tight drop-shadow-md"
         >
           Discover a place
           <br />
@@ -74,16 +73,6 @@ export function HeroSection() {
               }`}
             >
               Rent
-            </button>
-            <button
-              onClick={() => setActiveTab("sold")}
-              className={`flex-1 py-4 text-lg font-medium transition-colors ${
-                activeTab === "sold"
-                  ? "text-[#007882] border-b-2 border-[#007882]"
-                  : "text-[#2A2A33] hover:text-[#007882]"
-              }`}
-            >
-              Sold
             </button>
           </div>
 
