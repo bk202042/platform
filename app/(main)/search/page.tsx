@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 interface SearchPageProps {
-  searchParams: Record<string, string>;
+  searchParams: Record<string, string | string[] | undefined>;
 }
 
 export default function SearchPage({ searchParams }: SearchPageProps) {
@@ -27,7 +27,16 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
 
           <div className="lg:col-span-3">
             <Suspense fallback={<div>Loading...</div>}>
-              <SearchResults searchParams={searchParams} />
+              <SearchResults
+                searchParams={Object.fromEntries(
+                  Object.entries(searchParams).map(([key, value]) => [
+                    key,
+                    Array.isArray(value)
+                      ? value[0] ?? ''
+                      : value ?? ''
+                  ])
+                )}
+              />
             </Suspense>
           </div>
         </div>
