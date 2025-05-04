@@ -27,9 +27,6 @@ export default async function Home() {
       {/* Hero Section (Server Component) */}
       <HeroSection />
 
-      {/* Feature Highlights Section (Client Component) */}
-      <FeatureHighlightsSection />
-
       {/* Explore Section (Server Component) */}
       <ExploreSection />
 
@@ -39,6 +36,9 @@ export default async function Home() {
         buyProperties={buyResult.data || []} // Pass fetched data as props, provide default empty array
         totalProperties={allPropertiesResult.total || 0} // Pass fetched total, provide default 0
       />
+
+      {/* Feature Highlights Section (Client Component) */}
+      <FeatureHighlightsSection />
 
       {/* For Korean Expatriates Section (Server Component) */}
       <KoreanExpatriatesSection />

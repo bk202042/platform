@@ -65,13 +65,13 @@ export function Header() {
           <nav className="hidden md:flex items-center space-x-6">
             <Link
               href="/search"
-              className="text-[#2A2A33] hover:text-[#007882] transition-colors font-medium"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent h-9 px-4 py-2 text-[#2A2A33] hover:text-[#007882] font-medium"
             >
               Buy
             </Link>
             <Link
               href="/properties"
-              className="text-[#2A2A33] hover:text-[#007882] transition-colors font-medium"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent h-9 px-4 py-2 text-[#2A2A33] hover:text-[#007882] font-medium"
             >
               Rent
             </Link>
