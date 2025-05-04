@@ -46,14 +46,13 @@ function processPropertyImages(
       if (!storagePath) return { ...img, publicUrl: null };
 
       // Ensure the path passed to getPublicUrl doesn't include the bucket name if storage_path already has it.
-      const bucketName = 'platform';
+      const bucketName = "platform";
       if (storagePath.startsWith(`${bucketName}/`)) {
         storagePath = storagePath.substring(bucketName.length + 1);
       } else if (storagePath.startsWith(`/${bucketName}/`)) {
         // Handle cases where it might start with /platform/
         storagePath = storagePath.substring(bucketName.length + 2);
       }
-
 
       const { data: publicUrlData } = supabase.storage
         .from(bucketName) // Use bucket name variable

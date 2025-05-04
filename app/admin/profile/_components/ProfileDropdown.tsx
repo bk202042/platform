@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { User } from '@supabase/supabase-js';
-import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { User } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { LogOut, User as UserIcon } from 'lucide-react';
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { LogOut, User as UserIcon } from "lucide-react";
 
 interface ProfileDropdownProps {
   user: User;
@@ -20,13 +20,13 @@ interface ProfileDropdownProps {
 export default function ProfileDropdown({ user }: ProfileDropdownProps) {
   const router = useRouter();
   const supabase = createClient();
-  
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.refresh();
-    router.push('/');
+    router.push("/");
   };
-  
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -39,20 +39,18 @@ export default function ProfileDropdown({ user }: ProfileDropdownProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <div className="px-2 py-1.5 text-sm font-medium">
-          {user.email}
-        </div>
+        <div className="px-2 py-1.5 text-sm font-medium">{user.email}</div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem 
+        <DropdownMenuItem
           className="cursor-pointer"
-          onClick={() => router.push('/admin/profile')}
+          onClick={() => router.push("/admin/profile")}
         >
           <UserIcon className="mr-2 h-4 w-4" />
           <span>내 프로필</span>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem 
+        <DropdownMenuItem
           className="cursor-pointer text-red-600"
           onClick={handleSignOut}
         >

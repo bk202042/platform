@@ -1,12 +1,12 @@
-import 'server-only';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import "server-only";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export async function createClient() {
   // Create a server-side Supabase client with minimal cookie handling
   // to ensure sessions work consistently
   const cookieStore = cookies();
-  
+
   // Simple implementation with only necessary functionality
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,9 +23,9 @@ export async function createClient() {
         },
         remove(name, options) {
           // Handle cookie removal with try/catch for server components
-          cookieStore.set({ name, value: '', ...options });
+          cookieStore.set({ name, value: "", ...options });
         },
       },
-    }
+    },
   );
 }

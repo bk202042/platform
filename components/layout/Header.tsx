@@ -1,18 +1,18 @@
 "use client";
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Home, User, Heart } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Home, Heart } from "lucide-react";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useRouter } from 'next/navigation';
+} from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 
 export function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -24,7 +24,9 @@ export function Header() {
   useEffect(() => {
     const getUser = async () => {
       setIsLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       setUser(user);
       setIsLoggedIn(!!user);
       setIsLoading(false);
@@ -33,7 +35,9 @@ export function Header() {
     getUser();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user || null);
       setIsLoggedIn(!!session?.user);
     });
@@ -82,13 +86,11 @@ export function Header() {
             <>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="rounded-full h-9 w-9 p-0 overflow-hidden"
-                  >
-                    <User className="h-5 w-5" />
-                    <span className="sr-only">Profile</span>
-                  </Button>
+                  <button className="flex items-center gap-2 rounded-full px-4 py-2 font-medium transition-colors bg-[rgb(0,120,130)] text-white hover:bg-[rgb(0,95,103)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgb(0,120,130)]">
+                    {user?.user_metadata
+                      ? user.user_metadata.full_name || user.email
+                      : user?.email}
+                  </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-2 py-1.5 text-sm font-medium">
@@ -96,33 +98,26 @@ export function Header() {
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <button 
+                    <button
                       onClick={() => {
-                        // Force navigation with a refresh to ensure proper auth state
-                        window.location.href = '/admin/profile';
+                        window.location.href = "/admin/profile";
                       }}
                       className="cursor-pointer w-full text-left"
                     >
                       Profile
                     </button>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin" className="cursor-pointer w-full">
-                      Admin Dashboard
-                    </Link>
-                  </DropdownMenuItem>
                   <DropdownMenuItem>
                     <button
-                      onClick={() => router.push('/saved-homes')}
+                      onClick={() => router.push("/saved-homes")}
                       className="cursor-pointer w-full text-left flex items-center gap-2"
                     >
                       <Heart className="h-4 w-4" />
                       <span>Saved Homes</span>
                     </button>
                   </DropdownMenuItem>
-
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     className="cursor-pointer text-red-600"
                     onClick={handleSignOut}
                   >

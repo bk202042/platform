@@ -1,17 +1,17 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 export const metadata = {
-  title: 'Admin Settings | Vietnam Property Platform',
-  description: 'Configure system settings for the Vietnam Property Platform',
+  title: "Admin Settings | Vietnam Property Platform",
+  description: "Configure system settings for the Vietnam Property Platform",
 };
 
 export default function AdminSettingsPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Admin Settings</h1>
-      
+
       <Card>
         <CardHeader>
           <CardTitle>Site Configuration</CardTitle>
@@ -32,7 +32,7 @@ export default function AdminSettingsPage() {
                 Contact system administrator to change site name
               </p>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Contact Email
@@ -44,7 +44,7 @@ export default function AdminSettingsPage() {
               />
             </div>
           </div>
-          
+
           <div className="flex justify-end">
             <Button className="bg-[#007882] hover:bg-[#005F67]">
               Save Changes
@@ -52,7 +52,7 @@ export default function AdminSettingsPage() {
           </div>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader>
           <CardTitle>Property Settings</CardTitle>
@@ -63,15 +63,13 @@ export default function AdminSettingsPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Default Currency
               </label>
-              <select
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#007882]"
-              >
+              <select className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#007882]">
                 <option value="USD">USD ($)</option>
                 <option value="VND">VND (₫)</option>
                 <option value="KRW">KRW (₩)</option>
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Max Featured Properties
@@ -83,16 +81,18 @@ export default function AdminSettingsPage() {
               />
             </div>
           </div>
-          
+
           <Separator className="my-4" />
-          
+
           <div>
             <label className="flex items-center">
               <input type="checkbox" className="rounded text-[#007882] mr-2" />
-              <span className="text-sm">Require admin approval for new listings</span>
+              <span className="text-sm">
+                Require admin approval for new listings
+              </span>
             </label>
           </div>
-          
+
           <div className="flex justify-end">
             <Button className="bg-[#007882] hover:bg-[#005F67]">
               Save Changes
@@ -100,24 +100,26 @@ export default function AdminSettingsPage() {
           </div>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader>
           <CardTitle>Maintenance Mode</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-gray-500">
-            Enabling maintenance mode will make the site inaccessible to regular users. 
-            Administrators will still be able to log in.
+            Enabling maintenance mode will make the site inaccessible to regular
+            users. Administrators will still be able to log in.
           </p>
-          
+
           <div className="flex items-center">
             <label className="flex items-center">
               <input type="checkbox" className="rounded text-[#007882] mr-2" />
-              <span className="text-sm font-medium">Enable Maintenance Mode</span>
+              <span className="text-sm font-medium">
+                Enable Maintenance Mode
+              </span>
             </label>
           </div>
-          
+
           <div className="flex justify-end">
             <Button className="bg-[#007882] hover:bg-[#005F67]">
               Save Changes

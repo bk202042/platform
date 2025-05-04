@@ -1,22 +1,29 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 
 export default function UpdatePassword() {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,14 +32,14 @@ export default function UpdatePassword() {
     setLoading(true);
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       setLoading(false);
       return;
     }
 
     try {
       const { error } = await supabase.auth.updateUser({
-        password
+        password,
       });
 
       if (error) {
@@ -43,11 +50,11 @@ export default function UpdatePassword() {
       setSuccess(true);
       // Redirect after successful password reset
       setTimeout(() => {
-        router.push('/auth/sign-in');
+        router.push("/auth/sign-in");
       }, 2000);
     } catch (err) {
-      setError('An error occurred while updating your password');
-      console.error('Password update error:', err);
+      setError("An error occurred while updating your password");
+      console.error("Password update error:", err);
     } finally {
       setLoading(false);
     }
@@ -58,9 +65,7 @@ export default function UpdatePassword() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Set New Password</CardTitle>
-          <CardDescription>
-            Enter your new password below.
-          </CardDescription>
+          <CardDescription>Enter your new password below.</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
@@ -104,8 +109,12 @@ export default function UpdatePassword() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" disabled={loading || success} className="w-full">
-              {loading ? 'Updating...' : 'Update Password'}
+            <Button
+              type="submit"
+              disabled={loading || success}
+              className="w-full"
+            >
+              {loading ? "Updating..." : "Update Password"}
             </Button>
           </CardFooter>
         </form>

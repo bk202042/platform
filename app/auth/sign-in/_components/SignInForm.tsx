@@ -18,14 +18,14 @@ type SignInFormData = z.infer<typeof signInSchema>;
 export default function SignInForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [returnTo, setReturnTo] = useState<string>('/');
+  const [returnTo, setReturnTo] = useState<string>("/");
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
-  
+
   useEffect(() => {
     // Get returnTo from URL parameters if it exists
-    const returnPath = searchParams.get('returnTo');
+    const returnPath = searchParams.get("returnTo");
     if (returnPath) {
       setReturnTo(returnPath);
     }

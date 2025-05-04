@@ -1,50 +1,50 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/navigation";
 
 export default function ClientProfilePage() {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
-    fullName: '',
-    phone: '',
-    role: '관리자',
+    fullName: "",
+    phone: "",
+    role: "관리자",
   });
   const router = useRouter();
   const supabase = createClient();
-  
+
   useEffect(() => {
     async function loadUser() {
       setIsLoading(true);
       const { data } = await supabase.auth.getUser();
-      
+
       if (!data.user) {
-        router.push('/auth/sign-in');
+        router.push("/auth/sign-in");
         return;
       }
-      
+
       setUser(data.user);
       setFormData({
-        fullName: data.user.user_metadata?.full_name || '',
-        phone: data.user.user_metadata?.phone || '',
-        role: data.user.user_metadata?.role || '관리자',
+        fullName: data.user.user_metadata?.full_name || "",
+        phone: data.user.user_metadata?.phone || "",
+        role: data.user.user_metadata?.role || "관리자",
       });
       setIsLoading(false);
     }
-    
+
     loadUser();
   }, [router, supabase.auth]);
-  
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -55,14 +55,14 @@ export default function ClientProfilePage() {
           role: formData.role,
         },
       });
-      
-      alert('프로필이 업데이트되었습니다.');
+
+      alert("프로필이 업데이트되었습니다.");
     } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('프로필 업데이트 중 오류가 발생했습니다.');
+      console.error("Error updating profile:", error);
+      alert("프로필 업데이트 중 오류가 발생했습니다.");
     }
   };
-  
+
   if (isLoading) {
     return (
       <div className="py-8 max-w-4xl mx-auto flex items-center justify-center min-h-[300px]">
@@ -70,11 +70,11 @@ export default function ClientProfilePage() {
       </div>
     );
   }
-  
+
   return (
     <div className="py-8 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-8">내 프로필</h1>
-      
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader>
@@ -89,11 +89,11 @@ export default function ClientProfilePage() {
                 <input
                   type="email"
                   className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50"
-                  value={user?.email || ''}
+                  value={user?.email || ""}
                   disabled
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   사용자 ID
@@ -101,14 +101,14 @@ export default function ClientProfilePage() {
                 <input
                   type="text"
                   className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50"
-                  value={user?.id || ''}
+                  value={user?.id || ""}
                   disabled
                 />
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>프로필 설정</CardTitle>
@@ -128,7 +128,7 @@ export default function ClientProfilePage() {
                   placeholder="이름을 입력하세요"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   전화번호
@@ -143,14 +143,11 @@ export default function ClientProfilePage() {
                 />
               </div>
             </div>
-            
+
             <Separator className="my-4" />
-            
+
             <div className="flex justify-end">
-              <Button 
-                type="submit" 
-                className="bg-[#007882] hover:bg-[#005F67]"
-              >
+              <Button type="submit" className="bg-[#007882] hover:bg-[#005F67]">
                 변경사항 저장
               </Button>
             </div>

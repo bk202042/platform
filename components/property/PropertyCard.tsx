@@ -48,16 +48,18 @@ function PropertyCardComponent({
   return (
     <Card className="h-full flex flex-col transition-shadow hover:shadow-md">
       <CardHeader className="pb-2">
-        {(
-          property.primary_image ||
-          (property.property_images && property.property_images.length > 0 && property.property_images[0].publicUrl)
-        ) ? (
+        {property.primary_image ||
+        (property.property_images &&
+          property.property_images.length > 0 &&
+          property.property_images[0].publicUrl) ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={
               property.primary_image ||
-              (property.property_images && property.property_images.length > 0 && property.property_images[0].publicUrl) ||
-              '/next.svg'
+              (property.property_images &&
+                property.property_images.length > 0 &&
+                property.property_images[0].publicUrl) ||
+              "/next.svg"
             }
             alt={property.title}
             className="w-full h-48 object-cover rounded-lg mb-2"

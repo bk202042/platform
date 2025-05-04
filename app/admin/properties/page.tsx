@@ -1,20 +1,20 @@
-import { createClient } from '@/lib/supabase/server';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { createClient } from "@/lib/supabase/server";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export const metadata = {
-  title: 'Property Management | Admin Dashboard',
-  description: 'Manage property listings on the Vietnam Property Platform',
+  title: "Property Management | Admin Dashboard",
+  description: "Manage property listings on the Vietnam Property Platform",
 };
 
 export default async function AdminPropertiesPage() {
   const supabase = await createClient();
-  
+
   // Fetch the latest properties with pagination
   const { data: properties, error } = await supabase
-    .from('property_listings')
-    .select('id, title, price, property_type, created_at')
-    .order('created_at', { ascending: false })
+    .from("property_listings")
+    .select("id, title, price, property_type, created_at")
+    .order("created_at", { ascending: false })
     .limit(10);
 
   return (
@@ -38,19 +38,34 @@ export default async function AdminPropertiesPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Title
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Price
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Type
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Created
                   </th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     Actions
                   </th>
                 </tr>
@@ -70,21 +85,23 @@ export default async function AdminPropertiesPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 px-2 py-1 text-green-800">
-                        {property.property_type === '월세' ? 'Monthly Rent' : 'Purchase'}
+                        {property.property_type === "월세"
+                          ? "Monthly Rent"
+                          : "Purchase"}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(property.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <Link 
-                        href={`/properties/${property.id}`} 
+                      <Link
+                        href={`/properties/${property.id}`}
                         className="text-blue-600 hover:text-blue-900 mr-4"
                       >
                         View
                       </Link>
-                      <Link 
-                        href={`/admin/properties/edit/${property.id}`} 
+                      <Link
+                        href={`/admin/properties/edit/${property.id}`}
                         className="text-indigo-600 hover:text-indigo-900 mr-4"
                       >
                         Edit
