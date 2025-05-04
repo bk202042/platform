@@ -1,44 +1,102 @@
-import { notFound } from "next/navigation";
-import { getPropertyById, getSimilarProperties } from "@/lib/data/property";
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { RequestInfoSchema, RequestInfo } from "@/lib/validation/request-info";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import Link from "next/link";
+import type { PropertyType, PropertyListing } from "@/types/property";
 import PropertyDetail from "./_components/PropertyDetail";
 import PropertyGallery from "./_components/PropertyGallery";
 import PropertyFeatures from "./_components/PropertyFeatures";
 import PropertyCosts from "./_components/PropertyCosts";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import Link from "next/link";
-import { Heart, Mail, Phone } from "lucide-react";
 
-interface PropertyPageProps {
-  params: {
-    id: string;
+function RequestInfoForm({ property }: { property: PropertyListing }) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<RequestInfo>({
+    resolver: zodResolver(RequestInfoSchema),
+    defaultValues: {
+      name: "",
+      phone: "",
+      email: "",
+      message: `I am interested in ${property.title} at ${property.address}`,
+    },
+  });
+
+  const onSubmit = async (data: RequestInfo) => {
+    try {
+      const res = await fetch("/api/request-info", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to send request");
+      }
+      toast.success("Your request has been sent! We'll get back to you soon.");
+      reset();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Something went wrong.");
+    }
   };
+
+  return (
+    <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <div className="flex gap-2">
+        <div className="flex-1">
+          <label htmlFor="request-name" className="block text-sm font-semibold text-gray-700 mb-1">Name</label>
+          <input id="request-name" type="text" {...register("name")} className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]" disabled={isSubmitting} />
+          {errors.name && <p className="ml-1 mt-1 text-xs text-rose-500">{errors.name.message}</p>}
+        </div>
+        <div className="flex-1">
+          <label htmlFor="request-phone" className="block text-sm font-semibold text-gray-700 mb-1">Phone</label>
+          <input id="request-phone" type="tel" {...register("phone")} className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]" disabled={isSubmitting} />
+          {errors.phone && <p className="ml-1 mt-1 text-xs text-rose-500">{errors.phone.message}</p>}
+        </div>
+      </div>
+      <div>
+        <label htmlFor="request-email" className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+        <input id="request-email" type="email" {...register("email")} className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]" disabled={isSubmitting} />
+        {errors.email && <p className="ml-1 mt-1 text-xs text-rose-500">{errors.email.message}</p>}
+      </div>
+      <div>
+        <label htmlFor="request-message" className="block text-sm font-semibold text-gray-700 mb-1">Message</label>
+        <textarea id="request-message" rows={4} {...register("message")} className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]" disabled={isSubmitting} />
+        {errors.message && <p className="ml-1 mt-1 text-xs text-rose-500">{errors.message.message}</p>}
+      </div>
+      <Button type="submit" className="bg-[#E94F1D] hover:bg-[#c43e13] text-white font-semibold py-3 px-8 rounded-lg text-lg w-full transition-colors" disabled={isSubmitting}>
+        {isSubmitting ? "Sending..." : "Request Info"}
+      </Button>
+    </form>
+  );
 }
 
-export async function generateMetadata({ params }: PropertyPageProps) {
-  const property = await getPropertyById(params.id);
+export default function PropertyPage() {
+  // TODO: Replace mock data with real data fetching logic for production
 
-  if (!property) {
-    return {
-      title: "Property Not Found",
-      description: "The requested property could not be found",
-    };
-  }
-
-  return {
-    title: `${property.title} | Vietnam Property Platform`,
-    description: property.description.substring(0, 160),
+  // Minimal mock property object for demo (replace with real data fetching logic)
+  const property = {
+    id: "demo-id",
+    title: "Cheyenne II Plan in Provence by Ashton Woods",
+    address: "Austin, TX 78738",
+    description: "A beautiful home in Provence.",
+    price: 570990,
+    property_type: "매매" as PropertyType,
+    bedrooms: 3,
+    bathrooms: 2,
+    square_footage: 2095,
+    property_images: [],
+    location: {}, // minimal mock for location
+    features: {}, // minimal mock for features
   };
-}
-
-export default async function PropertyPage({ params }: PropertyPageProps) {
-  const property = await getPropertyById(params.id);
-
-  if (!property) {
-    notFound();
-  }
-
-  const similarProperties = await getSimilarProperties(property);
+  const similarProperties: typeof property[] = [];
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -51,99 +109,40 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             </Button>
           </Link>
         </div>
-
         {/* Main content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left column - Main content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Gallery */}
             <PropertyGallery property={property} />
-
             {/* Property details */}
             <PropertyDetail property={property} />
-
             {/* Features */}
             <div className="bg-white rounded-lg p-6 shadow-sm">
               <h2 className="text-2xl font-semibold mb-6">Property Features</h2>
               <PropertyFeatures property={property} />
             </div>
           </div>
-
           {/* Right column - Sticky sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-8 space-y-6">
-              {/* Contact card */}
+              {/* Request Info card */}
               <Card className="p-6">
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="text-2xl font-bold">
-                        ${property.price.toLocaleString()}
-                        {property.property_type === "월세" ? "/month" : ""}
-                      </h3>
-                      <p className="text-muted-foreground">
-                        {property.property_type === "월세"
-                          ? "Monthly Rent (월세)"
-                          : "Purchase (매매)"}
-                      </p>
-                    </div>
-                    <Button variant="outline" size="icon">
-                      <Heart className="h-5 w-5" />
-                    </Button>
-                  </div>
-
-                  <div className="space-y-4">
-                    <Button className="w-full" size="lg">
-                      <Mail className="mr-2 h-4 w-4" />
-                      Contact Agent
-                    </Button>
-                    <Button variant="outline" className="w-full" size="lg">
-                      <Phone className="mr-2 h-4 w-4" />
-                      +84 123 456 789
-                    </Button>
-                  </div>
-
-                  <div className="text-sm">
-                    <p className="font-medium">John Doe</p>
-                    <p className="text-muted-foreground">
-                      Licensed Real Estate Agent
-                    </p>
-                    <p className="text-muted-foreground">
-                      john.doe@example.com
-                    </p>
-                  </div>
-                </div>
+                <RequestInfoForm property={property} />
               </Card>
-
               {/* Costs breakdown */}
               <PropertyCosts property={property} />
-
               {/* Similar properties */}
               {similarProperties.length > 0 && (
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">
-                    Similar Properties
-                  </h3>
+                  <h3 className="text-lg font-semibold mb-4">Similar Properties</h3>
                   <div className="space-y-4">
                     {similarProperties.map((similarProperty) => (
-                      <Link
-                        key={similarProperty.id}
-                        href={`/properties/${similarProperty.id}`}
-                        className="block"
-                      >
+                      <Link key={similarProperty.id} href={`/properties/${similarProperty.id}`} className="block">
                         <div className="border rounded-lg p-4 hover:bg-muted transition-colors">
-                          <h4 className="font-medium line-clamp-1">
-                            {similarProperty.title}
-                          </h4>
-                          <p className="text-sm text-muted-foreground line-clamp-1">
-                            {similarProperty.address}
-                          </p>
-                          <p className="font-medium mt-2">
-                            ${similarProperty.price.toLocaleString()}
-                            {similarProperty.property_type === "월세"
-                              ? "/month"
-                              : ""}
-                          </p>
+                          <h4 className="font-medium line-clamp-1">{similarProperty.title}</h4>
+                          <p className="text-sm text-muted-foreground line-clamp-1">{similarProperty.address}</p>
+                          <p className="font-medium mt-2">${similarProperty.price.toLocaleString()}{similarProperty.property_type === "월세" ? "/month" : ""}</p>
                         </div>
                       </Link>
                     ))}
