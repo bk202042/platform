@@ -1,7 +1,7 @@
 "use client";
 
 import { PropertyListing } from "@/types/property";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Heart, MapPin, BedDouble, Bath, Maximize2 } from "lucide-react";
 
 interface PropertyDetailProps {
   property: PropertyListing;
@@ -18,62 +18,43 @@ export default function PropertyDetail({ property }: PropertyDetailProps) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl">{property.title}</CardTitle>
-        <p className="text-muted-foreground">{property.address}</p>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-          <div>
-            <p className="text-3xl font-bold">
-              {formatPrice(property.price, property.property_type)}
-            </p>
-            <p className="text-muted-foreground">
-              {property.property_type === "월세"
-                ? "Monthly Rent (월세)"
-                : "Purchase (매매)"}
-            </p>
-          </div>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <div className="text-center">
-              <p className="text-2xl font-semibold">{property.bedrooms}</p>
-              <p className="text-sm text-muted-foreground">Bedrooms</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-semibold">{property.bathrooms}</p>
-              <p className="text-sm text-muted-foreground">Bathrooms</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-semibold">
-                {property.square_footage}
-              </p>
-              <p className="text-sm text-muted-foreground">Sq Ft</p>
-            </div>
-          </div>
+    <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-gray-900 leading-tight">{property.title}</h1>
+          <button className="ml-2 p-2 rounded-full border border-gray-200 bg-white hover:bg-gray-100 text-[#007882] shadow-sm transition-colors" aria-label="Save property">
+            <Heart className="h-5 w-5" />
+          </button>
         </div>
-
+        <div className="flex items-center gap-2">
+          <span className="text-2xl font-bold text-[#E94F1D]">{formatPrice(property.price, property.property_type)}</span>
+          <span className="ml-2 text-sm text-muted-foreground font-medium">{property.property_type === "월세" ? "Monthly Rent" : "Purchase"}</span>
+        </div>
+      </div>
+      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mt-2">
+        <span className="flex items-center gap-1"><MapPin className="h-4 w-4" />{property.address}</span>
+        <span className="flex items-center gap-1"><BedDouble className="h-4 w-4" />{property.bedrooms} Bed</span>
+        <span className="flex items-center gap-1"><Bath className="h-4 w-4" />{property.bathrooms} Bath</span>
+        <span className="flex items-center gap-1"><Maximize2 className="h-4 w-4" />{property.square_footage} sqft</span>
+      </div>
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Description</h3>
+        <p className="text-gray-700 whitespace-pre-line leading-relaxed">{property.description}</p>
+      </div>
+      {/* Features (legacy, keep for compatibility) */}
+      {Array.isArray(property.features) && property.features.length > 0 && (
         <div>
-          <h3 className="text-xl font-semibold mb-2">Description</h3>
-          <p className="text-muted-foreground whitespace-pre-line">
-            {property.description}
-          </p>
+          <h3 className="text-xl font-semibold mb-2">Features</h3>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {property.features.map((feature: string, index: number) => (
+              <li key={index} className="flex items-center">
+                <span className="mr-2">•</span>
+                {feature}
+              </li>
+            ))}
+          </ul>
         </div>
-
-        {property.features && property.features.length > 0 && (
-          <div>
-            <h3 className="text-xl font-semibold mb-2">Features</h3>
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {property.features.map((feature, index) => (
-                <li key={index} className="flex items-center">
-                  <span className="mr-2">•</span>
-                  {feature}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      )}
+    </div>
   );
 }

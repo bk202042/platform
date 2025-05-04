@@ -1,7 +1,7 @@
 "use client";
 
 import { PropertyListing } from "@/types/property";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bath, BedDouble, Home, Maximize, Wifi } from "lucide-react";
 
 interface PropertyFeaturesProps {
@@ -43,11 +43,9 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Interior Features */}
-      <Card>
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">
-            Interior Features
-          </CardTitle>
+          <CardTitle className="text-lg font-semibold">Interior Features</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -59,14 +57,11 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
             ))}
           </div>
         </CardContent>
-      </Card>
-
+      </div>
       {/* Building Amenities */}
-      <Card>
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">
-            Building Amenities
-          </CardTitle>
+          <CardTitle className="text-lg font-semibold">Building Amenities</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
@@ -78,14 +73,11 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
             ))}
           </ul>
         </CardContent>
-      </Card>
-
+      </div>
       {/* Exterior Features */}
-      <Card>
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">
-            Exterior Features
-          </CardTitle>
+          <CardTitle className="text-lg font-semibold">Exterior Features</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
@@ -97,14 +89,11 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
             ))}
           </ul>
         </CardContent>
-      </Card>
-
+      </div>
       {/* Additional Information */}
-      <Card>
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">
-            Additional Information
-          </CardTitle>
+          <CardTitle className="text-lg font-semibold">Additional Information</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
@@ -116,7 +105,7 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
             ))}
           </ul>
         </CardContent>
-      </Card>
+      </div>
     </div>
   );
 }

@@ -99,39 +99,45 @@ export default function PropertyPage() {
   const similarProperties: typeof property[] = [];
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <div className="container mx-auto py-8">
+    <div className="min-h-screen bg-[#f7f9fa]">
+      <div className="container mx-auto py-10">
         {/* Back button */}
         <div className="mb-6">
           <Link href="/">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="rounded-full border-gray-300 bg-white shadow-sm hover:bg-gray-50">
               ← Back to Home
             </Button>
           </Link>
         </div>
         {/* Main content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Left column - Main content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Gallery */}
-            <PropertyGallery property={property} />
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-4 sm:p-6">
+              <PropertyGallery property={property} />
+            </div>
             {/* Property details */}
-            <PropertyDetail property={property} />
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6">
+              <PropertyDetail property={property} />
+            </div>
             {/* Features */}
-            <div className="bg-white rounded-lg p-6 shadow-sm">
+            <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6">
               <h2 className="text-2xl font-semibold mb-6">Property Features</h2>
               <PropertyFeatures property={property} />
             </div>
           </div>
           {/* Right column - Sticky sidebar */}
           <div className="lg:col-span-1">
-            <div className="sticky top-8 space-y-6">
+            <div className="sticky top-8 space-y-8">
               {/* Request Info card */}
-              <Card className="p-6">
+              <Card className="p-6 border border-gray-200 rounded-2xl shadow-lg bg-white">
                 <RequestInfoForm property={property} />
               </Card>
               {/* Costs breakdown */}
-              <PropertyCosts property={property} />
+              <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6">
+                <PropertyCosts property={property} />
+              </div>
               {/* Similar properties */}
               {similarProperties.length > 0 && (
                 <Card className="p-6">

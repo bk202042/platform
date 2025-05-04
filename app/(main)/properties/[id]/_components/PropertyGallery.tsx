@@ -46,20 +46,26 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
     `Property image ${currentImageIndex + 1}`;
 
   return (
-    <div className="relative">
+    <div className="relative bg-white border border-gray-200 rounded-2xl shadow-lg p-2 sm:p-4">
+      {/* Price badge (example, can be replaced with dynamic value) */}
+      <div className="absolute top-4 left-4 z-10">
+        <span className="inline-block bg-[#eaf6f3] text-[#007882] text-sm font-semibold px-4 py-1 rounded-full shadow-sm border border-[#b2e2d6]">
+          For Sale
+        </span>
+      </div>
       {/* Main Image */}
-      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg">
+      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-gray-100">
         <Image
           src={currentImageUrl}
           alt={currentImageAlt}
           fill
           className="object-cover"
-          priority={currentImageIndex === 0} // Prioritize loading the first image
+          priority={currentImageIndex === 0}
         />
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white"
+          className="absolute top-4 right-4 bg-white/80 hover:bg-white text-[#007882] border border-gray-200 shadow-sm"
           onClick={() => setIsFullscreen(true)}
           aria-label="View fullscreen"
         >
@@ -70,7 +76,7 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white"
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#007882] border border-gray-200 shadow-sm"
               onClick={previousImage}
               aria-label="Previous image"
             >
@@ -79,7 +85,7 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#007882] border border-gray-200 shadow-sm"
               onClick={nextImage}
               aria-label="Next image"
             >
@@ -87,29 +93,23 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
             </Button>
           </>
         )}
-        <div className="absolute bottom-4 right-4 bg-black/50 px-3 py-1 rounded-full text-white text-sm">
+        <div className="absolute bottom-4 right-4 bg-white/80 px-3 py-1 rounded-full text-[#007882] text-sm border border-gray-200 shadow-sm">
           {currentImageIndex + 1} / {images.length}
         </div>
       </div>
-
       {/* Thumbnail Strip */}
       {images.length > 1 && (
-        <div className="flex gap-2 mt-2 overflow-x-auto pb-2">
+        <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
           {images.map((image, index) => (
             <button
-              // Use image id if available and valid, otherwise index
               key={image.id || `thumb-${index}`}
               onClick={() => setCurrentImageIndex(index)}
-              className={`relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden ${
-                currentImageIndex === index ? "ring-2 ring-primary" : ""
-              }`}
+              className={`relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden border-2 ${currentImageIndex === index ? "border-[#007882]" : "border-gray-200"}`}
               aria-label={`View image ${index + 1}`}
             >
               <Image
-                src={
-                  image.publicUrl || "/assets/images/property-placeholder.jpg"
-                } // Use publicUrl field
-                alt={image.alt_text || `Thumbnail ${index + 1}`} // Use alt_text
+                src={image.publicUrl || "/assets/images/property-placeholder.jpg"}
+                alt={image.alt_text || `Thumbnail ${index + 1}`}
                 fill
                 className="object-cover"
               />
@@ -117,21 +117,20 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
           ))}
         </div>
       )}
-
       {/* Fullscreen Dialog */}
       <Dialog open={isFullscreen} onOpenChange={setIsFullscreen}>
         <DialogContent className="max-w-7xl w-full h-[90vh] p-0">
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full bg-white rounded-2xl">
             <Image
-              src={currentImageUrl} // Use variable for current image URL
-              alt={currentImageAlt} // Use variable for current image alt text
+              src={currentImageUrl}
+              alt={currentImageAlt}
               fill
-              className="object-contain"
+              className="object-contain rounded-2xl"
             />
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white"
+              className="absolute top-4 right-4 bg-white/80 hover:bg-white text-[#007882] border border-gray-200 shadow-sm"
               onClick={() => setIsFullscreen(false)}
               aria-label="Close fullscreen"
             >
@@ -142,7 +141,7 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#007882] border border-gray-200 shadow-sm"
                   onClick={previousImage}
                   aria-label="Previous image"
                 >
@@ -151,7 +150,7 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#007882] border border-gray-200 shadow-sm"
                   onClick={nextImage}
                   aria-label="Next image"
                 >
@@ -159,7 +158,7 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
                 </Button>
               </>
             )}
-            <div className="absolute bottom-4 right-4 bg-black/50 px-3 py-1 rounded-full text-white text-sm">
+            <div className="absolute bottom-4 right-4 bg-white/80 px-3 py-1 rounded-full text-[#007882] text-sm border border-gray-200 shadow-sm">
               {currentImageIndex + 1} / {images.length}
             </div>
           </div>
