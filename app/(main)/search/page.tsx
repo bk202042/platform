@@ -8,11 +8,7 @@ export const metadata = {
   description: "Search for properties in Vietnam that match your criteria",
 };
 
-interface SearchPageProps {
-  searchParams: Record<string, string | string[] | undefined>;
-}
-
-export default function SearchPage({ searchParams }: SearchPageProps) {
+export default function SearchPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
   return (
     <PropertyDataProvider>
       <div className="py-8">
