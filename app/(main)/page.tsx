@@ -1,9 +1,15 @@
 import { getPropertyListings } from "@/lib/data/property";
 import { KoreanExpatriatesSection } from "@/components/sections/KoreanExpatriatesSection";
 import { HeroSection } from "@/components/sections/HeroSection";
-import { FeatureHighlightsSection } from "@/components/sections/FeatureHighlightsSection"; // Import the new section
+import { FeatureHighlightsSection } from "@/components/sections/FeatureHighlightsSection";
 import { ExploreSection } from "@/components/sections/ExploreSection";
-import { FeaturedPropertiesClient } from "./_components/FeaturedPropertiesClient"; // Import the new client component
+import dynamic from "next/dynamic";
+
+// Solution 2: Dynamic import with next/dynamic
+const FeaturedPropertiesClient = dynamic(
+  () => import("@/components/featured/FeaturedPropertiesClient").then(mod => mod.FeaturedPropertiesClient),
+  { ssr: true } // Enable server-side rendering for better performance
+);
 
 // This is now an async Server Component
 export default async function Home() {
