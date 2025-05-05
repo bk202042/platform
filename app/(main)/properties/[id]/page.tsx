@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   // Await the params Promise to get the ID
   const resolvedParams = await params;
   const property = await getPropertyById(resolvedParams.id);
-  
+
   if (!property) {
     return {
       title: 'Property Not Found',
@@ -31,22 +31,22 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function PropertyPage({ params }: { params: Promise<{ id: string }> }) {
   // Await the params Promise to get the ID
   const resolvedParams = await params;
-  
+
   // Fetch the property data using the ID from URL params
   const property = await getPropertyById(resolvedParams.id);
-  
+
   // If property is not found, trigger the not-found page
   if (!property) {
     notFound();
   }
-  
+
   // Fetch similar properties (optional) - using same property type with different ID
   // Only fetch properties of the same type, and we'll filter out the current one client-side
   const similarPropertiesResult = await getPropertyListings({
     propertyType: property.property_type,
     limit: 4 // Request one extra since we'll filter one out
   });
-  
+
   // Filter out the current property from the results and limit to 3 max
   const similarProperties = (similarPropertiesResult.data || [])
     .filter(p => p.id !== property.id)
@@ -109,7 +109,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
                         href={`/properties/${similarProperty.id}`}
                         className="block"
                       >
-                        <div className="border rounded-lg p-4 hover:bg-muted transition-colors">
+                        <div className="border border-gray-200 rounded-lg p-4 hover:bg-muted transition-colors">
                           <h4 className="font-medium line-clamp-1">
                             {similarProperty.title}
                           </h4>
