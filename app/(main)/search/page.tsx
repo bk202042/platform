@@ -8,7 +8,15 @@ export const metadata = {
   description: "Search for properties in Vietnam that match your criteria",
 };
 
-export default function SearchPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+// In Next.js 15.3.1, searchParams must be a Promise type
+export default async function SearchPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  // Await the searchParams Promise to access its values
+  const resolvedSearchParams = await searchParams;
+  
   return (
     <PropertyDataProvider>
       <div className="py-8">
@@ -25,7 +33,7 @@ export default function SearchPage({ searchParams }: { searchParams: { [key: str
             <Suspense fallback={<div>Loading...</div>}>
               <SearchResults
                 searchParams={Object.fromEntries(
-                  Object.entries(searchParams).map(([key, value]) => [
+                  Object.entries(resolvedSearchParams).map(([key, value]) => [
                     key,
                     Array.isArray(value)
                       ? value[0] ?? ''

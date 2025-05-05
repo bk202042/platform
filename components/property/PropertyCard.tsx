@@ -2,6 +2,7 @@
 
 import { memo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { PropertyListing } from "@/types/property";
 import {
   Card,
@@ -52,8 +53,7 @@ function PropertyCardComponent({
         (property.property_images &&
           property.property_images.length > 0 &&
           property.property_images[0].publicUrl) ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={
               property.primary_image ||
               (property.property_images &&
@@ -65,17 +65,17 @@ function PropertyCardComponent({
             className="w-full h-48 object-cover rounded-lg mb-2"
             width={384}
             height={192}
-            loading="lazy"
+            priority={false}
           />
         ) : (
           // fallback image
-          <img
+          <Image
             src="/next.svg"
             alt="No image available"
             className="w-full h-48 object-cover rounded-lg mb-2"
             width={384}
             height={192}
-            loading="lazy"
+            priority={false}
           />
         )}
         <CardTitle className="text-lg line-clamp-2">{property.title}</CardTitle>

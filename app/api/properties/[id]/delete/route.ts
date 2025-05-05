@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPropertyById, deleteProperty } from "@/lib/data/property";
 
+// Updated for Next.js 15.3.1 - params must be a Promise
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 /**
@@ -12,7 +13,9 @@ interface RouteParams {
  */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    const { id } = params;
+    // Await the params Promise
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
 
     // Validate UUID format
     const uuidRegex =
