@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Header } from "@/components/layout/Header"; // Import the Header
-import { Footer } from "@/components/layout/Footer"; // Import the Footer
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { Toaster } from "@/components/ui/sonner"; // Import Toaster component for notifications
 
 export const metadata: Metadata = {
   title: "Vietnam Property Platform | Find Your Perfect Home",
@@ -21,8 +22,9 @@ export default function RootLayout({
         className="antialiased bg-background text-foreground" // Use theme variables
       >
         <div className="relative flex min-h-screen flex-col bg-background">
-          <Header /> {/* Add the Header component */}
+          <Header />
           <main className="flex-1">{children}</main>
+          <Toaster />
           <Footer /> {/* Add the Footer component */}
         </div>
       </body>
