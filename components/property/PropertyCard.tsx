@@ -47,7 +47,7 @@ function PropertyCardComponent({
   distanceMeters,
 }: PropertyCardProps) {
   return (
-    <Card className="h-full flex flex-col transition-shadow hover:shadow-md">
+    <Card className="h-full flex flex-col transition-shadow hover:shadow-lg border border-gray-200 rounded-xl shadow-md">
       <CardHeader className="pb-2">
         {property.primary_image ||
         (property.property_images &&
@@ -62,7 +62,7 @@ function PropertyCardComponent({
               "/next.svg"
             }
             alt={property.title}
-            className="w-full h-48 object-cover rounded-lg mb-2"
+            className="w-full h-48 object-cover rounded-lg mb-3"
             width={384}
             height={192}
             priority={false}
@@ -72,14 +72,14 @@ function PropertyCardComponent({
           <Image
             src="/next.svg"
             alt="No image available"
-            className="w-full h-48 object-cover rounded-lg mb-2"
+            className="w-full h-48 object-cover rounded-lg mb-3"
             width={384}
             height={192}
             priority={false}
           />
         )}
-        <CardTitle className="text-lg line-clamp-2">{property.title}</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-lg font-semibold line-clamp-2">{property.title}</CardTitle>
+        <CardDescription className="text-muted-foreground">
           {property.address}
           {showDistance && distanceMeters && (
             <span className="ml-2 text-xs font-medium text-primary">
@@ -89,7 +89,7 @@ function PropertyCardComponent({
         </CardDescription>
       </CardHeader>
       <CardContent className="py-2 flex-grow">
-        <div className="space-y-2">
+        <div className="space-y-3">
           <p className="font-semibold text-lg">
             {formatPrice(property.price, property.property_type)}
             <span className="ml-2 text-sm font-normal text-muted-foreground">
@@ -97,17 +97,17 @@ function PropertyCardComponent({
             </span>
           </p>
           <div className="flex space-x-4 text-sm">
-            <div>
-              {property.bedrooms}{" "}
-              <span className="text-muted-foreground">Bed</span>
+            <div className="flex items-center">
+              <span className="font-medium">{property.bedrooms}</span>{" "}
+              <span className="text-muted-foreground ml-1">Bed</span>
             </div>
-            <div>
-              {property.bathrooms}{" "}
-              <span className="text-muted-foreground">Bath</span>
+            <div className="flex items-center">
+              <span className="font-medium">{property.bathrooms}</span>{" "}
+              <span className="text-muted-foreground ml-1">Bath</span>
             </div>
-            <div>
-              {property.square_footage}{" "}
-              <span className="text-muted-foreground">sqft</span>
+            <div className="flex items-center">
+              <span className="font-medium">{property.square_footage}</span>{" "}
+              <span className="text-muted-foreground ml-1">sqft</span>
             </div>
           </div>
           <p className="text-sm line-clamp-3 text-muted-foreground">
@@ -117,7 +117,9 @@ function PropertyCardComponent({
       </CardContent>
       <CardFooter className="pt-2">
         <Link href={`/properties/${property.id}`} className="w-full">
-          <Button variant="outline" className="w-full">
+          <Button 
+            variant="outline" 
+            className="w-full rounded-lg border-gray-300 bg-white hover:bg-gray-50 transition-colors">
             View Details
           </Button>
         </Link>

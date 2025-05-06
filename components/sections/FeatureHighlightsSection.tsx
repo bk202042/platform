@@ -42,33 +42,39 @@ const features: FeatureHighlight[] = [
 
 export function FeatureHighlightsSection() {
   return (
-    <section className="py-16 bg-zinc-50 dark:bg-zinc-900">
+    <section className="py-16 bg-[#f7f9fa]">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-zinc-900 dark:text-white">
-          See How We Can Help
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <Card
-              key={index}
-              className="text-center bg-white dark:bg-zinc-800 shadow-md hover:shadow-lg transition-shadow duration-300"
-            >
-              <CardHeader className="items-center">
-                <feature.icon className="h-12 w-12 text-primary mb-4" />
-                <CardTitle className="text-xl font-semibold text-zinc-900 dark:text-white">
-                  {feature.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-zinc-600 dark:text-zinc-300 mb-6">
-                  {feature.description}
-                </p>
-                <Button asChild variant="default">
-                  <Link href={feature.ctaLink}>{feature.ctaText}</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 mb-4">
+          <h2 className="text-2xl font-semibold text-center mb-8">
+            See How We Can Help
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <Card
+                key={index}
+                className="text-center bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+              >
+                <CardHeader className="items-center pb-2">
+                  <feature.icon className="h-10 w-10 text-primary mb-3" />
+                  <CardTitle className="text-lg font-semibold">
+                    {feature.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-6 text-sm">
+                    {feature.description}
+                  </p>
+                  <Button 
+                    asChild 
+                    variant="default" 
+                    className="rounded-lg font-medium"
+                  >
+                    <Link href={feature.ctaLink}>{feature.ctaText}</Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
     </section>

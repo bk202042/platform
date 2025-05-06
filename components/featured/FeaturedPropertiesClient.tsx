@@ -8,11 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import {
-  Building2,
-  Home as HomeIcon,
-  ArrowRight,
-} from "lucide-react";
+import { Building2, Home as HomeIcon, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PropertyListing } from "@/types/property";
 import Link from "next/link";
@@ -76,56 +72,60 @@ export function FeaturedPropertiesClient({
   const properties = activeTab === "rent" ? rentProperties : buyProperties;
 
   return (
-    <section className="w-full py-16 bg-background">
+    <section className="w-full py-16 bg-[#f7f9fa]">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight mb-2">
-              Featured Properties
-            </h2>
-            <p className="text-muted-foreground">
-              Discover {totalProperties}+ properties available in Korea
-            </p>
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 mb-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">
+                Featured Properties
+              </h2>
+              <p className="text-muted-foreground">
+                Discover {totalProperties}+ properties available in Korea
+              </p>
+            </div>
+            <AnimatedTabs
+              tabs={tabs}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
           </div>
-          <AnimatedTabs
-            tabs={tabs}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
-        </div>
 
-        {/* Carousel Implementation */}
-        <Carousel
-          opts={{
-            align: "start",
-            loop: properties.length > 3, // Loop only if enough items
-          }}
-          className="w-full"
-        >
-          <CarouselContent>
-            {properties.map((property: PropertyListing) => (
-              <CarouselItem
-                key={property.id}
-                className="md:basis-1/2 lg:basis-1/3"
-              >
-                <div className="p-1 h-full">
-                  <PropertyCard property={property} />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="hidden sm:flex" />
-          <CarouselNext className="hidden sm:flex" />
-        </Carousel>
+          {/* Carousel Implementation */}
+          <div className="bg-white rounded-xl">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: properties.length > 3, // Loop only if enough items
+              }}
+              className="w-full"
+            >
+              <CarouselContent>
+                {properties.map((property: PropertyListing) => (
+                  <CarouselItem
+                    key={property.id}
+                    className="md:basis-1/2 lg:basis-1/3"
+                  >
+                    <div className="p-1 h-full">
+                      <PropertyCard property={property} />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden sm:flex -left-4" />
+              <CarouselNext className="hidden sm:flex -right-4" />
+            </Carousel>
+          </div>
 
-        <div className="mt-10 flex justify-center">
-          <Link
-            href={`/search?propertyType=${activeTab === "rent" ? "월세" : "매매"}`}
-            className="group inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
-          >
-            View all properties
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
+          <div className="mt-8 flex justify-center">
+            <Link
+              href={`/search?propertyType=${activeTab === "rent" ? "월세" : "매매"}`}
+              className="group inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium"
+            >
+              View all properties
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </div>
         </div>
       </div>
     </section>

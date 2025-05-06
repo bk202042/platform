@@ -1,12 +1,16 @@
-'use client';
+"use client";
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { RequestInfoSchema, RequestInfo } from '@/lib/validation/request-info';
-import { toast } from 'sonner';
-import type { PropertyListing } from '@/types/property';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { RequestInfoSchema, RequestInfo } from "@/lib/validation/request-info";
+import { toast } from "sonner";
+import type { PropertyListing } from "@/types/property";
 
-export default function RequestInfoForm({ property }: { property: PropertyListing }) {
+export default function RequestInfoForm({
+  property,
+}: {
+  property: PropertyListing;
+}) {
   const {
     register,
     handleSubmit,
@@ -15,28 +19,28 @@ export default function RequestInfoForm({ property }: { property: PropertyListin
   } = useForm<RequestInfo>({
     resolver: zodResolver(RequestInfoSchema),
     defaultValues: {
-      name: '',
-      phone: '',
-      email: '',
+      name: "",
+      phone: "",
+      email: "",
       message: `I am interested in ${property.title} at ${property.address}`,
     },
   });
 
   const onSubmit = async (data: RequestInfo) => {
     try {
-      const res = await fetch('/api/request-info', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/request-info", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || 'Failed to send request');
+        throw new Error(errorData.error || "Failed to send request");
       }
-      toast.success('Your request has been sent! We\'ll get back to you soon.');
+      toast.success("Your request has been sent! We'll get back to you soon.");
       reset();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Something went wrong.');
+      toast.error(err instanceof Error ? err.message : "Something went wrong.");
     }
   };
 
@@ -53,7 +57,7 @@ export default function RequestInfoForm({ property }: { property: PropertyListin
           <input
             id="request-name"
             type="text"
-            {...register('name')}
+            {...register("name")}
             className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]"
             disabled={isSubmitting}
           />
@@ -73,7 +77,7 @@ export default function RequestInfoForm({ property }: { property: PropertyListin
           <input
             id="request-phone"
             type="tel"
-            {...register('phone')}
+            {...register("phone")}
             className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]"
             disabled={isSubmitting}
           />
@@ -94,7 +98,7 @@ export default function RequestInfoForm({ property }: { property: PropertyListin
         <input
           id="request-email"
           type="email"
-          {...register('email')}
+          {...register("email")}
           className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]"
           disabled={isSubmitting}
         />
@@ -114,7 +118,7 @@ export default function RequestInfoForm({ property }: { property: PropertyListin
         <textarea
           id="request-message"
           rows={4}
-          {...register('message')}
+          {...register("message")}
           className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]"
           disabled={isSubmitting}
         />
@@ -129,7 +133,7 @@ export default function RequestInfoForm({ property }: { property: PropertyListin
         className="w-full bg-[#007882] hover:bg-[#006670] text-white py-3 px-6 rounded-lg font-semibold transition-colors disabled:opacity-70"
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Sending...' : 'Request Info'}
+        {isSubmitting ? "Sending..." : "Request Info"}
       </button>
     </form>
   );

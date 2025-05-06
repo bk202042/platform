@@ -1,34 +1,44 @@
-import { notFound } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import Link from 'next/link';
-import PropertyDetail from './_components/PropertyDetail';
-import PropertyGallery from './_components/PropertyGallery';
-import PropertyFeatures from './_components/PropertyFeatures';
-import PropertyCosts from './_components/PropertyCosts';
-import RequestInfoForm from './_components/RequestInfoForm';
-import { getPropertyById, getPropertyListings } from '@/lib/data/property';
+import { notFound } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import Link from "next/link";
+import PropertyDetail from "./_components/PropertyDetail";
+import PropertyGallery from "./_components/PropertyGallery";
+import PropertyFeatures from "./_components/PropertyFeatures";
+import PropertyCosts from "./_components/PropertyCosts";
+import RequestInfoForm from "./_components/RequestInfoForm";
+import { getPropertyById, getPropertyListings } from "@/lib/data/property";
 
 // Generate metadata for the property page
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   // Await the params Promise to get the ID
   const resolvedParams = await params;
   const property = await getPropertyById(resolvedParams.id);
 
   if (!property) {
     return {
-      title: 'Property Not Found',
-      description: 'The requested property could not be found.'
+      title: "Property Not Found",
+      description: "The requested property could not be found.",
     };
   }
 
   return {
     title: `${property.title} | Vietnam Property Platform`,
-    description: property.description?.substring(0, 160) || `View details for ${property.title} located in ${property.address}`
+    description:
+      property.description?.substring(0, 160) ||
+      `View details for ${property.title} located in ${property.address}`,
   };
 }
 
-export default async function PropertyPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PropertyPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   // Await the params Promise to get the ID
   const resolvedParams = await params;
 
@@ -44,12 +54,12 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
   // Only fetch properties of the same type, and we'll filter out the current one client-side
   const similarPropertiesResult = await getPropertyListings({
     propertyType: property.property_type,
-    limit: 4 // Request one extra since we'll filter one out
+    limit: 4, // Request one extra since we'll filter one out
   });
 
   // Filter out the current property from the results and limit to 3 max
   const similarProperties = (similarPropertiesResult.data || [])
-    .filter(p => p.id !== property.id)
+    .filter((p) => p.id !== property.id)
     .slice(0, 3);
 
   return (
@@ -118,9 +128,9 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
                           </p>
                           <p className="font-medium mt-2">
                             ${similarProperty.price.toLocaleString()}
-                            {similarProperty.property_type === '월세'
-                              ? '/month'
-                              : ''}
+                            {similarProperty.property_type === "월세"
+                              ? "/month"
+                              : ""}
                           </p>
                         </div>
                       </Link>

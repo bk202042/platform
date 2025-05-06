@@ -36,9 +36,7 @@ interface PropertyDataProviderProps {
   children: ReactNode;
 }
 
-export function PropertyDataProvider({
-  children,
-}: PropertyDataProviderProps) {
+export function PropertyDataProvider({ children }: PropertyDataProviderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

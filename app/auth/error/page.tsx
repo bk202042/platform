@@ -8,7 +8,7 @@ import { useSearchParams } from "next/navigation";
 function ErrorMessage() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
-  
+
   return (
     <p className="text-[#D32F2F] text-base leading-relaxed">
       {error || "An error occurred during authentication"}
@@ -33,7 +33,13 @@ export default function AuthErrorPage() {
               Error Details
             </h3>
             {/* Wrap the component using useSearchParams in a Suspense boundary */}
-            <Suspense fallback={<p className="text-[#D32F2F] text-base leading-relaxed">Loading error details...</p>}>
+            <Suspense
+              fallback={
+                <p className="text-[#D32F2F] text-base leading-relaxed">
+                  Loading error details...
+                </p>
+              }
+            >
               <ErrorMessage />
             </Suspense>
           </div>

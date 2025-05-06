@@ -64,18 +64,9 @@ export function ExploreSection() {
           propertyCount={cities[0].propertyCount}
         />
 
-        {/* Testimonial Card */}
-        <Card className="p-6 flex flex-col justify-between h-full">
-          <div>
-            <h3 className="font-bold text-lg mb-2">Trulia User</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Vietnam Resident
-            </p>
-            <p className="text-muted-foreground">
-              I just moved to the neighborhood 2 years ago and love it!
-              It&apos;s a great mix of families, seniors and...
-            </p>
-          </div>
+        {/* Placeholder Card */}
+        <Card className="p-6 flex flex-col justify-center items-center h-full bg-muted">
+          {/* Empty placeholder for future content */}
         </Card>
 
         {/* Remaining City Cards */}

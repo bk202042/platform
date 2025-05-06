@@ -31,7 +31,7 @@ interface SearchFormProps {
 export default function SearchForm({ className, onSearch }: SearchFormProps) {
   const { searchParams, updateSearchParams, resetSearchParams } =
     usePropertyData();
-  const [, startTransition] = useTransition(); // Remove isPending
+  const [, startTransition] = useTransition();
 
   // Initialize form state from URL search params
   const [searchText, setSearchText] = useState(searchParams.search || "");
@@ -169,15 +169,15 @@ export default function SearchForm({ className, onSearch }: SearchFormProps) {
   };
 
   return (
-    <Card className={className}>
-      <CardHeader>
-        <CardTitle className="text-2xl">Find Your Property</CardTitle>
+    <Card className={`${className} border-gray-200 rounded-xl shadow-none`}>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xl font-semibold">Find Your Property</CardTitle>
         <CardDescription>
           Search for properties in Vietnam that match your criteria
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form className="space-y-5" onSubmit={handleSubmit}>
           {/* Search Text */}
           <div className="space-y-2">
             <label htmlFor="search" className="text-sm font-medium">
@@ -362,11 +362,20 @@ export default function SearchForm({ className, onSearch }: SearchFormProps) {
           </div>
         </form>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button variant="outline" onClick={handleReset}>
+      <CardFooter className="flex justify-between pt-2">
+        <Button 
+          variant="outline" 
+          onClick={handleReset}
+          className="rounded-lg border-gray-300 bg-white hover:bg-gray-50 transition-colors"
+        >
           Reset
         </Button>
-        <Button onClick={handleSubmit}>Search</Button>
+        <Button 
+          onClick={handleSubmit}
+          className="rounded-lg shadow-sm hover:shadow transition-all"
+        >
+          Search
+        </Button>
       </CardFooter>
     </Card>
   );

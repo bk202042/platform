@@ -1,6 +1,6 @@
 ---
-description: 
-globs: **/*.{js,ts,jsx,tsx,mdx,css}
+description:
+globs: ts,jsx,tsx,css,js
 alwaysApply: false
 ---
 # Tailwind CSS v4.1 Guide
