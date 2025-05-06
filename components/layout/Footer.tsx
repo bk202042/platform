@@ -137,11 +137,11 @@ export function Footer() {
         <div className="border-t border-gray-200 pt-8">
           <div className="text-center text-sm text-[#2A2A33]">
             <p className="mb-2">
-              © {currentYear} VinaProp. All rights reserved. Equal Housing
+              © {currentYear} VinaHome. All rights reserved. Equal Housing
               Opportunity.
             </p>
             <p className="text-xs">
-              VinaProp is committed to ensuring digital accessibility for
+              VinaHome is committed to ensuring digital accessibility for
               individuals with disabilities. We are continuously working to
               improve the accessibility of our web experience for everyone.
             </p>

@@ -34,13 +34,23 @@ export default async function SearchPage({
 
             <div className="lg:col-span-3">
               <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6">
-                <Suspense fallback={<div className="py-20 text-center text-muted-foreground">Loading properties...</div>}>
+                <Suspense
+                  fallback={
+                    <div className="py-20 text-center text-muted-foreground">
+                      Loading properties...
+                    </div>
+                  }
+                >
                   <SearchResults
                     searchParams={Object.fromEntries(
-                      Object.entries(resolvedSearchParams).map(([key, value]) => [
-                        key,
-                        Array.isArray(value) ? (value[0] ?? "") : (value ?? ""),
-                      ]),
+                      Object.entries(resolvedSearchParams).map(
+                        ([key, value]) => [
+                          key,
+                          Array.isArray(value)
+                            ? (value[0] ?? "")
+                            : (value ?? ""),
+                        ],
+                      ),
                     )}
                   />
                 </Suspense>

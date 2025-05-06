@@ -78,7 +78,9 @@ function PropertyCardComponent({
             priority={false}
           />
         )}
-        <CardTitle className="text-lg font-semibold line-clamp-2">{property.title}</CardTitle>
+        <CardTitle className="text-lg font-semibold line-clamp-2">
+          {property.title}
+        </CardTitle>
         <CardDescription className="text-muted-foreground">
           {property.address}
           {showDistance && distanceMeters && (
@@ -117,9 +119,10 @@ function PropertyCardComponent({
       </CardContent>
       <CardFooter className="pt-2">
         <Link href={`/properties/${property.id}`} className="w-full">
-          <Button 
-            variant="outline" 
-            className="w-full rounded-lg border-gray-300 bg-white hover:bg-gray-50 transition-colors">
+          <Button
+            variant="outline"
+            className="w-full rounded-lg border-gray-300 bg-white hover:bg-gray-50 transition-colors"
+          >
             View Details
           </Button>
         </Link>

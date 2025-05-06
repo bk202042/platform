@@ -64,9 +64,9 @@ export function FeatureHighlightsSection() {
                   <p className="text-muted-foreground mb-6 text-sm">
                     {feature.description}
                   </p>
-                  <Button 
-                    asChild 
-                    variant="default" 
+                  <Button
+                    asChild
+                    variant="default"
                     className="rounded-lg font-medium"
                   >
                     <Link href={feature.ctaLink}>{feature.ctaText}</Link>

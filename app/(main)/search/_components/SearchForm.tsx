@@ -171,7 +171,9 @@ export default function SearchForm({ className, onSearch }: SearchFormProps) {
   return (
     <Card className={`${className} border-gray-200 rounded-xl shadow-none`}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl font-semibold">Find Your Property</CardTitle>
+        <CardTitle className="text-xl font-semibold">
+          Find Your Property
+        </CardTitle>
         <CardDescription>
           Search for properties in Vietnam that match your criteria
         </CardDescription>
@@ -363,14 +365,14 @@ export default function SearchForm({ className, onSearch }: SearchFormProps) {
         </form>
       </CardContent>
       <CardFooter className="flex justify-between pt-2">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={handleReset}
           className="rounded-lg border-gray-300 bg-white hover:bg-gray-50 transition-colors"
         >
           Reset
         </Button>
-        <Button 
+        <Button
           onClick={handleSubmit}
           className="rounded-lg shadow-sm hover:shadow transition-all"
         >

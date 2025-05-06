@@ -9,7 +9,7 @@ This document outlines the minimal, KISS-aligned steps to add Supabase database 
 - **Create a Supabase project** via the Supabase dashboard.
 - **Enable PostGIS extension** for geospatial queries.
 - **Define schema**:
-  - `property_types` enum: `('월세', '전세', '매매')`
+  - `property_types` enum: `('월세','매매')`
   - `property_listings` table with fields:
     - `id` (UUID, PK)
     - `title` (text)
@@ -72,7 +72,7 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 ```
 
-- Add the following to `.env.local`:
+- Add the following to `.env`:
   ```
   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
@@ -131,7 +131,7 @@ export async function getPropertyListings(params) {
 | Step | File/Dir                     | Purpose                         |
 | ---- | ---------------------------- | ------------------------------- |
 | 1    | Supabase Dashboard           | Create DB, schema, RLS          |
-| 2    | .env.local                   | Store Supabase URL/key          |
+| 2    | .env                         | Store Supabase URL/key          |
 | 3    | lib/db.ts                    | Supabase client config          |
 | 4    | lib/data/property-listing.ts | DAL for property listings       |
 | 5    | app/api/properties/route.ts  | (Next step) API route using DAL |
