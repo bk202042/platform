@@ -1,6 +1,5 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -20,8 +19,14 @@ const cities: CitiesData[] = [
   {
     name: "Hanoi",
     imageUrl:
-      "https://images.unsplash.com/photo-1599708153386-62bf3489c821?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1509030450996-dd1a26dda07a?q=80&w=3023&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     propertyCount: 18,
+  },
+  {
+    name: "Hai Phong",
+    imageUrl:
+      "https://images.unsplash.com/photo-1570559120097-e6c3388329e6?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    propertyCount: 14,
   },
   {
     name: "Da Nang",
@@ -38,7 +43,7 @@ const cities: CitiesData[] = [
   {
     name: "Hoi An",
     imageUrl:
-      "https://images.unsplash.com/photo-1558185348-c1e6420aa7d8?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1558334466-afce6bf36c69?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     propertyCount: 6,
   },
 ];
@@ -57,20 +62,7 @@ export function ExploreSection() {
 
       {/* City Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* City Card 1 */}
-        <CityCard
-          name={cities[0].name}
-          imageUrl={cities[0].imageUrl}
-          propertyCount={cities[0].propertyCount}
-        />
-
-        {/* Placeholder Card */}
-        <Card className="p-6 flex flex-col justify-center items-center h-full bg-muted">
-          {/* Empty placeholder for future content */}
-        </Card>
-
-        {/* Remaining City Cards */}
-        {cities.slice(1).map((city, index) => (
+        {cities.map((city, index) => (
           <CityCard
             key={index}
             name={city.name}
