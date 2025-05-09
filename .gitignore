@@ -69,7 +69,7 @@ tasks/
 docs
 scripts
 .augment/
-.clinerules
+
 README-task-master.md
 .roo/
 .roomodes
