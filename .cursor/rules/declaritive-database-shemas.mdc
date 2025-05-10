@@ -1,8 +1,8 @@
 ---
-trigger: model_decision
-description: Guide to Supabase declarative schemas: Define DB state; system auto-generates versioned migrations. Covers creation, updates, deployment, dependencies, rollbacks, & limitations for developers
+description: Define DB state; system auto-generates versioned migrations. Covers creation, updates, deployment, dependencies, rollbacks, & limitations for developers
+globs:
+alwaysApply: false
 ---
-
 **Declarative database schemas**
 
 Manage your database schemas in one place and generate versioned migrations.
