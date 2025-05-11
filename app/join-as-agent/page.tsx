@@ -1,8 +1,9 @@
 import { Metadata } from 'next';
+import AgentRegistrationForm from './_components/AgentRegistrationForm';
 
 export const metadata: Metadata = {
   title: 'Join as an Agent | VinaHome',
-  description: 'Unlock your agency\'s full potential with VinaHome. Boost listings, generate leads, and close deals faster with our AI-powered platform.',
+  description: 'Unlock your agency&apos;s full potential with VinaHome. Boost listings, generate leads, and close deals faster with our AI-powered platform.',
 };
 
 export default function JoinAsAgentPage() {
@@ -56,7 +57,7 @@ export default function JoinAsAgentPage() {
             </li>
           </ul>
           <p className="mt-6 text-gray-600 italic">
-            Join forward-thinking agencies who are already transforming their business with VinaHome's innovative tools.
+            Join forward-thinking agencies who are already transforming their business with VinaHome&apos;s innovative tools.
           </p>
         </div>
       </div>
@@ -79,17 +80,10 @@ export default function JoinAsAgentPage() {
         </div>
       </div>
 
-      <div className="text-center mb-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Ready to elevate your agency?</h2>
-        <div className="inline-flex rounded-md shadow">
-          <a
-            href="mailto:hello@vinahome.cc"
-            className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-          >
-            Get Started Today
-          </a>
-        </div>
-        <p className="mt-6 text-base text-gray-500">
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Ready to elevate your agency?</h2>
+        <AgentRegistrationForm />
+        <p className="mt-6 text-base text-gray-500 text-center">
           👉 Visit <a href="https://www.vinahome.cc" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">www.vinahome.cc</a> or email <a href="mailto:hello@vinahome.cc" className="text-blue-600 hover:underline">hello@vinahome.cc</a>
         </p>
       </div>
