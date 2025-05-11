@@ -1,56 +1,57 @@
-"use client";
+'use client';
 
-import Link from "next/link";
+import Link from 'next/link';
 
 const footerSections = [
   {
-    title: "Popular Searches",
+    title: 'Popular Searches',
     links: [
-      { name: "Apartments Near Me", href: "#" },
-      { name: "Houses for Sale", href: "#" },
-      { name: "Condos for Rent", href: "#" },
+      { name: 'Apartments Near Me', href: '/search?type=apartment' },
+      { name: 'Houses for Sale', href: '/search?type=house&sale=true' },
+      { name: 'Condos for Rent', href: '/search?type=condo&rent=true' },
     ],
   },
   {
-    title: "Explore",
+    title: 'Explore',
     links: [
-      { name: "Cities", href: "#" },
-      { name: "FAQs", href: "#" },
-      { name: "Guides", href: "#" },
+      { name: 'Cities', href: '/search' },
+      { name: 'FAQs', href: '#' },
+      { name: 'For Sale', href: '/search?sale=true' },
     ],
   },
   {
-    title: "About",
+    title: 'About',
     links: [
-      { name: "About Us", href: "#" },
-      { name: "Contact", href: "#" },
+      { name: 'About Us', href: '#' },
+      { name: 'Contact', href: '#' },
+      { name: 'Join as an agent', href: '/join-as-agent' },
     ],
   },
   {
-    title: "Legal",
+    title: 'Legal',
     links: [
-      { name: "Terms of Use", href: "/terms-of-use" },
-      { name: "Privacy Policy", href: "/privacy-policy" },
+      { name: 'Terms of Use', href: '/terms-of-use' },
+      { name: 'Privacy Policy', href: '/privacy-policy' },
     ],
   },
 ];
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-50 border-t border-gray-200">
-      <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+    <footer className="bg-gray-50 border-t border-gray-100">
+      <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-wrap justify-between">
           {footerSections.map((section) => (
-            <div key={section.title}>
-              <h3 className="text-sm font-semibold text-gray-500 tracking-wider uppercase">
+            <div key={section.title} className="mb-6 w-1/2 md:w-auto md:mb-0">
+              <h3 className="text-sm font-semibold text-gray-600">
                 {section.title}
               </h3>
-              <ul role="list" className="mt-4 space-y-4">
+              <ul className="mt-4 space-y-2">
                 {section.links.map((link) => (
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="text-base text-gray-500 hover:text-gray-900"
+                      className="text-xs text-gray-500 hover:text-gray-700"
                     >
                       {link.name}
                     </Link>
@@ -60,15 +61,10 @@ export default function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-12 border-t border-gray-200 pt-8">
-          <p className="text-base text-gray-400 xl:text-center">
-            &copy; {new Date().getFullYear()} VinaHome. All rights reserved.
-            Equal Housing Opportunity.
-          </p>
-          <p className="mt-4 text-xs text-gray-400 xl:text-center">
-            VinaHome is committed to ensuring digital accessibility for
-            individuals with disabilities. We are continuously working to
-            improve the accessibility of our web experience for everyone.
+        <div className="mt-6 pt-6 border-t border-gray-100 text-center text-xs text-gray-400">
+          <p>&copy; {new Date().getFullYear()} VinaHome. All Rights Reserved. Equal Housing Opportunity.</p>
+          <p className="mt-1 text-[10px]">
+            VinaHome is committed to ensuring digital accessibility for individuals with disabilities. We are continuously working to improve the accessibility of our web experience for everyone.
           </p>
         </div>
       </div>
