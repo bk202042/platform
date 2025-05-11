@@ -22,7 +22,6 @@ node_modules/
 # Rules
 .cursor/rules/
 .cursor/
-.windsurf/
-.windsurf/rules/
+
 .github/
 .github/prompts/
