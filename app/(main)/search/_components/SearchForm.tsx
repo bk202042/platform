@@ -67,35 +67,35 @@ export default function SearchForm({ className, onSearch }: SearchFormProps) {
 
     // Validate numeric fields
     if (minPrice && isNaN(Number(minPrice))) {
-      newErrors.minPrice = "Must be a valid number";
+      newErrors.minPrice = "유효한 숫자여야 합니다";
     }
 
     if (maxPrice && isNaN(Number(maxPrice))) {
-      newErrors.maxPrice = "Must be a valid number";
+      newErrors.maxPrice = "유효한 숫자여야 합니다";
     }
 
     if (minBedrooms && isNaN(Number(minBedrooms))) {
-      newErrors.minBedrooms = "Must be a valid number";
+      newErrors.minBedrooms = "유효한 숫자여야 합니다";
     }
 
     if (minBathrooms && isNaN(Number(minBathrooms))) {
-      newErrors.minBathrooms = "Must be a valid number";
+      newErrors.minBathrooms = "유효한 숫자여야 합니다";
     }
 
     if ((lat && !lng) || (!lat && lng)) {
-      newErrors.location = "Both latitude and longitude are required";
+      newErrors.location = "위도와 경도 모두 필요합니다";
     }
 
     if (lat && isNaN(Number(lat))) {
-      newErrors.lat = "Must be a valid number";
+      newErrors.lat = "유효한 숫자여야 합니다";
     }
 
     if (lng && isNaN(Number(lng))) {
-      newErrors.lng = "Must be a valid number";
+      newErrors.lng = "유효한 숫자여야 합니다";
     }
 
     if (radiusMeters && isNaN(Number(radiusMeters))) {
-      newErrors.radiusMeters = "Must be a valid number";
+      newErrors.radiusMeters = "유효한 숫자여야 합니다";
     }
 
     setErrors(newErrors);
@@ -121,7 +121,6 @@ export default function SearchForm({ className, onSearch }: SearchFormProps) {
     if (minBathrooms) params.minBathrooms = minBathrooms;
     if (lat && lng) {
       params.lat = lat;
-      params.lng = lng;
       params.lng = lng;
       params.radiusMeters = radiusMeters;
     }
@@ -171,23 +170,19 @@ export default function SearchForm({ className, onSearch }: SearchFormProps) {
   return (
     <Card className={`${className} border-gray-200 rounded-xl shadow-none`}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl font-semibold">
-          Find Your Property
-        </CardTitle>
-        <CardDescription>
-          Search for properties in Vietnam that match your criteria
-        </CardDescription>
+        <CardTitle className="text-xl font-semibold">매물 찾기</CardTitle>
+        <CardDescription>조건에 맞는 베트남 매물 검색</CardDescription>
       </CardHeader>
       <CardContent>
         <form className="space-y-5" onSubmit={handleSubmit}>
           {/* Search Text */}
           <div className="space-y-2">
             <label htmlFor="search" className="text-sm font-medium">
-              Search
+              검색
             </label>
             <Input
               id="search"
-              placeholder="Enter keywords..."
+              placeholder="키워드 입력..."
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
             />
@@ -196,189 +191,185 @@ export default function SearchForm({ className, onSearch }: SearchFormProps) {
           {/* Property Type */}
           <div className="space-y-2">
             <label htmlFor="propertyType" className="text-sm font-medium">
-              Property Type
+              매물 유형
             </label>
             <Select
               value={propertyType}
-              onValueChange={(value) => setPropertyType(value as PropertyType)}
+              onValueChange={(value) =>
+                setPropertyType(value as PropertyType | "any")
+              }
             >
               <SelectTrigger id="propertyType">
-                <SelectValue placeholder="Select property type" />
+                <SelectValue placeholder="매물 유형 선택" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="any">Any</SelectItem>
-                <SelectItem value="월세">Monthly Rent (월세)</SelectItem>
-                <SelectItem value="매매">Purchase (매매)</SelectItem>
+                <SelectItem value="any">모든 매물 유형</SelectItem>
+                <SelectItem value="월세">월세</SelectItem>
+                <SelectItem value="매매">매매</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {/* Price Range */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label htmlFor="minPrice" className="text-sm font-medium">
-                Min Price (USD)
-              </label>
-              <Input
-                id="minPrice"
-                placeholder="Min price"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                className={errors.minPrice ? "border-red-500" : ""}
-              />
-              {errors.minPrice && (
-                <p className="text-xs text-red-500">{errors.minPrice}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="maxPrice" className="text-sm font-medium">
-                Max Price (USD)
-              </label>
-              <Input
-                id="maxPrice"
-                placeholder="Max price"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                className={errors.maxPrice ? "border-red-500" : ""}
-              />
-              {errors.maxPrice && (
-                <p className="text-xs text-red-500">{errors.maxPrice}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Bedrooms & Bathrooms */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label htmlFor="minBedrooms" className="text-sm font-medium">
-                Min Bedrooms
-              </label>
-              <Input
-                id="minBedrooms"
-                placeholder="Min bedrooms"
-                value={minBedrooms}
-                onChange={(e) => setMinBedrooms(e.target.value)}
-                className={errors.minBedrooms ? "border-red-500" : ""}
-              />
-              {errors.minBedrooms && (
-                <p className="text-xs text-red-500">{errors.minBedrooms}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="minBathrooms" className="text-sm font-medium">
-                Min Bathrooms
-              </label>
-              <Input
-                id="minBathrooms"
-                placeholder="Min bathrooms"
-                value={minBathrooms}
-                onChange={(e) => setMinBathrooms(e.target.value)}
-                className={errors.minBathrooms ? "border-red-500" : ""}
-              />
-              {errors.minBathrooms && (
-                <p className="text-xs text-red-500">{errors.minBathrooms}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Location Search */}
+          {/* Min Price */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Location (Optional)</label>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Input
-                  id="lat"
-                  placeholder="Latitude"
-                  value={lat}
-                  onChange={(e) => setLat(e.target.value)}
-                  className={
-                    errors.lat || errors.location ? "border-red-500" : ""
-                  }
-                />
-                {errors.lat && (
-                  <p className="text-xs text-red-500">{errors.lat}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Input
-                  id="lng"
-                  placeholder="Longitude"
-                  value={lng}
-                  onChange={(e) => setLng(e.target.value)}
-                  className={
-                    errors.lng || errors.location ? "border-red-500" : ""
-                  }
-                />
-                {errors.lng && (
-                  <p className="text-xs text-red-500">{errors.lng}</p>
-                )}
-              </div>
-            </div>
-            {errors.location && (
-              <p className="text-xs text-red-500">{errors.location}</p>
+            <label htmlFor="minPrice" className="text-sm font-medium">
+              최소 가격
+            </label>
+            <Input
+              id="minPrice"
+              placeholder="예: 50000"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+            />
+            {errors.minPrice && (
+              <p className="text-red-500 text-xs">{errors.minPrice}</p>
+            )}
+          </div>
+
+          {/* Max Price */}
+          <div className="space-y-2">
+            <label htmlFor="maxPrice" className="text-sm font-medium">
+              최대 가격
+            </label>
+            <Input
+              id="maxPrice"
+              placeholder="예: 100000"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+            />
+            {errors.maxPrice && (
+              <p className="text-red-500 text-xs">{errors.maxPrice}</p>
+            )}
+          </div>
+
+          {/* Min Bedrooms */}
+          <div className="space-y-2">
+            <label htmlFor="minBedrooms" className="text-sm font-medium">
+              최소 침실 수
+            </label>
+            <Input
+              id="minBedrooms"
+              placeholder="예: 2"
+              value={minBedrooms}
+              onChange={(e) => setMinBedrooms(e.target.value)}
+            />
+            {errors.minBedrooms && (
+              <p className="text-red-500 text-xs">{errors.minBedrooms}</p>
+            )}
+          </div>
+
+          {/* Min Bathrooms */}
+          <div className="space-y-2">
+            <label htmlFor="minBathrooms" className="text-sm font-medium">
+              최소 욕실 수
+            </label>
+            <Input
+              id="minBathrooms"
+              placeholder="예: 1"
+              value={minBathrooms}
+              onChange={(e) => setMinBathrooms(e.target.value)}
+            />
+            {errors.minBathrooms && (
+              <p className="text-red-500 text-xs">{errors.minBathrooms}</p>
+            )}
+          </div>
+
+          {/* Location (Latitude) */}
+          <div className="space-y-2">
+            <label htmlFor="lat" className="text-sm font-medium">
+              위치 (위도)
+            </label>
+            <Input
+              id="lat"
+              placeholder="예: 10.7769"
+              value={lat}
+              onChange={(e) => setLat(e.target.value)}
+            />
+            {errors.lat && <p className="text-red-500 text-xs">{errors.lat}</p>}
+          </div>
+
+          {/* Location (Longitude) */}
+          <div className="space-y-2">
+            <label htmlFor="lng" className="text-sm font-medium">
+              위치 (경도)
+            </label>
+            <Input
+              id="lng"
+              placeholder="예: 106.7009"
+              value={lng}
+              onChange={(e) => setLng(e.target.value)}
+            />
+            {errors.lng && <p className="text-red-500 text-xs">{errors.lng}</p>}
+          </div>
+          {errors.location && (
+            <p className="text-red-500 text-xs">{errors.location}</p>
+          )}
+
+          {/* Radius (meters) */}
+          <div className="space-y-2">
+            <label htmlFor="radiusMeters" className="text-sm font-medium">
+              반경 (미터)
+            </label>
+            <Input
+              id="radiusMeters"
+              placeholder="예: 5000"
+              value={radiusMeters}
+              onChange={(e) => setRadiusMeters(e.target.value)}
+            />
+            {errors.radiusMeters && (
+              <p className="text-red-500 text-xs">{errors.radiusMeters}</p>
             )}
           </div>
 
           {/* Features */}
-          <div className="space-y-4">
-            <label className="text-sm font-medium block mb-2">Features</label>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-              {Object.keys(features).map((key) => (
-                <div key={key} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`feature-${key}`}
-                    checked={features[key]}
-                    onCheckedChange={(checked) => {
-                      setFeatures((prev) => ({
-                        ...prev,
-                        [key]: Boolean(checked),
-                      }));
-                    }}
-                  />
-                  <Label
-                    htmlFor={`feature-${key}`}
-                    className="text-sm font-normal capitalize"
-                  >
-                    {key}
-                  </Label>
-                </div>
-              ))}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">시설</label>
+            <div className="space-y-2 pt-1">
+              {(Object.keys(features) as Array<keyof typeof features>).map(
+                (featureKey) => (
+                  <div key={featureKey} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={featureKey}
+                      checked={features[featureKey]}
+                      onCheckedChange={(checked) =>
+                        setFeatures((prev) => ({
+                          ...prev,
+                          [featureKey]: !!checked,
+                        }))
+                      }
+                    />
+                    <Label htmlFor={featureKey} className="font-normal">
+                      {featureKey === "parking"
+                        ? "주차"
+                        : featureKey === "pool"
+                          ? "수영장"
+                          : featureKey === "gym"
+                            ? "헬스장"
+                            : featureKey === "furnished"
+                              ? "가구 포함"
+                              : featureKey}
+                    </Label>
+                  </div>
+                ),
+              )}
             </div>
           </div>
 
-          {/* Radius */}
-          <div className="space-y-2">
-            <label htmlFor="radiusMeters" className="text-sm font-medium">
-              Search Radius (meters)
-            </label>
-            <Input
-              id="radiusMeters"
-              placeholder="Radius in meters"
-              value={radiusMeters}
-              onChange={(e) => setRadiusMeters(e.target.value)}
-              className={errors.radiusMeters ? "border-red-500" : ""}
-            />
-            {errors.radiusMeters && (
-              <p className="text-xs text-red-500">{errors.radiusMeters}</p>
-            )}
-          </div>
+          <CardFooter className="flex flex-col sm:flex-row justify-between p-0 pt-4 space-y-2 sm:space-y-0 sm:space-x-2">
+            <Button type="submit" className="w-full sm:w-auto">
+              필터 적용
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleReset}
+              className="w-full sm:w-auto"
+            >
+              필터 초기화
+            </Button>
+          </CardFooter>
         </form>
       </CardContent>
-      <CardFooter className="flex justify-between pt-2">
-        <Button
-          variant="outline"
-          onClick={handleReset}
-          className="rounded-lg border-gray-300 bg-white hover:bg-gray-50 transition-colors"
-        >
-          Reset
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          className="rounded-lg shadow-sm hover:shadow transition-all"
-        >
-          Search
-        </Button>
-      </CardFooter>
     </Card>
   );
 }

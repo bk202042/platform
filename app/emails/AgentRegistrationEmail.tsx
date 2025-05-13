@@ -7,51 +7,77 @@ export default function AgentRegistrationEmail({
   salesVolume,
   email,
   phone,
-  zipCode
+  zipCode,
 }: AgentRegistrationData) {
   return (
     <div
-      style={{ fontFamily: "Arial, sans-serif", maxWidth: "600px", margin: "0 auto" }}
+      style={{
+        fontFamily: "Arial, sans-serif",
+        maxWidth: "600px",
+        margin: "0 auto",
+      }}
     >
-      <h2 style={{ color: "#2563eb", borderBottom: "1px solid #ddd", paddingBottom: "10px" }}>
-        New Agent Registration
+      <h2
+        style={{
+          color: "#2563eb",
+          borderBottom: "1px solid #ddd",
+          paddingBottom: "10px",
+        }}
+      >
+        신규 중개인 등록
       </h2>
-      
+
       <p style={{ fontSize: "16px", lineHeight: "1.5" }}>
-        A new agent has registered to join VinaHome. Here are their details:
+        VinaHome에 새로운 중개인이 등록했습니다. 세부 정보는 다음과 같습니다:
       </p>
-      
-      <div style={{ background: "#f8fafc", padding: "15px", borderRadius: "5px", marginBottom: "20px" }}>
+
+      <div
+        style={{
+          background: "#f8fafc",
+          padding: "15px",
+          borderRadius: "5px",
+          marginBottom: "20px",
+        }}
+      >
         <p style={{ margin: "8px 0" }}>
-          <strong>Name:</strong> {firstName} {lastName}
+          <strong>이름:</strong> {firstName} {lastName}
         </p>
         <p style={{ margin: "8px 0" }}>
-          <strong>Sales Volume:</strong> {salesVolume}
+          <strong>판매량:</strong> {salesVolume}
         </p>
         <p style={{ margin: "8px 0" }}>
-          <strong>Email:</strong> {email}
+          <strong>이메일:</strong> {email}
         </p>
         {phone && (
           <p style={{ margin: "8px 0" }}>
-            <strong>Phone:</strong> {phone}
+            <strong>전화번호:</strong> {phone}
           </p>
         )}
         {zipCode && (
           <p style={{ margin: "8px 0" }}>
-            <strong>ZIP Code:</strong> {zipCode}
+            <strong>우편번호:</strong> {zipCode}
           </p>
         )}
         <p style={{ margin: "8px 0" }}>
-          <strong>Registration Date:</strong> {new Date().toLocaleString()}
+          <strong>등록일:</strong> {new Date().toLocaleString()}
         </p>
       </div>
-      
+
       <p style={{ fontSize: "16px", color: "#4b5563" }}>
-        Please reach out to this agent as soon as possible to discuss the partnership.
+        파트너십에 대해 논의하기 위해 가능한 한 빨리 이 중개인에게 연락해
+        주십시오.
       </p>
-      
-      <div style={{ marginTop: "30px", borderTop: "1px solid #ddd", paddingTop: "15px", fontSize: "14px", color: "#6b7280" }}>
-        <p>VinaHome - Your AI-Powered Partner in Real Estate Success</p>
+
+      <div
+        style={{
+          marginTop: "30px",
+          borderTop: "1px solid #ddd",
+          paddingTop: "15px",
+          fontSize: "14px",
+          color: "#6b7280",
+        }}
+      >
+        <p>VinaHome - 부동산 성공을 위한 AI 기반 파트너</p>
       </div>
     </div>
   );

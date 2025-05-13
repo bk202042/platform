@@ -17,20 +17,20 @@ export default function RequestInfoEmail({
     <div
       style={{ fontFamily: "Arial, sans-serif", color: "#222", fontSize: 16 }}
     >
-      <h2>New Property Info Request</h2>
+      <h2>새 부동산 정보 요청</h2>
       <p>
-        <strong>Name:</strong> {name}
+        <strong>이름:</strong> {name}
       </p>
       <p>
-        <strong>Email:</strong> {email}
+        <strong>이메일:</strong> {email}
       </p>
       {phone && (
         <p>
-          <strong>Phone:</strong> {phone}
+          <strong>전화번호:</strong> {phone}
         </p>
       )}
       <p>
-        <strong>Message:</strong>
+        <strong>메시지:</strong>
       </p>
       <p>{message}</p>
     </div>

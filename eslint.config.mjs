@@ -11,6 +11,12 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    files: ["app/emails/**/*.tsx", "app/emails/**/*.ts"],
+    rules: {
+      "react/no-inline-styles": "off",
+    },
+  },
 ];
 
 export default eslintConfig;

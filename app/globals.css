@@ -53,6 +53,14 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --radius: var(--radius);
+
+  /* Define the default sans-serif font family */
+  --font-family-sans:
+    var(--font-noto-sans-kr), /* System UI fonts as fallbacks */ system-ui,
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    /* More fallbacks including common Korean system fonts */
+      "Apple SD Gothic Neo",
+    "Malgun Gothic", "Nanum Gothic", /* Generic fallback */ sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -141,11 +149,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+  font-family: var(--font-family-sans); /* Use the CSS variable directly */
 }

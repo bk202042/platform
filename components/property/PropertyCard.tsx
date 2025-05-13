@@ -24,7 +24,7 @@ interface PropertyCardProps {
 const formatPrice = (price: number, type: string) => {
   // Use a fixed locale to avoid hydration mismatches
   if (type === "월세") {
-    return `$${price.toLocaleString("en-US")}/month`;
+    return `$${price.toLocaleString("en-US")}/월`;
   } else {
     return `$${price.toLocaleString("en-US")}`;
   }
@@ -34,10 +34,10 @@ const formatPrice = (price: number, type: string) => {
 const formatDistance = (meters: number) => {
   // Use fixed precision to avoid hydration mismatches
   if (meters < 1000) {
-    return `${Math.floor(meters)}m away`;
+    return `${Math.floor(meters)}m 거리`;
   } else {
     const km = meters / 1000;
-    return `${(Math.floor(km * 10) / 10).toFixed(1)}km away`;
+    return `${(Math.floor(km * 10) / 10).toFixed(1)}km 거리`;
   }
 };
 
@@ -71,7 +71,7 @@ function PropertyCardComponent({
           // fallback image
           <Image
             src="/next.svg"
-            alt="No image available"
+            alt="이미지 없음"
             className="w-full h-48 object-cover rounded-lg mb-3"
             width={384}
             height={192}
@@ -95,21 +95,21 @@ function PropertyCardComponent({
           <p className="font-semibold text-lg">
             {formatPrice(property.price, property.property_type)}
             <span className="ml-2 text-sm font-normal text-muted-foreground">
-              {property.property_type === "월세" ? "Monthly Rent" : "Purchase"}
+              {property.property_type === "월세" ? "월세" : "매매"}
             </span>
           </p>
           <div className="flex space-x-4 text-sm">
             <div className="flex items-center">
               <span className="font-medium">{property.bedrooms}</span>{" "}
-              <span className="text-muted-foreground ml-1">Bed</span>
+              <span className="text-muted-foreground ml-1">침실</span>
             </div>
             <div className="flex items-center">
               <span className="font-medium">{property.bathrooms}</span>{" "}
-              <span className="text-muted-foreground ml-1">Bath</span>
+              <span className="text-muted-foreground ml-1">욕실</span>
             </div>
             <div className="flex items-center">
               <span className="font-medium">{property.square_footage}</span>{" "}
-              <span className="text-muted-foreground ml-1">sqft</span>
+              <span className="text-muted-foreground ml-1">제곱피트</span>
             </div>
           </div>
           <p className="text-sm line-clamp-3 text-muted-foreground">
@@ -123,7 +123,7 @@ function PropertyCardComponent({
             variant="outline"
             className="w-full rounded-lg border-gray-300 bg-white hover:bg-gray-50 transition-colors"
           >
-            View Details
+            자세히 보기
           </Button>
         </Link>
       </CardFooter>

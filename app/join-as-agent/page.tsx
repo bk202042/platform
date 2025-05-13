@@ -1,9 +1,10 @@
-import { Metadata } from 'next';
-import AgentRegistrationForm from './_components/AgentRegistrationForm';
+import { Metadata } from "next";
+import AgentRegistrationForm from "./_components/AgentRegistrationForm";
 
 export const metadata: Metadata = {
-  title: 'Join as an Agent | VinaHome',
-  description: 'Unlock your agency&apos;s full potential with VinaHome. Boost listings, generate leads, and close deals faster with our AI-powered platform.',
+  title: "중개인으로 가입 | VinaHome",
+  description:
+    "VinaHome과 함께 중개업소의 잠재력을 최대한 발휘하세요. AI 기반 플랫폼으로 매물 홍보, 리드 생성, 거래 성사 속도를 높이세요.",
 };
 
 export default function JoinAsAgentPage() {
@@ -11,86 +12,161 @@ export default function JoinAsAgentPage() {
     <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-4">
-          Unlock Your Agency&apos;s Full Potential with VinaHome!
+          VinaHome과 함께 중개업소의 잠재력을 최대한 발휘하세요!
         </h1>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          Are you a real estate agency ready to <span className="font-bold">boost your listings, generate more leads, and close deals faster</span>?
+          부동산 중개업소이신가요?{" "}
+          <span className="font-bold">
+            매물 홍보 효과를 높이고, 더 많은 리드를 생성하며, 거래를 더 빨리
+            성사시킬
+          </span>{" "}
+          준비가 되셨나요?
         </p>
         <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
-          Discover the all-in-one platform designed to <span className="font-bold">streamline operations, supercharge marketing, and grow your business effortlessly</span> with cutting-edge AI technology.
+          최첨단 AI 기술로{" "}
+          <span className="font-bold">
+            운영을 간소화하고, 마케팅을 강화하며, 비즈니스를 손쉽게 성장시키도록
+          </span>{" "}
+          설계된 올인원 플랫폼을 만나보세요.
         </p>
       </div>
 
       <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-12">
         <div className="bg-blue-600 px-6 py-4">
-          <h2 className="text-xl font-semibold text-white">Why Choose VinaHome?</h2>
+          <h2 className="text-xl font-semibold text-white">
+            왜 VinaHome을 선택해야 할까요?
+          </h2>
         </div>
         <div className="p-6">
           <ul className="space-y-4">
             <li className="flex items-start">
-              <span className="flex-shrink-0 h-6 w-6 text-blue-600 mr-2">✓</span>
-              <span><span className="font-semibold">AI-powered property matching</span> that connects the right buyers to your listings</span>
+              <span className="flex-shrink-0 h-6 w-6 text-blue-600 mr-2">
+                ✓
+              </span>
+              <span>
+                <span className="font-semibold">AI 기반 부동산 매칭</span>으로
+                적합한 구매자와 매물을 연결합니다
+              </span>
             </li>
             <li className="flex items-start">
-              <span className="flex-shrink-0 h-6 w-6 text-blue-600 mr-2">✓</span>
-              <span><span className="font-semibold">Advanced CRM & lead management</span> system that prioritizes high-potential clients</span>
+              <span className="flex-shrink-0 h-6 w-6 text-blue-600 mr-2">
+                ✓
+              </span>
+              <span>
+                <span className="font-semibold">고급 CRM 및 리드 관리</span>{" "}
+                시스템으로 잠재력이 높은 고객을 우선적으로 관리합니다
+              </span>
             </li>
             <li className="flex items-start">
-              <span className="flex-shrink-0 h-6 w-6 text-blue-600 mr-2">✓</span>
-              <span><span className="font-semibold">Automated marketing campaigns</span> tailored to your specific property portfolio</span>
+              <span className="flex-shrink-0 h-6 w-6 text-blue-600 mr-2">
+                ✓
+              </span>
+              <span>
+                <span className="font-semibold">자동화된 마케팅 캠페인</span>을
+                특정 부동산 포트폴리오에 맞게 조정합니다
+              </span>
             </li>
             <li className="flex items-start">
-              <span className="flex-shrink-0 h-6 w-6 text-blue-600 mr-2">✓</span>
-              <span><span className="font-semibold">Professional photography services</span> included at no extra cost (3 properties monthly)</span>
+              <span className="flex-shrink-0 h-6 w-6 text-blue-600 mr-2">
+                ✓
+              </span>
+              <span>
+                <span className="font-semibold">전문 사진 촬영 서비스</span>{" "}
+                추가 비용 없이 포함 (월 3개 매물)
+              </span>
             </li>
             <li className="flex items-start">
-              <span className="flex-shrink-0 h-6 w-6 text-blue-600 mr-2">✓</span>
-              <span><span className="font-semibold">AI-driven market analysis</span> to optimize pricing strategies</span>
+              <span className="flex-shrink-0 h-6 w-6 text-blue-600 mr-2">
+                ✓
+              </span>
+              <span>
+                <span className="font-semibold">AI 기반 시장 분석</span>으로
+                가격 책정 전략을 최적화합니다
+              </span>
             </li>
             <li className="flex items-start">
-              <span className="flex-shrink-0 h-6 w-6 text-blue-600 mr-2">✓</span>
-              <span><span className="font-semibold">Seamless transaction tracking</span> with paperless documentation</span>
+              <span className="flex-shrink-0 h-6 w-6 text-blue-600 mr-2">
+                ✓
+              </span>
+              <span>
+                <span className="font-semibold">
+                  종이 없는 문서화로 원활한 거래 추적
+                </span>
+              </span>
             </li>
             <li className="flex items-start">
-              <span className="flex-shrink-0 h-6 w-6 text-blue-600 mr-2">✓</span>
-              <span><span className="font-semibold">Zero platform fees for 6 months</span> for early adopters</span>
+              <span className="flex-shrink-0 h-6 w-6 text-blue-600 mr-2">
+                ✓
+              </span>
+              <span>
+                <span className="font-semibold">
+                  얼리 어답터를 위한 6개월 플랫폼 수수료 면제
+                </span>
+              </span>
             </li>
           </ul>
           <p className="mt-6 text-gray-600 italic">
-            Join forward-thinking agencies who are already transforming their business with VinaHome&apos;s innovative tools.
+            VinaHome의 혁신적인 도구로 이미 비즈니스를 변화시키고 있는 미래
+            지향적인 중개업소와 함께하세요.
           </p>
         </div>
       </div>
 
       <div className="bg-gray-50 rounded-lg p-6 mb-12">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">First 100 agencies receive:</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          선착순 100개 중개업소 특별 혜택:
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white p-4 rounded shadow">
-            <h3 className="font-medium text-gray-900">Premium tablet PC</h3>
+            <h3 className="font-medium text-gray-900">프리미엄 태블릿 PC</h3>
           </div>
           <div className="bg-white p-4 rounded shadow">
-            <h3 className="font-medium text-gray-900">Custom agency profile development</h3>
+            <h3 className="font-medium text-gray-900">
+              맞춤형 중개업소 프로필 개발 지원
+            </h3>
           </div>
           <div className="bg-white p-4 rounded shadow">
-            <h3 className="font-medium text-gray-900">3 free AI marketing consultation sessions</h3>
+            <h3 className="font-medium text-gray-900">
+              AI 마케팅 컨설팅 3회 무료 제공
+            </h3>
           </div>
           <div className="bg-white p-4 rounded shadow">
-            <h3 className="font-medium text-gray-900">Complete digital infrastructure setup</h3>
+            <h3 className="font-medium text-gray-900">
+              완벽한 디지털 인프라 구축 지원
+            </h3>
           </div>
         </div>
       </div>
 
       <div className="mb-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Ready to elevate your agency?</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+          중개업소를 한 단계 발전시킬 준비가 되셨나요?
+        </h2>
         <AgentRegistrationForm />
         <p className="mt-6 text-base text-gray-500 text-center">
-          👉 Visit <a href="https://www.vinahome.cc" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">www.vinahome.cc</a> or email <a href="mailto:hello@vinahome.cc" className="text-blue-600 hover:underline">hello@vinahome.cc</a>
+          👉{" "}
+          <a
+            href="https://www.vinahome.cc"
+            className="text-blue-600 hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            www.vinahome.cc
+          </a>
+          를 방문하시거나{" "}
+          <a
+            href="mailto:hello@vinahome.cc"
+            className="text-blue-600 hover:underline"
+          >
+            hello@vinahome.cc
+          </a>
+          로 이메일을 보내주세요.
         </p>
       </div>
 
       <div className="text-center border-t border-gray-200 pt-8">
         <p className="text-lg font-semibold text-blue-600">
-          VinaHome - Your AI-Powered Partner in Real Estate Success
+          VinaHome - 부동산 성공을 위한 AI 기반 파트너
         </p>
       </div>
     </div>

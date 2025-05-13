@@ -21,16 +21,16 @@ export async function generateMetadata({
 
   if (!property) {
     return {
-      title: "Property Not Found",
-      description: "The requested property could not be found.",
+      title: "매물을 찾을 수 없습니다",
+      description: "요청하신 매물을 찾을 수 없습니다.",
     };
   }
 
   return {
-    title: `${property.title} | Vietnam Property Platform`,
+    title: `${property.title} | VinaHome 부동산 플랫폼`,
     description:
       property.description?.substring(0, 160) ||
-      `View details for ${property.title} located in ${property.address}`,
+      `${property.address}에 위치한 ${property.title}의 상세 정보 보기`,
   };
 }
 
@@ -73,7 +73,7 @@ export default async function PropertyPage({
               size="sm"
               className="rounded-full border-gray-300 bg-white shadow-sm hover:bg-gray-50"
             >
-              ← Back to Home
+              ← 홈으로 돌아가기
             </Button>
           </Link>
         </div>
@@ -91,7 +91,7 @@ export default async function PropertyPage({
             </div>
             {/* Features */}
             <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6">
-              <h2 className="text-2xl font-semibold mb-6">Property Features</h2>
+              <h2 className="text-2xl font-semibold mb-6">매물 특징</h2>
               <PropertyFeatures property={property} />
             </div>
           </div>
@@ -109,9 +109,7 @@ export default async function PropertyPage({
               {/* Similar properties */}
               {similarProperties.length > 0 && (
                 <Card className="p-6 border border-gray-200 rounded-2xl shadow-lg bg-white">
-                  <h3 className="text-lg font-semibold mb-4">
-                    Similar Properties
-                  </h3>
+                  <h3 className="text-lg font-semibold mb-4">유사한 매물</h3>
                   <div className="space-y-4">
                     {similarProperties.map((similarProperty) => (
                       <Link
@@ -129,7 +127,7 @@ export default async function PropertyPage({
                           <p className="font-medium mt-2">
                             ${similarProperty.price.toLocaleString()}
                             {similarProperty.property_type === "월세"
-                              ? "/month"
+                              ? " /월"
                               : ""}
                           </p>
                         </div>

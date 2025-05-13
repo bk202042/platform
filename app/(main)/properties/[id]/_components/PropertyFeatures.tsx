@@ -11,32 +11,32 @@ interface PropertyFeaturesProps {
 export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
   const featureSections = {
     interior: [
-      { icon: BedDouble, label: `${property.bedrooms} Bedrooms` },
-      { icon: Bath, label: `${property.bathrooms} Bathrooms` },
-      { icon: Maximize, label: `${property.square_footage} Sq Ft` },
-      { icon: Home, label: "Modern Kitchen" },
-      { icon: Wifi, label: "High-Speed Internet" },
+      { icon: BedDouble, label: `${property.bedrooms} 침실` },
+      { icon: Bath, label: `${property.bathrooms} 욕실` },
+      { icon: Maximize, label: `${property.square_footage} 평방피트` },
+      { icon: Home, label: "현대식 주방" },
+      { icon: Wifi, label: "초고속 인터넷" },
     ],
     building: [
-      "Elevator Access",
-      "Fitness Center",
-      "Package Receiving",
-      "Security System",
-      "Parking Available",
+      "엘리베이터 이용 가능",
+      "헬스장",
+      "택배 수령 서비스",
+      "보안 시스템",
+      "주차 가능",
     ],
     exterior: [
-      "Private Balcony",
-      "Garden Access",
-      "BBQ Area",
-      "Swimming Pool",
-      "Children's Playground",
+      "개인 발코니",
+      "정원 이용 가능",
+      "BBQ 공간",
+      "수영장",
+      "어린이 놀이터",
     ],
     additional: [
-      "24/7 Security",
-      "Pet Friendly",
-      "Close to Public Transport",
-      "Near International Schools",
-      "Shopping Centers Nearby",
+      "24시간 보안",
+      "반려동물 동반 가능",
+      "대중교통 인접",
+      "국제학교 인근",
+      "쇼핑센터 인근",
     ],
   };
 
@@ -45,9 +45,7 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
       {/* Interior Features */}
       <div className="bg-white border border-gray-200 rounded-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">
-            Interior Features
-          </CardTitle>
+          <CardTitle className="text-lg font-semibold">내부 특징</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -63,9 +61,7 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
       {/* Building Amenities */}
       <div className="bg-white border border-gray-200 rounded-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">
-            Building Amenities
-          </CardTitle>
+          <CardTitle className="text-lg font-semibold">건물 편의시설</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
@@ -81,9 +77,7 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
       {/* Exterior Features */}
       <div className="bg-white border border-gray-200 rounded-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">
-            Exterior Features
-          </CardTitle>
+          <CardTitle className="text-lg font-semibold">외부 특징</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
@@ -99,9 +93,7 @@ export default function PropertyFeatures({ property }: PropertyFeaturesProps) {
       {/* Additional Information */}
       <div className="bg-white border border-gray-200 rounded-2xl shadow-lg">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">
-            Additional Information
-          </CardTitle>
+          <CardTitle className="text-lg font-semibold">추가 정보</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">

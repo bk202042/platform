@@ -9,16 +9,16 @@ interface PropertyCostsProps {
 
 export default function PropertyCosts({ property }: PropertyCostsProps) {
   const monthlyCosts = [
-    { label: "Base rent", amount: property.price },
-    { label: "Parking fee", amount: 5 },
-    { label: "Pet fee (if applicable)", amount: 40 },
+    { label: "기본 임대료", amount: property.price },
+    { label: "주차비", amount: 5 },
+    { label: "반려동물 요금 (해당 시)", amount: 40 },
   ];
 
   const oneTimeCosts = [
-    { label: "Security deposit", amount: property.price * 2 },
-    { label: "Application fee", amount: 50 },
-    { label: "Administrative fee", amount: 300 },
-    { label: "Pet deposit (if applicable)", amount: 500 },
+    { label: "보증금", amount: property.price * 2 },
+    { label: "신청비", amount: 50 },
+    { label: "관리비", amount: 300 },
+    { label: "반려동물 보증금 (해당 시)", amount: 500 },
   ];
 
   const formatCurrency = (amount: number) => {
@@ -36,11 +36,11 @@ export default function PropertyCosts({ property }: PropertyCostsProps) {
   return (
     <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-900">Costs & Fees</h2>
+        <h2 className="text-xl font-bold text-gray-900">비용 및 수수료</h2>
       </div>
       {/* Monthly Costs */}
       <div className="mb-6">
-        <h4 className="font-semibold mb-3 text-gray-800">Monthly Costs</h4>
+        <h4 className="font-semibold mb-3 text-gray-800">월간 비용</h4>
         <div className="space-y-2">
           {monthlyCosts.map((cost) => (
             <div key={cost.label} className="flex justify-between text-sm">
@@ -50,14 +50,14 @@ export default function PropertyCosts({ property }: PropertyCostsProps) {
           ))}
           <Separator className="my-2" />
           <div className="flex justify-between font-semibold text-gray-900">
-            <span>Total Monthly Costs</span>
+            <span>총 월간 비용</span>
             <span>{formatCurrency(totalMonthlyCosts)}</span>
           </div>
         </div>
       </div>
       {/* One-time Costs */}
       <div className="mb-6">
-        <h4 className="font-semibold mb-3 text-gray-800">One-time Costs</h4>
+        <h4 className="font-semibold mb-3 text-gray-800">일회성 비용</h4>
         <div className="space-y-2">
           {oneTimeCosts.map((cost) => (
             <div key={cost.label} className="flex justify-between text-sm">
@@ -69,10 +69,11 @@ export default function PropertyCosts({ property }: PropertyCostsProps) {
       </div>
       <div className="text-xs text-muted-foreground">
         <p>
-          * Prices shown are estimates. Additional costs and fees may apply.
+          * 표시된 가격은 예상 금액이며, 추가 비용 및 수수료가 발생할 수
+          있습니다.
         </p>
-        <p>* Pet fees and deposits only apply to pet owners.</p>
-        <p>* Security deposit is typically two months&apos; rent.</p>
+        <p>* 반려동물 요금 및 보증금은 반려동물 소유자에게만 적용됩니다.</p>
+        <p>* 보증금은 일반적으로 2개월치 임대료입니다.</p>
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ export default function PropertyDetail({ property }: PropertyDetailProps) {
   // Format price based on property type
   const formatPrice = (price: number, type: string) => {
     if (type === "월세") {
-      return `$${price.toLocaleString()}/month`;
+      return `$${price.toLocaleString()}/월`;
     } else {
       return `$${price.toLocaleString()}`;
     }
@@ -26,7 +26,7 @@ export default function PropertyDetail({ property }: PropertyDetailProps) {
           </h1>
           <button
             className="ml-2 p-2 rounded-full border border-gray-200 bg-white hover:bg-gray-100 text-[#007882] shadow-sm transition-colors"
-            aria-label="Save property"
+            aria-label="매물 저장"
           >
             <Heart className="h-5 w-5" />
           </button>
@@ -36,7 +36,7 @@ export default function PropertyDetail({ property }: PropertyDetailProps) {
             {formatPrice(property.price, property.property_type)}
           </span>
           <span className="ml-2 text-sm text-muted-foreground font-medium">
-            {property.property_type === "월세" ? "Monthly Rent" : "Purchase"}
+            {property.property_type === "월세" ? "월세" : "매매"}
           </span>
         </div>
       </div>
@@ -47,19 +47,19 @@ export default function PropertyDetail({ property }: PropertyDetailProps) {
         </span>
         <span className="flex items-center gap-1">
           <BedDouble className="h-4 w-4" />
-          {property.bedrooms} Bed
+          {property.bedrooms} 침실
         </span>
         <span className="flex items-center gap-1">
           <Bath className="h-4 w-4" />
-          {property.bathrooms} Bath
+          {property.bathrooms} 욕실
         </span>
         <span className="flex items-center gap-1">
           <Maximize2 className="h-4 w-4" />
-          {property.square_footage} sqft
+          {property.square_footage} 평방피트
         </span>
       </div>
       <div>
-        <h3 className="text-lg font-semibold mb-2">Description</h3>
+        <h3 className="text-lg font-semibold mb-2">설명</h3>
         <p className="text-gray-700 whitespace-pre-line leading-relaxed">
           {property.description}
         </p>
@@ -67,7 +67,7 @@ export default function PropertyDetail({ property }: PropertyDetailProps) {
       {/* Features (legacy, keep for compatibility) */}
       {Array.isArray(property.features) && property.features.length > 0 && (
         <div>
-          <h3 className="text-xl font-semibold mb-2">Features</h3>
+          <h3 className="text-xl font-semibold mb-2">특징</h3>
           <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {property.features.map((feature: string, index: number) => (
               <li key={index} className="flex items-center">

@@ -47,14 +47,14 @@ export default function SearchResults({
       const response = await fetch(`/api/properties?${queryString}`);
 
       if (!response.ok) {
-        throw new Error("Failed to fetch properties");
+        throw new Error("매물을 가져오는데 실패했습니다");
       }
 
       const data: SearchResponse = await response.json();
 
       if (!data.success) {
         // Throw a generic error as 'message' might not exist on the response
-        throw new Error("API returned unsuccessful status");
+        throw new Error("API에서 성공적이지 않은 상태를 반환했습니다");
       }
 
       setResults(data.data);
@@ -62,7 +62,7 @@ export default function SearchResults({
     } catch (err) {
       console.error("Error fetching properties:", err);
       setError(
-        err instanceof Error ? err.message : "An unknown error occurred",
+        err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다",
       );
     } finally {
       setLoading(false);
@@ -100,7 +100,7 @@ export default function SearchResults({
       <Card className={className}>
         <CardContent className="pt-6">
           <div className="text-center text-red-500">
-            <p>Error: {error}</p>
+            <p>오류: {error}</p>
           </div>
         </CardContent>
       </Card>
@@ -113,7 +113,7 @@ export default function SearchResults({
         <CardContent className="pt-6">
           <div className="text-center">
             <p className="text-muted-foreground">
-              No properties found matching your criteria.
+              조건에 맞는 매물을 찾을 수 없습니다.
             </p>
           </div>
         </CardContent>
@@ -125,8 +125,7 @@ export default function SearchResults({
     <div className={className}>
       <div className="mb-4">
         <h2 className="text-xl font-semibold">
-          {pagination.total}{" "}
-          {pagination.total === 1 ? "Property" : "Properties"} Found
+          총 ${pagination.total}개의 매물을 찾았습니다.
         </h2>
       </div>
 
@@ -139,7 +138,7 @@ export default function SearchResults({
       {pagination.hasMore && (
         <div className="mt-8 flex justify-center">
           <Button onClick={loadMore} variant="outline">
-            Load More
+            더 불러오기
           </Button>
         </div>
       )}

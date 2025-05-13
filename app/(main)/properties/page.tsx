@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/card";
 
 export const metadata = {
-  title: "All Properties | Vietnam Property Platform",
-  description: "Browse all available properties in Vietnam",
+  title: "모든 매물 | VinaHome 부동산 플랫폼",
+  description: "베트남의 모든 매물을 둘러보세요",
 };
 
 export default async function PropertiesPage() {
@@ -21,7 +21,7 @@ export default async function PropertiesPage() {
   // Format price based on property type
   const formatPrice = (price: number, type: string) => {
     if (type === "월세") {
-      return `$${price.toLocaleString()}/month`;
+      return `$${price.toLocaleString()}/월`;
     } else {
       return `$${price.toLocaleString()}`;
     }
@@ -30,15 +30,15 @@ export default async function PropertiesPage() {
   return (
     <div className="py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">All Properties</h1>
+        <h1 className="text-3xl font-bold">모든 매물</h1>
         <Link href="/search">
-          <Button>Advanced Search</Button>
+          <Button>상세 검색</Button>
         </Link>
       </div>
 
       {result.data.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No properties found.</p>
+          <p className="text-muted-foreground">매물을 찾을 수 없습니다.</p>
         </div>
       ) : (
         <>
@@ -56,23 +56,21 @@ export default async function PropertiesPage() {
                     <p className="font-semibold text-lg">
                       {formatPrice(property.price, property.property_type)}
                       <span className="ml-2 text-sm font-normal text-muted-foreground">
-                        {property.property_type === "월세"
-                          ? "Monthly Rent"
-                          : "Purchase"}
+                        {property.property_type === "월세" ? "월세" : "매매"}
                       </span>
                     </p>
                     <div className="flex space-x-4 text-sm">
                       <div>
                         {property.bedrooms}{" "}
-                        <span className="text-muted-foreground">Bed</span>
+                        <span className="text-muted-foreground">침실</span>
                       </div>
                       <div>
                         {property.bathrooms}{" "}
-                        <span className="text-muted-foreground">Bath</span>
+                        <span className="text-muted-foreground">욕실</span>
                       </div>
                       <div>
                         {property.square_footage}{" "}
-                        <span className="text-muted-foreground">sqft</span>
+                        <span className="text-muted-foreground">평방피트</span>
                       </div>
                     </div>
                     <p className="text-sm line-clamp-3 text-muted-foreground">
@@ -83,7 +81,7 @@ export default async function PropertiesPage() {
                 <CardFooter className="pt-2">
                   <Link href={`/properties/${property.id}`} className="w-full">
                     <Button variant="outline" className="w-full">
-                      View Details
+                      상세 보기
                     </Button>
                   </Link>
                 </CardFooter>
@@ -94,7 +92,7 @@ export default async function PropertiesPage() {
           {result.hasMore && (
             <div className="flex justify-center">
               <Link href="/search">
-                <Button variant="outline">View More Properties</Button>
+                <Button variant="outline">더 많은 매물 보기</Button>
               </Link>
             </div>
           )}

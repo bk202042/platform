@@ -73,13 +73,13 @@ export function Header() {
               href="/search"
               className="px-3 py-2 font-medium text-sm text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors"
             >
-              Buy
+              매매
             </Link>
             <Link
               href="/properties"
               className="px-3 py-2 font-medium text-sm text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors"
             >
-              Rent
+              임대
             </Link>
           </nav>
         </div>
@@ -114,7 +114,7 @@ export function Header() {
                       onClick={() => router.push("/admin/profile")}
                       className="cursor-pointer w-full text-left"
                     >
-                      Profile
+                      프로필
                     </button>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
@@ -123,7 +123,7 @@ export function Header() {
                       className="cursor-pointer w-full text-left flex items-center gap-2"
                     >
                       <Heart className="h-4 w-4" />
-                      <span>Saved Homes</span>
+                      <span>저장된 매물</span>
                     </button>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -131,7 +131,7 @@ export function Header() {
                     className="cursor-pointer text-red-600"
                     onClick={handleSignOut}
                   >
-                    Sign Out
+                    로그아웃
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -140,12 +140,12 @@ export function Header() {
             <div className="flex items-center space-x-4">
               <Link href="/auth/sign-in">
                 <button className="px-3 py-2 font-medium text-sm text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors">
-                  Sign In
+                  로그인
                 </button>
               </Link>
               <Link href="/auth/sign-up">
                 <button className="px-3 py-2 font-medium text-sm text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors">
-                  Sign Up
+                  회원가입
                 </button>
               </Link>
             </div>

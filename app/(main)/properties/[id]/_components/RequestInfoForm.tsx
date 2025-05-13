@@ -22,7 +22,7 @@ export default function RequestInfoForm({
       name: "",
       phone: "",
       email: "",
-      message: `I am interested in ${property.title} at ${property.address}`,
+      message: `${property.title} (${property.address} 소재)에 관심이 있습니다`,
     },
   });
 
@@ -35,12 +35,12 @@ export default function RequestInfoForm({
       });
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to send request");
+        throw new Error(errorData.error || "요청을 보내지 못했습니다");
       }
-      toast.success("Your request has been sent! We'll get back to you soon.");
+      toast.success("요청이 전송되었습니다! 곧 연락드리겠습니다.");
       reset();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Something went wrong.");
+      toast.error(err instanceof Error ? err.message : "문제가 발생했습니다.");
     }
   };
 
@@ -52,7 +52,7 @@ export default function RequestInfoForm({
             htmlFor="request-name"
             className="block text-sm font-semibold text-gray-700 mb-1"
           >
-            Name
+            이름
           </label>
           <input
             id="request-name"
@@ -72,7 +72,7 @@ export default function RequestInfoForm({
             htmlFor="request-phone"
             className="block text-sm font-semibold text-gray-700 mb-1"
           >
-            Phone
+            전화번호
           </label>
           <input
             id="request-phone"
@@ -93,7 +93,7 @@ export default function RequestInfoForm({
           htmlFor="request-email"
           className="block text-sm font-semibold text-gray-700 mb-1"
         >
-          Email
+          이메일
         </label>
         <input
           id="request-email"
@@ -113,7 +113,7 @@ export default function RequestInfoForm({
           htmlFor="request-message"
           className="block text-sm font-semibold text-gray-700 mb-1"
         >
-          Message
+          메시지
         </label>
         <textarea
           id="request-message"
@@ -133,7 +133,7 @@ export default function RequestInfoForm({
         className="w-full bg-[#007882] hover:bg-[#006670] text-white py-3 px-6 rounded-lg font-semibold transition-colors disabled:opacity-70"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Sending..." : "Request Info"}
+        {isSubmitting ? "전송 중..." : "정보 요청"}
       </button>
     </form>
   );

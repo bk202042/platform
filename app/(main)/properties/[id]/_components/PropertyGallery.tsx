@@ -43,14 +43,14 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
     "/assets/images/property-placeholder.jpg";
   const currentImageAlt =
     images[currentImageIndex]?.alt_text ||
-    `Property image ${currentImageIndex + 1}`;
+    `매물 이미지 ${currentImageIndex + 1}`;
 
   return (
     <div className="relative bg-white border border-gray-200 rounded-2xl shadow-lg p-2 sm:p-4">
       {/* Price badge (example, can be replaced with dynamic value) */}
       <div className="absolute top-4 left-4 z-10">
         <span className="inline-block bg-[#eaf6f3] text-[#007882] text-sm font-semibold px-4 py-1 rounded-full shadow-sm border border-[#b2e2d6]">
-          For Sale
+          판매 중
         </span>
       </div>
       {/* Main Image */}
@@ -67,7 +67,7 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
           size="icon"
           className="absolute top-4 right-4 bg-white/80 hover:bg-white text-[#007882] border border-gray-200 shadow-sm"
           onClick={() => setIsFullscreen(true)}
-          aria-label="View fullscreen"
+          aria-label="전체 화면으로 보기"
         >
           <Expand className="h-5 w-5" />
         </Button>
@@ -78,7 +78,7 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
               size="icon"
               className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#007882] border border-gray-200 shadow-sm"
               onClick={previousImage}
-              aria-label="Previous image"
+              aria-label="이전 이미지"
             >
               <ChevronLeft className="h-6 w-6" />
             </Button>
@@ -87,7 +87,7 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
               size="icon"
               className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#007882] border border-gray-200 shadow-sm"
               onClick={nextImage}
-              aria-label="Next image"
+              aria-label="다음 이미지"
             >
               <ChevronRight className="h-6 w-6" />
             </Button>
@@ -105,13 +105,13 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
               key={image.id || `thumb-${index}`}
               onClick={() => setCurrentImageIndex(index)}
               className={`relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden border-2 ${currentImageIndex === index ? "border-[#007882]" : "border-gray-200"}`}
-              aria-label={`View image ${index + 1}`}
+              aria-label={`이미지 ${index + 1} 보기`}
             >
               <Image
                 src={
                   image.publicUrl || "/assets/images/property-placeholder.jpg"
                 }
-                alt={image.alt_text || `Thumbnail ${index + 1}`}
+                alt={image.alt_text || `썸네일 ${index + 1}`}
                 fill
                 className="object-cover"
               />
@@ -134,7 +134,7 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
               size="icon"
               className="absolute top-4 right-4 bg-white/80 hover:bg-white text-[#007882] border border-gray-200 shadow-sm"
               onClick={() => setIsFullscreen(false)}
-              aria-label="Close fullscreen"
+              aria-label="전체 화면 닫기"
             >
               <X className="h-5 w-5" />
             </Button>
@@ -145,7 +145,7 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
                   size="icon"
                   className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#007882] border border-gray-200 shadow-sm"
                   onClick={previousImage}
-                  aria-label="Previous image"
+                  aria-label="이전 이미지"
                 >
                   <ChevronLeft className="h-6 w-6" />
                 </Button>
@@ -154,7 +154,7 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
                   size="icon"
                   className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#007882] border border-gray-200 shadow-sm"
                   onClick={nextImage}
-                  aria-label="Next image"
+                  aria-label="다음 이미지"
                 >
                   <ChevronRight className="h-6 w-6" />
                 </Button>

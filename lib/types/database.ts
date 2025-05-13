@@ -18,7 +18,7 @@ export interface Database {
           phone: string;
           sales_volume: string;
           zip_code: string;
-          status: 'pending' | 'approved' | 'rejected';
+          status: "pending" | "approved" | "rejected";
           notes?: string;
           created_at: string;
           updated_at?: string;
@@ -32,7 +32,7 @@ export interface Database {
           phone: string;
           sales_volume: string;
           zip_code: string;
-          status?: 'pending' | 'approved' | 'rejected';
+          status?: "pending" | "approved" | "rejected";
           notes?: string;
           created_at?: string;
           updated_at?: string;
@@ -46,7 +46,7 @@ export interface Database {
           phone?: string;
           sales_volume?: string;
           zip_code?: string;
-          status?: 'pending' | 'approved' | 'rejected';
+          status?: "pending" | "approved" | "rejected";
           notes?: string;
           created_at?: string;
           updated_at?: string;
