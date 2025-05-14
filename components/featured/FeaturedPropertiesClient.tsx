@@ -65,8 +65,8 @@ export function FeaturedPropertiesClient({
   const [activeTab, setActiveTab] = useState("rent");
 
   const tabs = [
-    { id: "rent", label: "For Rent", icon: <Building2 className="h-4 w-4" /> },
-    { id: "buy", label: "For Sale", icon: <HomeIcon className="h-4 w-4" /> },
+    { id: "rent", label: "월세", icon: <Building2 className="h-4 w-4" /> },
+    { id: "buy", label: "매매", icon: <HomeIcon className="h-4 w-4" /> },
   ];
 
   const properties = activeTab === "rent" ? rentProperties : buyProperties;
@@ -77,11 +77,9 @@ export function FeaturedPropertiesClient({
         <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6 mb-10">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
             <div>
-              <h2 className="text-2xl font-semibold mb-2">
-                Featured Properties
-              </h2>
+              <h2 className="text-2xl font-semibold mb-2">추천 매물</h2>
               <p className="text-muted-foreground">
-                Discover {totalProperties}+ properties available in Korea
+                한국에서 {totalProperties}개 이상의 매물을 확인하세요
               </p>
             </div>
             <AnimatedTabs
@@ -122,7 +120,7 @@ export function FeaturedPropertiesClient({
               href={`/search?propertyType=${activeTab === "rent" ? "월세" : "매매"}`}
               className="group inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium"
             >
-              View all properties
+              모든 매물 보기
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>

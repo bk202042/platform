@@ -43,9 +43,9 @@ export function HeroSection() {
       {/* Content */}
       <div className="relative z-20 container mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[600px] text-center">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-12 max-w-3xl leading-tight drop-shadow-md">
-          Discover a place
+          살고 싶은 곳을
           <br />
-          you&apos;ll love to live
+          발견하세요
         </h1>
 
         {/* Search Box Container */}
@@ -60,7 +60,7 @@ export function HeroSection() {
                   : "text-[#2A2A33] hover:text-[#007882]"
               }`}
             >
-              Buy
+              매매
             </button>
             <button
               onClick={() => setActiveTab("rent")}
@@ -70,7 +70,7 @@ export function HeroSection() {
                   : "text-[#2A2A33] hover:text-[#007882]"
               }`}
             >
-              Rent
+              월세
             </button>
           </div>
 
@@ -82,7 +82,7 @@ export function HeroSection() {
                 name="searchText"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
-                placeholder="Enter a location"
+                placeholder="위치를 입력하세요"
                 className="w-full h-14 pl-4 pr-16 text-lg rounded-lg border-2 border-gray-200 focus:border-[#007882] focus:ring-[#007882] placeholder:text-gray-500"
                 aria-label="Search Location"
               />

@@ -52,11 +52,9 @@ export function ExploreSection() {
   return (
     <section className="container mx-auto px-4 mb-16">
       <div className="mb-8">
-        <h2 className="text-3xl font-bold mb-4">Explore homes in Vietnam</h2>
+        <h2 className="text-3xl font-bold mb-4">베트남 집 둘러보기</h2>
         <p className="text-lg text-muted-foreground max-w-3xl">
-          Take a deep dive and browse homes for sale, original neighborhood
-          photos, resident reviews and local insights to find what is right for
-          you.
+          매물, 동네 사진, 후기, 현지 정보로 딱 맞는 집을 찾아보세요.
         </p>
       </div>
 

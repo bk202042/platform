@@ -32,7 +32,7 @@ export function FeaturedPropertyTabs({
                 : "text-muted-foreground hover:text-foreground transition-colors"
             }`}
           >
-            For Rent (월세)
+            월세
           </button>
           <button
             type="button"
@@ -43,7 +43,7 @@ export function FeaturedPropertyTabs({
                 : "text-muted-foreground hover:text-foreground transition-colors"
             }`}
           >
-            For Sale (매매)
+            매매
           </button>
         </div>
       </div>
@@ -59,9 +59,7 @@ export function FeaturedPropertyTabs({
               ))
           ) : (
             <div className="col-span-3 text-center py-12">
-              <p className="text-muted-foreground">
-                No rental properties found.
-              </p>
+              <p className="text-muted-foreground">월세 매물이 없습니다.</p>
             </div>
           )}
         </div>
@@ -78,9 +76,7 @@ export function FeaturedPropertyTabs({
               ))
           ) : (
             <div className="col-span-3 text-center py-12">
-              <p className="text-muted-foreground">
-                No properties for sale found.
-              </p>
+              <p className="text-muted-foreground">매매 매물이 없습니다.</p>
             </div>
           )}
         </div>
