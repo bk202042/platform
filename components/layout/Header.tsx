@@ -71,13 +71,13 @@ export function Header() {
           <nav className="hidden md:flex items-center space-x-6">
             <Link
               href="/search"
-              className="px-3 py-2 font-medium text-sm text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors"
+              className="px-3 py-2 font-bold text-lg text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors"
             >
               매매
             </Link>
             <Link
               href="/properties"
-              className="px-3 py-2 font-medium text-sm text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors"
+              className="px-3 py-2 font-bold text-lg text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors"
             >
               임대
             </Link>
@@ -139,12 +139,12 @@ export function Header() {
           ) : (
             <div className="flex items-center space-x-4">
               <Link href="/auth/sign-in">
-                <button className="px-3 py-2 font-medium text-sm text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors">
+                <button className="px-3 py-2 font-bold text-lg text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors">
                   로그인
                 </button>
               </Link>
               <Link href="/auth/sign-up">
-                <button className="px-3 py-2 font-medium text-sm text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors">
+                <button className="px-3 py-2 font-bold text-lg text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors">
                   회원가입
                 </button>
               </Link>
