@@ -88,7 +88,7 @@ function CityCard({ name, imageUrl, propertyCount }: CityCardProps) {
       <div className="relative rounded-lg overflow-hidden h-full min-h-[240px] group">
         {/* Background Image */}
         <div className="absolute inset-0">
-          <Image src={imageUrl} alt={name} fill className="object-cover" />
+          <Image src={imageUrl} alt={name} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
         </div>
 
         {/* Gradient Overlay */}

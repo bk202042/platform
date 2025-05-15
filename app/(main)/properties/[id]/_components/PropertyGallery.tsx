@@ -61,6 +61,7 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
           fill
           className="object-cover"
           priority={currentImageIndex === 0}
+          sizes="100vw"
         />
         <Button
           variant="ghost"
@@ -114,6 +115,7 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
                 alt={image.alt_text || `썸네일 ${index + 1}`}
                 fill
                 className="object-cover"
+                sizes="80px"
               />
             </button>
           ))}
@@ -128,6 +130,7 @@ export default function PropertyGallery({ property }: PropertyGalleryProps) {
               alt={currentImageAlt}
               fill
               className="object-contain rounded-2xl"
+              sizes="100vw"
             />
             <Button
               variant="ghost"
