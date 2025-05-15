@@ -10,26 +10,9 @@ export const metadata: Metadata = {
 export default function JoinAsAgentPage() {
   return (
     <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl mb-4">
-          VinaHome과 함께 중개업소의 잠재력을 최대한 발휘하세요!
-        </h1>
-        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          부동산 중개업소이신가요?{" "}
-          <span className="font-bold">
-            매물 홍보 효과를 높이고, 더 많은 리드를 생성하며, 거래를 더 빨리
-            성사시킬
-          </span>{" "}
-          준비가 되셨나요?
-        </p>
-        <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
-          최첨단 AI 기술로{" "}
-          <span className="font-bold">
-            운영을 간소화하고, 마케팅을 강화하며, 비즈니스를 손쉽게 성장시키도록
-          </span>{" "}
-          설계된 올인원 플랫폼을 만나보세요.
-        </p>
-      </div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+        중개업소를 한 단계 발전시킬 준비가 되셨나요?
+      </h2>
 
       <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-12">
         <div className="bg-blue-600 px-6 py-4">
@@ -105,43 +88,9 @@ export default function JoinAsAgentPage() {
               </span>
             </li>
           </ul>
-          <p className="mt-6 text-gray-600 italic">
-            VinaHome의 혁신적인 도구로 이미 비즈니스를 변화시키고 있는 미래
-            지향적인 중개업소와 함께하세요.
-          </p>
         </div>
       </div>
-
-      <div className="bg-gray-50 rounded-lg p-6 mb-12">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          선착순 100개 중개업소 특별 혜택:
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white p-4 rounded shadow">
-            <h3 className="font-medium text-gray-900">프리미엄 태블릿 PC</h3>
-          </div>
-          <div className="bg-white p-4 rounded shadow">
-            <h3 className="font-medium text-gray-900">
-              맞춤형 중개업소 프로필 개발 지원
-            </h3>
-          </div>
-          <div className="bg-white p-4 rounded shadow">
-            <h3 className="font-medium text-gray-900">
-              AI 마케팅 컨설팅 3회 무료 제공
-            </h3>
-          </div>
-          <div className="bg-white p-4 rounded shadow">
-            <h3 className="font-medium text-gray-900">
-              완벽한 디지털 인프라 구축 지원
-            </h3>
-          </div>
-        </div>
-      </div>
-
       <div className="mb-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          중개업소를 한 단계 발전시킬 준비가 되셨나요?
-        </h2>
         <AgentRegistrationForm />
         <p className="mt-6 text-base text-gray-500 text-center">
           👉{" "}
