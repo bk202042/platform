@@ -22,7 +22,7 @@ const footerSections = [
   {
     title: "회사 소개",
     links: [
-      { name: "회사 소개", href: "#" },
+      { name: "회사 소개", href: "/about" },
       { name: "연락처", href: "#" },
       { name: "중개인으로 가입", href: "/join-as-agent" },
     ],
