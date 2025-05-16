@@ -6,12 +6,32 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { LoaderCircle, User, Mail, Phone, MapPin, BarChart3 } from "lucide-react";
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 // Validation schema
 const formSchema = z.object({
   firstName: z.string().min(2, "이름은 최소 2자 이상이어야 합니다."),
-  lastName: z.string().min(2, "성은 최소 2자 이상이어야 합니다."),
-  salesVolume: z.string(),
+  lastName: z.string().min(1, "성은 최소 1자 이상이어야 합니다."),
+  salesVolume: z.string().min(1, "판매량을 선택해주세요."),
   email: z.string().email("유효한 이메일 주소를 입력해주세요."),
   phone: z.string().min(10, "유효한 전화번호를 입력해주세요."),
   zipCode: z.string().min(5, "유효한 우편번호를 입력해주세요."),
@@ -21,12 +41,7 @@ export default function AgentRegistrationForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: "",
@@ -56,7 +71,7 @@ export default function AgentRegistrationForm() {
       }
 
       toast.success("중개인 등록이 제출되었습니다! 곧 연락드리겠습니다.");
-      reset();
+      form.reset();
       router.push("/join-as-agent/success");
     } catch (err) {
       toast.error(
@@ -68,149 +83,179 @@ export default function AgentRegistrationForm() {
   };
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
-      <div className="flex gap-2">
-        <div className="flex-1">
-          <label
-            htmlFor="agent-first-name"
-            className="block text-sm font-semibold text-gray-700 mb-1"
-          >
-            이름
-          </label>
-          <input
-            id="agent-first-name"
-            type="text"
-            {...register("firstName")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]"
-            disabled={isSubmitting}
-          />
-          {errors.firstName && (
-            <p className="ml-1 mt-1 text-xs text-rose-500">
-              {errors.firstName.message}
-            </p>
-          )}
-        </div>
-        <div className="flex-1">
-          <label
-            htmlFor="agent-last-name"
-            className="block text-sm font-semibold text-gray-700 mb-1"
-          >
-            성
-          </label>
-          <input
-            id="agent-last-name"
-            type="text"
-            {...register("lastName")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]"
-            disabled={isSubmitting}
-          />
-          {errors.lastName && (
-            <p className="ml-1 mt-1 text-xs text-rose-500">
-              {errors.lastName.message}
-            </p>
-          )}
-        </div>
-      </div>
+    <Card className="w-full max-w-2xl mx-auto shadow-md">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold text-center">중개인 등록</CardTitle>
+        <CardDescription className="text-center">
+          아래 양식을 작성하여 중개인으로 등록해 주세요
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>성</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="성을 입력하세요"
+                          className="pl-10"
+                          {...field}
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-      <div className="flex gap-2">
-        <div className="flex-1">
-          <label
-            htmlFor="agent-email"
-            className="block text-sm font-semibold text-gray-700 mb-1"
-          >
-            이메일
-          </label>
-          <input
-            id="agent-email"
-            type="email"
-            {...register("email")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]"
-            disabled={isSubmitting}
-          />
-          {errors.email && (
-            <p className="ml-1 mt-1 text-xs text-rose-500">
-              {errors.email.message}
-            </p>
-          )}
-        </div>
-        <div className="flex-1">
-          <label
-            htmlFor="agent-phone"
-            className="block text-sm font-semibold text-gray-700 mb-1"
-          >
-            전화번호
-          </label>
-          <input
-            id="agent-phone"
-            type="tel"
-            {...register("phone")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]"
-            disabled={isSubmitting}
-          />
-          {errors.phone && (
-            <p className="ml-1 mt-1 text-xs text-rose-500">
-              {errors.phone.message}
-            </p>
-          )}
-        </div>
-      </div>
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>이름</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="이름을 입력하세요"
+                          className="pl-10"
+                          {...field}
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-      <div className="flex gap-2">
-        <div className="flex-1">
-          <label
-            htmlFor="agent-sales-volume"
-            className="block text-sm font-semibold text-gray-700 mb-1"
-          >
-            연간 판매량
-          </label>
-          <select
-            id="agent-sales-volume"
-            {...register("salesVolume")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]"
-            disabled={isSubmitting}
-          >
-            <option value="">판매량 선택</option>
-            <option value="Less than 1 billion VND">10억 VND 미만</option>
-            <option value="1-5 billion VND">10억-50억 VND</option>
-            <option value="5-10 billion VND">50억-100억 VND</option>
-            <option value="10-50 billion VND">100억-500억 VND</option>
-            <option value="Over 50 billion VND">500억 VND 초과</option>
-          </select>
-          {errors.salesVolume && (
-            <p className="ml-1 mt-1 text-xs text-rose-500">
-              {errors.salesVolume.message}
-            </p>
-          )}
-        </div>
-        <div className="flex-1">
-          <label
-            htmlFor="agent-zip-code"
-            className="block text-sm font-semibold text-gray-700 mb-1"
-          >
-            우편번호
-          </label>
-          <input
-            id="agent-zip-code"
-            type="text"
-            {...register("zipCode")}
-            className="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#007882]"
-            disabled={isSubmitting}
-          />
-          {errors.zipCode && (
-            <p className="ml-1 mt-1 text-xs text-rose-500">
-              {errors.zipCode.message}
-            </p>
-          )}
-        </div>
-      </div>
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>이메일</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          type="email"
+                          placeholder="이메일을 입력하세요"
+                          className="pl-10"
+                          {...field}
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-      <button
-        type="submit"
-        className="w-full bg-[#007882] hover:bg-[#006670] text-white py-3 px-6 rounded-lg font-semibold transition-colors disabled:opacity-70"
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? "제출 중..." : "등록 제출"}
-      </button>
-    </form>
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>전화번호</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          type="tel"
+                          placeholder="전화번호를 입력하세요"
+                          className="pl-10"
+                          {...field}
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="salesVolume"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>연간 판매량</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={isSubmitting}
+                    >
+                      <FormControl>
+                        <div className="relative">
+                          <BarChart3 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <SelectTrigger className="pl-10">
+                            <SelectValue placeholder="판매량 선택" />
+                          </SelectTrigger>
+                        </div>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Less than 1 billion VND">10억 VND 미만</SelectItem>
+                        <SelectItem value="1-5 billion VND">10억-50억 VND</SelectItem>
+                        <SelectItem value="5-10 billion VND">50억-100억 VND</SelectItem>
+                        <SelectItem value="10-50 billion VND">100억-500억 VND</SelectItem>
+                        <SelectItem value="Over 50 billion VND">500억 VND 초과</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="zipCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>우편번호</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="우편번호를 입력하세요"
+                          className="pl-10"
+                          {...field}
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                  제출 중...
+                </>
+              ) : (
+                "등록 제출"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }

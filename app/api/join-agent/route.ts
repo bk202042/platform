@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
         phone,
         zip_code: zipCode
       });
-    
+
     if (dbError) {
       console.error('Database error:', dbError);
       return NextResponse.json(
@@ -110,7 +110,6 @@ export async function POST(req: NextRequest) {
     const emailResponse = await resend.emails.send({
       from: FROM_EMAIL,
       to: [ADMIN_EMAIL],
-      cc: [email],
       subject: "New Agent Registration - VinaHome",
       react: AgentRegistrationEmail({
         firstName,

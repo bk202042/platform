@@ -10,10 +10,6 @@ export const metadata: Metadata = {
 export default function JoinAsAgentPage() {
   return (
     <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-        중개업소를 한 단계 발전시킬 준비가 되셨나요?
-      </h2>
-
       <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-12">
         <div className="bg-blue-600 px-6 py-4">
           <h2 className="text-xl font-semibold text-white">
