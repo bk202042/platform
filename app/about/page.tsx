@@ -37,7 +37,7 @@ export default function AboutPage() {
 
       <hr className='my-10 md:my-16 border-gray-200 max-w-4xl mx-auto' />
 
-      <div className='grid md:grid-cols-2 gap-x-12 gap-y-10 max-w-4xl mx-auto'>
+      <div className='grid md:grid-cols-2 gap-x-12 gap-y-10 max-w-4xl mx-auto items-start'>
         {pageContent.sections.map((section, index) => (
           <div key={index} className='flex flex-col items-start text-left'>
             <div className='mb-4'>
