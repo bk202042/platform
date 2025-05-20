@@ -20,7 +20,7 @@ export default function AboutPage() {
 
   return (
     <div className='container mx-auto px-4 py-12 md:py-20 bg-white'>
-      <header className='text-left max-w-3xl mx-auto mb-10 md:mb-16'>
+      <header className='text-left max-w-3xl mx-auto mb-10'>
         <h1 className='text-3xl md:text-4xl text-gray-800 mb-6 text-left'>
           {pageContent.mainHeading}
         </h1>
@@ -29,13 +29,13 @@ export default function AboutPage() {
         </p>
       </header>
 
-      <div className='mx-auto my-8 md:my-12 flex justify-center'>
+      <div className='mx-auto my-6 flex justify-center mb-8'>
         <svg width='60' height='60' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'>
           <line x1='20' y1='80' x2='80' y2='20' stroke='currentColor' strokeWidth='2' className='text-gray-500' />
         </svg>
       </div>
 
-      <hr className='my-10 md:my-16 border-gray-200 max-w-4xl mx-auto' />
+      <hr className='border-gray-200 max-w-4xl mx-auto mb-8 mt-8' />
 
       <div className='grid md:grid-cols-2 gap-x-12 gap-y-10 max-w-4xl mx-auto items-start'>
         {pageContent.sections.map((section, index) => (
