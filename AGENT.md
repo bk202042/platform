@@ -1,6 +1,7 @@
 # AGENT.md - Coding Guidelines for Platform Project
 
 ## Build Commands
+
 - Dev server: `npm run dev`
 - Build: `npm run build`
 - Start: `npm run start`
@@ -8,6 +9,7 @@
 - Load data: `npm run load-data`
 
 ## Code Style Guidelines
+
 - **TypeScript**: Strict typing required (see tsconfig.json)
 - **Naming**: PascalCase for components, camelCase for variables/functions
 - **Error Handling**: Try-catch with specific error messages, use toast for user feedback
@@ -19,6 +21,7 @@
 - **CSS**: Use Tailwind classes for styling (v4)
 
 ## Architecture
+
 - Next.js App Router with Server Components
 - Supabase for backend/auth
 - React Hook Form for forms
