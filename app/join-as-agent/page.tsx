@@ -10,36 +10,27 @@ export const metadata: Metadata = {
 
 export default function JoinAsAgentPage() {
   return (
-    <div className="max-w-4xl mx-auto py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
-      {/* Introductory Section */}
-      <div className="mb-12 text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
-          VinaHome과 함께 부동산 중개업소의 거래 성사율을 최대한 끌어올려
-          보세요!
-        </h1>
-        <p className="text-lg text-gray-600 mb-4 max-w-3xl mx-auto">
-          매물 홍보를 효과적으로 하고 싶으신가요? 더 많은 고객을 유치하고,
-          빠르게 계약을 체결할 준비가 되셨다면 지금이 기회입니다.
-        </p>
-        <p className="text-lg text-gray-600 mb-12 max-w-3xl mx-auto">
-          VinaHome은 최신 AI 기술을 기반으로 운영을 단순화하고 마케팅을 강화해,
-          비즈니스를 쉽고 빠르게 성장시킬 수 있도록 돕는 통합 플랫폼입니다.
-        </p>
+    <div className="max-w-4xl mx-auto py-24 sm:py-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-gray-50 rounded-xl">
+      {/* Introductory Section (Content Removed by User Request) */}
+      <div className="text-center">
+        {" "}
+        {/* mb-12 class removed */}
+        {/* Content removed as per user request */}
       </div>
 
       {/* Why VinaHome Section */}
-      <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-12">
-        <div className="bg-blue-600 px-6 py-4">
+      <div className="bg-white rounded-lg overflow-hidden mb-24 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] border border-gray-100">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-5">
           <h2 className="text-xl font-semibold text-white">
             왜 VinaHome을 선택해야 할까요?
           </h2>
         </div>
-        <div className="p-6">
-          <ul className="space-y-4">
+        <div className="p-8">
+          <ul className="space-y-6">
             <li className="flex items-start">
               <CheckCircle2 className="flex-shrink-0 h-5 w-5 text-blue-600 mr-3 mt-0.5" />
-              <span className="text-base text-gray-700">
-                <span className="font-semibold text-gray-800">
+              <span className="text-base text-gray-700 leading-relaxed">
+                <span className="font-bold text-gray-900">
                   AI 기반 부동산 매칭
                 </span>
                 으로 적합한 구매자와 매물을 연결합니다
@@ -47,8 +38,8 @@ export default function JoinAsAgentPage() {
             </li>
             <li className="flex items-start">
               <CheckCircle2 className="flex-shrink-0 h-5 w-5 text-blue-600 mr-3 mt-0.5" />
-              <span className="text-base text-gray-700">
-                <span className="font-semibold text-gray-800">
+              <span className="text-base text-gray-700 leading-relaxed">
+                <span className="font-bold text-gray-900">
                   고급 CRM 및 리드 관리
                 </span>{" "}
                 시스템으로 잠재력이 높은 고객을 우선적으로 관리합니다
@@ -56,8 +47,8 @@ export default function JoinAsAgentPage() {
             </li>
             <li className="flex items-start">
               <CheckCircle2 className="flex-shrink-0 h-5 w-5 text-blue-600 mr-3 mt-0.5" />
-              <span className="text-base text-gray-700">
-                <span className="font-semibold text-gray-800">
+              <span className="text-base text-gray-700 leading-relaxed">
+                <span className="font-bold text-gray-900">
                   자동화된 마케팅 캠페인
                 </span>
                 을 특정 부동산 포트폴리오에 맞게 조정합니다
@@ -65,8 +56,8 @@ export default function JoinAsAgentPage() {
             </li>
             <li className="flex items-start">
               <CheckCircle2 className="flex-shrink-0 h-5 w-5 text-blue-600 mr-3 mt-0.5" />
-              <span className="text-base text-gray-700">
-                <span className="font-semibold text-gray-800">
+              <span className="text-base text-gray-700 leading-relaxed">
+                <span className="font-bold text-gray-900">
                   종이 없는 문서화로 원활한 거래 추적
                 </span>
               </span>
@@ -75,36 +66,66 @@ export default function JoinAsAgentPage() {
         </div>
       </div>
       {/* Agent Registration Form Section */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-semibold text-gray-800 text-center mb-8">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 text-center mb-12">
           중개인으로 등록하세요
         </h2>
         <AgentRegistrationForm />
-        <p className="mt-6 text-base text-gray-500 text-center">
-          👉{" "}
-          <a
-            href="https://www.vinahome.cc"
-            className="text-blue-600 hover:underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            www.vinahome.cc
-          </a>
-          를 방문하시거나{" "}
-          <a
-            href="mailto:hello@vinahome.cc"
-            className="text-blue-600 hover:underline"
-          >
-            hello@vinahome.cc
-          </a>
-          로 이메일을 보내주세요.
-        </p>
+        <div className="mt-12 text-base text-gray-600 text-center max-w-xl mx-auto bg-gray-50 p-4 rounded-lg border border-gray-100">
+          <p className="mb-3 font-medium">문의가 있으신가요?</p>
+          <div className="flex items-center justify-center space-x-6">
+            <a
+              href="https://www.vinahome.cc"
+              className="flex items-center text-blue-600 hover:text-blue-700 transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                />
+              </svg>
+              웹사이트 방문
+            </a>
+            <a
+              href="mailto:hello@vinahome.cc"
+              className="flex items-center text-blue-600 hover:text-blue-700 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
+              </svg>
+              이메일 문의
+            </a>
+          </div>
+        </div>
       </div>
 
-      <div className="text-center border-t border-gray-200 pt-8">
-        <p className="text-lg font-semibold text-blue-600">
-          VinaHome - 부동산 성공을 위한 AI 기반 파트너
-        </p>
+      <div className="text-center border-t border-gray-200 pt-16">
+        <div className="inline-flex items-center px-4 py-2 bg-blue-50 rounded-full">
+          <p className="text-lg font-bold text-blue-700">
+            VinaHome - 부동산 성공을 위한 AI 기반 파트너
+          </p>
+        </div>
       </div>
     </div>
   );
