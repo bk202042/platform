@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { ArrowLeftIcon } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+
 export default function RegistrationSuccessPage() {
   return (
-    <div className="max-w-2xl mx-auto px-4 py-12">
+    <div className="max-w-2xl mx-auto px-4 py-16 sm:py-20">
       <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
         <div className="flex flex-col items-center text-center">
           <div className="h-16 w-16 bg-[#007882]/10 rounded-full flex items-center justify-center mb-6">
@@ -25,23 +27,34 @@ export default function RegistrationSuccessPage() {
             </svg>
           </div>
 
-          <h1 className="text-2xl font-bold text-gray-900 mb-3">등록 성공</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            신청해 주셔서 감사합니다!
+          </h1>
 
-          <p className="text-gray-600 mb-6 max-w-md">
-            VinaHome 중개인으로 가입에 관심을 가져주셔서 감사합니다. 귀하의
-            신청서를 접수했으며 저희 팀에서 곧 검토할 예정입니다. 다음 단계에
-            대해 논의하기 위해 곧 연락드리겠습니다.
+          <p className="text-lg text-gray-700 mb-8 max-w-md">
+            VinaHome 중개인 프로그램에 관심을 가져주셔서 진심으로 감사드립니다.
           </p>
 
-          <div className="space-y-4 w-full max-w-xs">
-            <Link
-              href="/"
-              className="flex items-center justify-center text-[#007882] font-semibold hover:text-[#006670] transition-colors"
-            >
-              <ArrowLeftIcon className="h-4 w-4 mr-1" />
-              홈페이지로 돌아가기
-            </Link>
+          <div className="text-left bg-gray-50 p-6 rounded-lg w-full max-w-lg mb-8">
+            <h2 className="text-xl font-semibold text-gray-800 mb-3">
+              무엇을 기대해야 할까요?
+            </h2>
+            <ul className="space-y-2 text-gray-600 list-disc list-inside">
+              <li>귀하의 신청서가 성공적으로 접수되었습니다.</li>
+              <li>저희 팀에서 귀하의 정보를 신중히 검토할 것입니다.</li>
+              <li>
+                일반적으로 2-3 영업일 이내에 다음 단계에 대해 안내해 드리기 위해
+                연락드립니다.
+              </li>
+            </ul>
           </div>
+
+          <Link href="/" passHref>
+            <Button variant="outline" className="w-full max-w-xs">
+              <ArrowLeftIcon className="h-4 w-4 mr-2" />
+              홈페이지로 돌아가기
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

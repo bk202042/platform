@@ -6,7 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { LoaderCircle, User, Mail, Phone, MapPin, BarChart3 } from "lucide-react";
+import {
+  LoaderCircle,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  BarChart3,
+} from "lucide-react";
 
 import {
   Form,
@@ -25,7 +32,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 // Validation schema
 const formSchema = z.object({
@@ -85,7 +98,9 @@ export default function AgentRegistrationForm() {
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-md">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">중개인 등록</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">
+          중개인 등록
+        </CardTitle>
         <CardDescription className="text-center">
           아래 양식을 작성하여 중개인으로 등록해 주세요
         </CardDescription>
@@ -204,11 +219,21 @@ export default function AgentRegistrationForm() {
                         </div>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Less than 1 billion VND">10억 VND 미만</SelectItem>
-                        <SelectItem value="1-5 billion VND">10억-50억 VND</SelectItem>
-                        <SelectItem value="5-10 billion VND">50억-100억 VND</SelectItem>
-                        <SelectItem value="10-50 billion VND">100억-500억 VND</SelectItem>
-                        <SelectItem value="Over 50 billion VND">500억 VND 초과</SelectItem>
+                        <SelectItem value="Less than 1 billion VND">
+                          10억 VND 미만
+                        </SelectItem>
+                        <SelectItem value="1-5 billion VND">
+                          10억-50억 VND
+                        </SelectItem>
+                        <SelectItem value="5-10 billion VND">
+                          50억-100억 VND
+                        </SelectItem>
+                        <SelectItem value="10-50 billion VND">
+                          100억-500억 VND
+                        </SelectItem>
+                        <SelectItem value="Over 50 billion VND">
+                          500억 VND 초과
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -239,11 +264,7 @@ export default function AgentRegistrationForm() {
               />
             </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isSubmitting}
-            >
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
