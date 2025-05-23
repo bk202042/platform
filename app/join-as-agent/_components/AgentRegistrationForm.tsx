@@ -43,7 +43,10 @@ import {
 // Validation schema
 const formSchema = z.object({
   firstName: z.string().min(2, "이름은 최소 2자 이상이어야 합니다."),
-  lastName: z.string().min(1, "성은 최소 1자 이상이어야 합니다."),
+  lastName: z.string().trim().min(1, "성은 최소 1자 이상이어야 합니다.").refine(
+    (value) => !/\s{2,}/.test(value), // Prevent multiple consecutive spaces
+    { message: "성은 한 단어로 입력해주세요." }
+  ),
   salesVolume: z.string().min(1, "판매량을 선택해주세요."),
   email: z.string().email("유효한 이메일 주소를 입력해주세요."),
   phone: z.string().min(10, "유효한 전화번호를 입력해주세요."),
@@ -71,6 +74,7 @@ export default function AgentRegistrationForm() {
     try {
       setIsSubmitting(true);
 
+      // Use the correct API endpoint
       const res = await fetch("/api/agents/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -80,6 +84,7 @@ export default function AgentRegistrationForm() {
       const responseData = await res.json();
 
       if (!res.ok) {
+        console.error('Error response:', responseData);
         throw new Error(responseData.message || "등록 제출에 실패했습니다.");
       }
 
@@ -87,6 +92,7 @@ export default function AgentRegistrationForm() {
       form.reset();
       router.push("/join-as-agent/success");
     } catch (err) {
+      console.error('Form submission error:', err);
       toast.error(
         err instanceof Error ? err.message : "제출 중 문제가 발생했습니다.",
       );
