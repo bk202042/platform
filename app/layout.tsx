@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Toaster } from "@/components/ui/sonner"; // Import Toaster component for notifications
 import { Noto_Sans_KR } from "next/font/google";
+import StagewiseToolbarLoader from "@/components/stagewise/StagewiseToolbarLoader";
 
 const notoSansKR = Noto_Sans_KR({
   // @ts-expect-error // Allow 'korean' subset, expect a type error here which we are overriding.
@@ -35,6 +36,7 @@ export default function RootLayout({
         className="bg-background text-foreground" // Use theme variables. Font is now on HTML tag.
       >
         <div className="relative flex min-h-screen flex-col bg-background">
+          <StagewiseToolbarLoader />
           <Header />
           <main className="flex-1">{children}</main>
           <Toaster />
