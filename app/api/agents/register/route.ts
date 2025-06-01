@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   try {
     // Parse and validate the request body
     const body = await request.json();
-    
+
     // Log the incoming request body for debugging
     console.log('Agent registration request body:', {
       ...body,
@@ -76,9 +76,9 @@ export async function POST(request: NextRequest) {
       // Validate required email fields
       const adminEmail = process.env.ADMIN_EMAIL || "admin@bkmind.com";
       const fromEmail = process.env.FROM_EMAIL || "admin@bkmind.com";
-      
+
       console.log('Sending email notification to:', adminEmail);
-      
+
       const emailResponse = await resend.emails.send({
         from: `VinaHome <${fromEmail}>`,
         to: [adminEmail],
@@ -86,12 +86,12 @@ export async function POST(request: NextRequest) {
         subject: "New Agent Registration",
         react: AgentRegistrationEmail(agentData),
       });
-      
+
       if (emailResponse.error) {
         throw new Error(`Resend API error: ${emailResponse.error.message}`);
       }
-      
-      console.log('Email sent successfully:', emailResponse.id);
+
+      console.log('Email sent successfully. ID:', emailResponse.data?.id);
     } catch (emailError) {
       console.error("Error sending email notification:", emailError);
       // Log detailed error information for debugging
