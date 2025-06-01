@@ -16,9 +16,9 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
-  title: "베트남 부동산 플랫폼 | 완벽한 집 찾기",
+  title: "하노이 호치민 다낭 부동산 플랫폼 | 완벽한 집 찾기",
   description:
-    "베트남 인기 지역의 한국인 거주자를 위한 맞춤형 부동산을 찾아보세요",
+    "하노이 호치민 다낭 부동산 플랫폼은 베트남의 한국인 거주자를 위한 맞춤형 부동산을 찾아보세요",
 };
 
 export default function RootLayout({
