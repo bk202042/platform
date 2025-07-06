@@ -10,12 +10,12 @@ import Link from "next/link";
 
 const signUpSchema = z
   .object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    email: z.string().email("유효하지 않은 이메일 주소입니다"),
+    password: z.string().min(6, "비밀번호는 6자 이상이어야 합니다"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: "비밀번호가 일치하지 않습니다",
     path: ["confirmPassword"],
   });
 
@@ -67,7 +67,7 @@ export default function SignUpForm() {
           htmlFor="email"
           className="block text-sm font-medium text-gray-700"
         >
-          Email address
+          이메일 주소
         </label>
         <div className="mt-1">
           <input
@@ -89,7 +89,7 @@ export default function SignUpForm() {
           htmlFor="password"
           className="block text-sm font-medium text-gray-700"
         >
-          Password
+          비밀번호
         </label>
         <div className="mt-1">
           <input
@@ -113,7 +113,7 @@ export default function SignUpForm() {
           htmlFor="confirmPassword"
           className="block text-sm font-medium text-gray-700"
         >
-          Confirm Password
+          비밀번호 확인
         </label>
         <div className="mt-1">
           <input
@@ -147,7 +147,7 @@ export default function SignUpForm() {
           href="/auth/sign-in"
           className="font-medium text-indigo-600 hover:text-indigo-500"
         >
-          Already have an account?
+          이미 계정이 있으신가요?
         </Link>
       </div>
 
@@ -157,7 +157,7 @@ export default function SignUpForm() {
           disabled={isLoading}
           className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
         >
-          {isLoading ? "Creating account..." : "Create account"}
+          {isLoading ? "계정 생성 중..." : "계정 만들기"}
         </button>
       </div>
     </form>

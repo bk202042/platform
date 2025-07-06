@@ -7,20 +7,19 @@ export default function SignUpSuccessPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-lg">
         <h1 className="text-4xl font-bold text-[#2A2A33] text-center tracking-tight mb-2">
-          Check your email
+          이메일을 확인하세요
         </h1>
         <p className="text-lg text-center text-[#54545A] mb-8">
-          We sent you a confirmation link to complete your registration
+          등록을 완료하기 위한 확인 링크를 이메일로 보냈습니다
         </p>
 
         <div className="bg-white rounded-xl shadow-lg p-8">
           <div className="bg-[#E6F4EA] rounded-lg p-6 mb-6">
             <h3 className="text-[#1B5E20] text-xl font-semibold mb-3">
-              Registration successful
+              등록 성공
             </h3>
             <p className="text-[#2E7D32] text-base leading-relaxed">
-              Please check your email for a confirmation link to complete your
-              registration. If you don&apos;t see it, check your spam folder.
+              등록을 완료하려면 이메일에서 확인 링크를 확인하세요. 보이지 않으면 스팸 폴더를 확인하세요.
             </p>
           </div>
 
@@ -42,7 +41,7 @@ export default function SignUpSuccessPage() {
                     clipRule="evenodd"
                   />
                 </svg>
-                Back to sign in
+                로그인으로 돌아가기
               </Link>
             </div>
           </div>
