@@ -15,13 +15,6 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          // The following line `request.cookies.set(name, value)` is from the original prompt.
-          // Note: `request.cookies` (ReadonlyRequestCookies) doesn't typically have a `set` method,
-          // and this call omits `options`. Adhere to this specific instruction.
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
-
           supabaseResponse = NextResponse.next({
             // Re-create response to apply cookies
             request,
