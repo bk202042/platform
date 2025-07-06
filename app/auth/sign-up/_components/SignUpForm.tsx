@@ -44,7 +44,7 @@ export default function SignUpForm() {
         email: data.email,
         password: data.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/confirm`,
+          emailRedirectTo: "https://vinahome.cc/auth/sign-in",
         },
       });
 
