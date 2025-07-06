@@ -1,15 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
-import { type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-type CookieWithOptions = {
-  name: string;
-  value: string;
-  options?: CookieOptions;
-};
-
 export async function middleware(request: NextRequest) {
-  const supabaseResponse = NextResponse.next({
+  let supabaseResponse = NextResponse.next({
     request,
   });
 
@@ -19,80 +12,48 @@ export async function middleware(request: NextRequest) {
     {
       cookies: {
         getAll() {
-          return request.cookies.getAll().map((cookie) => ({
-            name: cookie.name,
-            value: cookie.value,
-          }));
+          return request.cookies.getAll();
         },
-        setAll(cookies: CookieWithOptions[]) {
-          cookies.forEach((cookie) => {
-            supabaseResponse.cookies.set(
-              cookie.name,
-              cookie.value,
-              cookie.options || {},
-            );
+        setAll(cookiesToSet) {
+          // The following line `request.cookies.set(name, value)` is from the original prompt.
+          // Note: `request.cookies` (ReadonlyRequestCookies) doesn't typically have a `set` method,
+          // and this call omits `options`. Adhere to this specific instruction.
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value),
+          );
+
+          supabaseResponse = NextResponse.next({
+            // Re-create response to apply cookies
+            request,
           });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options),
+          );
         },
       },
     },
   );
 
-  // Get both user and session to check authentication status
+  // IMPORTANT: Do not run code between createServerClient and supabase.auth.getUser().
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getUser(); // MUST NOT be removed.
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  // List of public routes that don't require authentication
-  const publicRoutes = ["/", "/search", "/properties", "/auth"];
-
-  // Special callback routes that must be excluded from auth checks
-  const authCallbackRoutes = [
-    "/auth/callback",
-    "/auth/reset-password",
-    "/auth/confirm",
-  ];
-  const isAuthCallback = authCallbackRoutes.some(
-    (route) => request.nextUrl.pathname === route,
-  );
-
-  const isPublicRoute =
-    publicRoutes.some((route) => request.nextUrl.pathname.startsWith(route)) ||
-    isAuthCallback;
-
-  // For debugging - log auth status to server console
-  console.log({
-    path: request.nextUrl.pathname,
-    isPublicRoute,
-    isAuthCallback: authCallbackRoutes.some(
-      (route) => request.nextUrl.pathname === route,
-    ),
-    hasUser: !!user,
-    hasSession: !!session,
-    userId: user?.id,
-  });
-
-  // Only redirect to sign-in for protected routes when user is not authenticated
-  if (!session && !isPublicRoute) {
-    // Debug session information
-    console.log("Missing session for protected route", {
-      cookies: request.cookies.getAll().map((c) => c.name),
-      authCookies: request.cookies
-        .getAll()
-        .filter((c) => c.name.includes("supabase"))
-        .map((c) => c.name),
-      path: request.nextUrl.pathname,
-    });
-
+  if (
+    !user &&
+    !request.nextUrl.pathname.startsWith("/login") &&
+    !request.nextUrl.pathname.startsWith("/auth")
+  ) {
     const url = request.nextUrl.clone();
-    url.pathname = "/auth/sign-in";
-    // Add a return parameter to redirect back to the intended page after sign-in
-    url.searchParams.set("returnTo", request.nextUrl.pathname);
+    url.pathname = "/login";
     return NextResponse.redirect(url);
   }
+
+  // IMPORTANT: You *must* return `supabaseResponse`. If creating a new response:
+  // 1. Pass `request`: `NextResponse.next({ request })`
+  // 2. Copy cookies: `newResp.cookies.setAll(supabaseResponse.cookies.getAll())`
+  // 3. Modify `newResp` (avoid cookie changes), then return `newResp`.
+  // Failure can break sessions.
 
   return supabaseResponse;
 }
