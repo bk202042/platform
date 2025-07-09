@@ -40,9 +40,12 @@ export async function middleware(request: NextRequest) {
     '/auth/error',
   ];
 
-  const isPublicPath = publicPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
-  );
+  const isPublicPath = publicPaths.some((path) => {
+    if (path === '/') {
+      return request.nextUrl.pathname === '/';
+    }
+    return request.nextUrl.pathname.startsWith(path);
+  });
 
   // If the user is not logged in and trying to access a protected route, redirect to sign-in
   if (!user && !isPublicPath) {
