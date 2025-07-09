@@ -3,7 +3,11 @@
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 
-export default function GoogleSignInButton() {
+interface GoogleSignInButtonProps {
+  children: React.ReactNode;
+}
+
+export default function GoogleSignInButton({ children }: GoogleSignInButtonProps) {
   const supabase = createClient();
 
   const handleSignIn = async () => {
@@ -17,7 +21,7 @@ export default function GoogleSignInButton() {
 
   return (
     <Button onClick={handleSignIn} className="w-full">
-      Sign in with Google
+      {children}
     </Button>
   );
 }
