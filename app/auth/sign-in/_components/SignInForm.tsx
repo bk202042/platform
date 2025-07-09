@@ -69,7 +69,7 @@ export default function SignInForm() {
           htmlFor="email"
           className="block text-sm font-medium text-gray-700"
         >
-          Email address
+          이메일 주소
         </label>
         <div className="mt-1">
           <input
@@ -91,7 +91,7 @@ export default function SignInForm() {
           htmlFor="password"
           className="block text-sm font-medium text-gray-700"
         >
-          Password
+          비밀번호
         </label>
         <div className="mt-1">
           <input
@@ -126,7 +126,7 @@ export default function SignInForm() {
             href="/auth/forgot-password"
             className="font-medium text-indigo-600 hover:text-indigo-500"
           >
-            Forgot your password?
+            비밀번호를 잊으셨나요?
           </Link>
         </div>
         <div className="text-sm">
@@ -134,7 +134,7 @@ export default function SignInForm() {
             href="/auth/sign-up"
             className="font-medium text-indigo-600 hover:text-indigo-500"
           >
-            Dont have an account?
+            계정이 없으신가요?
           </Link>
         </div>
       </div>
@@ -145,7 +145,7 @@ export default function SignInForm() {
           disabled={isLoading}
           className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
         >
-          {isLoading ? "Signing in..." : "Sign in"}
+          {isLoading ? "로그인 중..." : "로그인"}
         </button>
       </div>
     </form>
