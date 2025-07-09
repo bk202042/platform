@@ -16,10 +16,7 @@
 
 ```bash
 npm install
-# 또는
-yarn install
-# 또는
-pnpm install
+
 ```
 
 ## 3. Tailwind CSS v4.1.4 (context7: .clinerules/tailwind-css-v4.md)
