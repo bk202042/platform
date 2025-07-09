@@ -20,8 +20,18 @@ export default function GoogleSignInButton({ children }: GoogleSignInButtonProps
   };
 
   return (
-    <Button onClick={handleSignIn} className="w-full">
-      {children}
+    <Button
+      onClick={handleSignIn}
+      variant="outline"
+      className="w-full flex items-center justify-center gap-2"
+    >
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
+        alt="Google logo"
+        width={20}
+        height={20}
+      />
+      <span>{children}</span>
     </Button>
   );
 }
