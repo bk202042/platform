@@ -34,8 +34,8 @@ create policy "Admin can view all agent registrations"
   to authenticated
   using (
     exists (
-      select 1 from public.users
-      where auth.uid() = users.id and users.role = 'admin'
+      select 1 from public.profiles
+      where auth.uid() = profiles.id and profiles.role = 'admin'
     )
   );
 
@@ -45,8 +45,8 @@ create policy "Admin can insert agent registrations"
   to authenticated
   with check (
     exists (
-      select 1 from public.users
-      where auth.uid() = users.id and users.role = 'admin'
+      select 1 from public.profiles
+      where auth.uid() = profiles.id and profiles.role = 'admin'
     )
   );
 
@@ -56,14 +56,14 @@ create policy "Admin can update agent registrations"
   to authenticated
   using (
     exists (
-      select 1 from public.users
-      where auth.uid() = users.id and users.role = 'admin'
+      select 1 from public.profiles
+      where auth.uid() = profiles.id and profiles.role = 'admin'
     )
   )
   with check (
     exists (
-      select 1 from public.users
-      where auth.uid() = users.id and users.role = 'admin'
+      select 1 from public.profiles
+      where auth.uid() = profiles.id and profiles.role = 'admin'
     )
   );
 
