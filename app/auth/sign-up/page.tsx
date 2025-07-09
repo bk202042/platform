@@ -23,7 +23,7 @@ export default async function SignUpPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
           <div className="mb-6">
-            <GoogleSignInButton>Sign up with Google</GoogleSignInButton>
+            <GoogleSignInButton>Google로 가입</GoogleSignInButton>
           </div>
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
@@ -31,7 +31,7 @@ export default async function SignUpPage() {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="bg-white px-2 text-gray-500">
-                Or continue with
+                또는 다음으로 계속
               </span>
             </div>
           </div>
