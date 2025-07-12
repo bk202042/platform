@@ -81,6 +81,12 @@ export function Header() {
             >
               임대
             </Link>
+            <Link
+              href="/community"
+              className="px-3 py-2 font-medium text-lg text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors"
+            >
+              커뮤니티
+            </Link>
           </nav>
         </div>
 

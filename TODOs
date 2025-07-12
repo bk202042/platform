@@ -1,0 +1,114 @@
+# Community Feature Development Plan
+
+### Phase 1: Database & Types
+
+1.  **Create Database Migration:**
+    *   Create a new SQL migration file in `supabase/migrations/`.
+    *   **File:** `supabase/migrations/YYYYMMDDHHMMSS_create_community_tables.sql`
+    *   **Tables:**
+        *   `apartments`: `id`, `city`, `name`, `created_at`.
+        *   `community_posts`: `id`, `apartment_id` (FK to `apartments`), `user_id` (FK to `auth.users`), `category` (ENUM type), `title` (optional), `content` (text), `images` (JSONB, array of URLs, max 5), `created_at`.
+        *   `community_comments`: `id`, `post_id` (FK to `community_posts`), `user_id` (FK to `auth.users`), `parent_id` (self-referencing for threads), `content` (text), `created_at`.
+        *   `community_likes`: `id`, `post_id` (FK to `community_posts`), `user_id` (FK to `auth.users`), with a unique constraint on `(post_id, user_id)`.
+    *   **Indexes:** Add indexes on `apartment_id`, `user_id`, and `parent_id` for performance.
+
+2.  **Update Supabase Types:**
+    *   After running the migration, update the database type definitions.
+    *   **Command:** `npx supabase gen types typescript --project-id <your-project-id> > lib/types/database.ts` (or similar command used in your project).
+
+3.  **Row-Level Security (RLS) Policies:**
+    *   Define RLS policies within the migration file.
+    *   **Policies:**
+        *   Guests can read all public data.
+        *   Authenticated users can create posts, comments, and likes.
+        *   Users can only edit/delete their own posts/comments.
+
+---
+
+### Phase 2: Backend - API Routes & Logic
+
+1.  **Validation Schemas:**
+    *   Create a new validation file for community-related schemas.
+    *   **File:** `lib/validation/community.ts`
+    *   **Schemas (using Zod):**
+        *   `createPostSchema`: `apartment_id`, `category`, `title`, `content`, `images` (validate array length).
+        *   `createCommentSchema`: `post_id`, `parent_id` (optional), `content`.
+
+2.  **Data Access Logic:**
+    *   Create a new file for community data fetching functions.
+    *   **File:** `lib/data/community.ts`
+    *   **Functions:** `getPosts`, `getPostById`, `createPost`, `createComment`, `toggleLike`, etc.
+
+3.  **API Route Implementation:**
+    *   Create the following API route handlers under `app/api/community/`:
+    *   `GET /api/community/posts`:
+        *   **File:** `app/api/community/posts/route.ts`
+        *   **Logic:** Handle fetching posts with filters (city, apartment, category) and sorting. Implement logic to feature posts with high engagement (likes within 7 days).
+    *   `POST /api/community/posts`:
+        *   **File:** `app/api/community/posts/route.ts` (add POST handler)
+        *   **Logic:** Handle new post creation, including image uploads to Supabase Storage. Use `createPostSchema` for validation.
+    *   `POST /api/community/posts/[postId]/like`:
+        *   **File:** `app/api/community/posts/[postId]/like/route.ts`
+        *   **Logic:** Toggle a like for the given user and post.
+    *   `POST /api/community/posts/[postId]/comments`:
+        *   **File:** `app/api/community/posts/[postId]/comments/route.ts`
+        *   **Logic:** Add a new comment or reply. Use `createCommentSchema` for validation.
+
+---
+
+### Phase 3: Frontend - UI Components
+
+*   Create a new directory for shared community components: `components/community/`.
+*   Page-specific components can be created under `app/community/_components/`.
+
+1.  **`ApartmentSelect.tsx`**:
+    *   **File:** `components/community/ApartmentSelect.tsx`
+    *   **Functionality:** Nested selects for City -> Apartment.
+2.  **`PostCard.tsx`**:
+    *   **File:** `components/community/PostCard.tsx`
+    *   **Functionality:** Display post summary (title, content snippet, author, stats).
+3.  **`LikeButton.tsx`**:
+    *   **File:** `components/community/LikeButton.tsx`
+    *   **Functionality:** Client-side component to display like count and handle like/unlike actions.
+4.  **`NewPostDialog.tsx`**:
+    *   **File:** `app/community/_components/NewPostDialog.tsx`
+    *   **Functionality:** A dialog/form for creating/editing posts using `form.tsx` and Zod for validation. Handles image uploads.
+5.  **`CommentForm.tsx` & `CommentList.tsx`**:
+    *   **Files:** `components/community/CommentForm.tsx`, `components/community/CommentList.tsx`
+    *   **Functionality:** Display comments in a threaded view and provide a form for adding new comments/replies.
+
+---
+
+### Phase 4: Frontend - Pages
+
+1.  **Community Main Page:**
+    *   **File:** `app/community/page.tsx`
+    *   **Layout:** `app/community/layout.tsx`
+    *   **Functionality:**
+        *   Use `ApartmentSelect` for filtering.
+        *   Display a list of `PostCard` components.
+        *   Include a button to open the `NewPostDialog`.
+        *   Fetch data using server components and functions from `lib/data/community.ts`.
+
+2.  **Post Detail Page:**
+    *   **File:** `app/community/[postId]/page.tsx`
+    *   **Functionality:**
+        *   Display the full post content (`PostDetail` component).
+        *   Show `LikeButton` and engagement stats.
+        *   Render `CommentList` and `CommentForm`.
+
+---
+
+### Phase 5: Testing & Analytics
+
+1.  **Code Quality:**
+    *   Ensure all new files pass `tsc`, `prettier`, and ESLint checks.
+2.  **Manual QA:**
+    *   Test all user flows: creating an account, creating a post, commenting, liking, viewing posts.
+    *   Verify access control (guests vs. authenticated users).
+    *   Check responsive design on mobile and desktop.
+3.  **Analytics:**
+    *   Add logging or Supabase queries to track key metrics:
+        *   Weekly posts per apartment.
+        *   Comment/like ratio per post.
+        *   Views of top-liked posts.
