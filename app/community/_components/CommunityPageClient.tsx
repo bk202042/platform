@@ -1,11 +1,14 @@
 'use client';
 
-import { useState, ChangeEvent } from 'react';
+import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ApartmentSelect } from '@/components/community/ApartmentSelect';
 import { PostCard } from '@/components/community/PostCard';
-import { COMMUNITY_CATEGORIES } from '@/lib/validation/community';
 import { NewPostDialogClient } from './NewPostDialog.client';
+import { CategorySidebar } from './CategorySidebar';
+import { Button } from '@/components/ui/button';
+import { Home, ChevronRight } from 'lucide-react';
 
 // Define types for props
 interface City {
@@ -40,26 +43,12 @@ export function CommunityPageClient({
   posts,
   cities,
   apartments,
-  initialCategory,
   initialApartmentId,
 }: CommunityPageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [category, setCategory] = useState(initialCategory);
   const [apartmentId, setApartmentId] = useState(initialApartmentId);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const handleCategoryChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const newCategory = e.target.value;
-    setCategory(newCategory);
-    const params = new URLSearchParams(searchParams.toString());
-    if (newCategory) {
-      params.set('category', newCategory);
-    } else {
-      params.delete('category');
-    }
-    router.push(`/community?${params.toString()}`);
-  };
 
   const handleApartmentChange = (newApartmentId: string) => {
     setApartmentId(newApartmentId);
@@ -72,48 +61,77 @@ export function CommunityPageClient({
     router.push(`/community?${params.toString()}`);
   };
 
+  const currentCategory = searchParams.get('category');
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <ApartmentSelect
-          value={apartmentId}
-          onChange={handleApartmentChange}
-        />
-        <div className="flex gap-2 mt-2 md:mt-0">
-          <select
-            className="border rounded-lg px-3 py-2 text-sm"
-            value={category}
-            onChange={handleCategoryChange}
-            aria-label="카테고리 선택"
-          >
-            <option value="">전체 카테고리</option>
-            {COMMUNITY_CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-          <button onClick={() => setIsDialogOpen(true)} className="bg-blue-500 text-white px-4 py-2 rounded-lg">
-            글 작성
-          </button>
-          <NewPostDialogClient
-            open={isDialogOpen}
-            onClose={() => setIsDialogOpen(false)}
-            cities={cities}
-            apartments={apartments}
-            onPostCreated={() => {
-              setIsDialogOpen(false);
-              router.refresh();
-            }}
-          />
-        </div>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Page Header */}
+      <div className="mb-6">
+        <nav className="flex" aria-label="Breadcrumb">
+          <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+            <li className="inline-flex items-center">
+              <Link href="/" className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                <Home className="w-4 h-4 me-2.5" />
+                Home
+              </Link>
+            </li>
+            <li>
+              <div className="flex items-center">
+                <ChevronRight className="w-4 h-4 text-gray-400" />
+                <Link href="/community" className="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">Community</Link>
+              </div>
+            </li>
+            {currentCategory && (
+               <li>
+                <div className="flex items-center">
+                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2">{currentCategory}</span>
+                </div>
+              </li>
+            )}
+          </ol>
+        </nav>
+        <h1 className="text-3xl font-bold mt-4">Community</h1>
       </div>
-      <div>
-        {posts.length === 0 ? (
-          <div className="text-gray-400 text-center py-12">게시글이 없습니다.</div>
-        ) : (
-          posts.map((post) => <PostCard key={post.id} post={post} />)
-        )}
+
+      {/* Two-column layout */}
+      <div className="flex flex-col md:flex-row md:gap-6">
+        {/* Left Sidebar */}
+        <CategorySidebar />
+
+        {/* Main Feed */}
+        <main className="flex-1 min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <ApartmentSelect
+              value={apartmentId}
+              onChange={handleApartmentChange}
+            />
+            <Button onClick={() => setIsDialogOpen(true)}>
+              Write a Post
+            </Button>
+            <NewPostDialogClient
+              open={isDialogOpen}
+              onClose={() => setIsDialogOpen(false)}
+              cities={cities}
+              apartments={apartments}
+              onPostCreated={() => {
+                setIsDialogOpen(false);
+                router.refresh();
+              }}
+            />
+          </div>
+
+          <div className="space-y-4">
+            {posts.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                <p className="text-lg">No posts found.</p>
+                <p>Be the first to post in this community!</p>
+              </div>
+            ) : (
+              posts.map((post) => <PostCard key={post.id} post={post} />)
+            )}
+          </div>
+        </main>
       </div>
     </div>
   );
