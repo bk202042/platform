@@ -1,7 +1,7 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
-import { createApiClient } from "../../lib/supabase/server-api";
-import { AgentRegistrationData } from "../../types/agent";
+import { createApiClient } from "@/lib/supabase/server-api";
+import { AgentRegistrationData } from "@/lib/types/agent";
 
 /**
  * Register a new agent
