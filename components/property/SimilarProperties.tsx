@@ -4,7 +4,7 @@ import Link from "next/link";
 import { PropertyCard } from "@/components/property/PropertyCard";
 import { PropertyCardSkeleton } from "@/components/property/PropertyCardSkeleton";
 import { Button } from "@/components/ui/button";
-import { PropertyListing } from "@/types/property";
+import { PropertyListing } from "@/lib/types/property";
 
 interface SimilarPropertiesProps {
   properties: PropertyListing[];

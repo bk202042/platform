@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { PropertyListing, PropertyImage } from "@/types/property"; // Import PropertyImage
+import { PropertyListing, PropertyImage } from "@/lib/types/property"; // Import PropertyImage
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";

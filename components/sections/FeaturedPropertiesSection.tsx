@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FeaturedPropertyTabs } from "@/components/property/FeaturedPropertyTabs";
 import { PropertyStatistics } from "@/components/property/PropertyStatistics";
-import { PropertyListing } from "@/types/property";
+import { PropertyListing } from "@/lib/types/property";
 
 interface FeaturedPropertiesSectionProps {
   rentProperties: PropertyListing[];

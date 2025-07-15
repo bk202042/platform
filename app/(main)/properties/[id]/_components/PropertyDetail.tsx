@@ -1,6 +1,6 @@
 "use client";
 
-import { PropertyListing } from "@/types/property";
+import { PropertyListing } from "@/lib/types/property";
 import { Heart, MapPin, BedDouble, Bath, Maximize2 } from "lucide-react";
 
 interface PropertyDetailProps {

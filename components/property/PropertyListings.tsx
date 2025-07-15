@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { PropertyCard } from "@/components/property/PropertyCard";
 import { PropertyCardSkeleton } from "@/components/property/PropertyCardSkeleton";
 import { Button } from "@/components/ui/button";
-import { PropertyListing } from "@/types/property";
+import { PropertyListing } from "@/lib/types/property";
 
 // Extend PropertyListing to include optional distance_meters
 type PropertyListingWithDistance = PropertyListing & {

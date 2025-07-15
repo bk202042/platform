@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { PropertyListing } from "@/types/property";
+import { PropertyListing } from "@/lib/types/property";
 import { Card, CardContent } from "@/components/ui/card"; // Removed unused Card parts
 import { Button } from "@/components/ui/button";
 // Removed unused Link import
