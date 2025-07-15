@@ -8,7 +8,7 @@ interface CommunityPostDetailPageProps {
   params: Promise<{
     postId: string;
   }>;
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function CommunityPostDetailPage({ params }: CommunityPostDetailPageProps) {
