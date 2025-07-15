@@ -1,5 +1,5 @@
 import * as React from "react";
-import { AgentRegistrationData } from "@/types/agent";
+import { AgentRegistrationData } from "@/lib/types/agent";
 
 export default function AgentRegistrationEmail({
   firstName,
