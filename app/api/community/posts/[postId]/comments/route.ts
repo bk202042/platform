@@ -4,12 +4,10 @@ import { createCommentSchema } from '@/lib/validation/community';
 import { createClient } from '@/lib/supabase/server';
 
 // POST: 댓글/대댓글 작성
-export async function POST(
-  req: NextRequest,
-  context: { params: { postId: string } },
-) {
-  const { params } = context;
+export async function POST(req: NextRequest) {
   try {
+    const { pathname } = new URL(req.url);
+    const postId = pathname.split('/')[4];
     // SSR 인증: 로그인 사용자만 허용
     const supabase = await createClient();
     const {
@@ -18,7 +16,6 @@ export async function POST(
     if (!user) {
       return NextResponse.json({ success: false, message: '로그인이 필요합니다.' }, { status: 401 });
     }
-    const postId = params.postId;
     if (!postId) {
       return NextResponse.json({ success: false, message: '게시글 정보가 올바르지 않습니다.' }, { status: 400 });
     }
