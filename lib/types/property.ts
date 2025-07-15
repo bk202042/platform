@@ -38,6 +38,11 @@ export interface PropertyImage {
  * Based on the columns in the property_listings table
  * Designed for Vietnamese properties targeting Korean expatriates
  */
+export interface GeoJSONPoint {
+  type: "Point";
+  coordinates: [number, number]; // [longitude, latitude]
+}
+
 export interface PropertyListing {
   id?: string;
   title: string;
@@ -47,7 +52,7 @@ export interface PropertyListing {
   bedrooms: number;
   bathrooms: number;
   square_footage: number;
-  location: any; // Type for PostGIS location data might need refinement
+  location: GeoJSONPoint; // Type for PostGIS location data might need refinement
   address: string;
   features: PropertyFeatures; // Consider defining this more strictly if possible
   created_at?: string;

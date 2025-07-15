@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 
@@ -25,7 +26,7 @@ export default function GoogleSignInButton({ children }: GoogleSignInButtonProps
       variant="outline"
       className="w-full flex items-center justify-center gap-2"
     >
-      <img
+      <Image
         src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
         alt="Google logo"
         width={20}

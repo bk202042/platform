@@ -1,4 +1,4 @@
-import { PropertyType } from "./property";
+import { PropertyType, GeoJSONPoint, PropertyFeatures } from "./property";
 
 export interface PropertyListing {
   id: string;
@@ -9,9 +9,9 @@ export interface PropertyListing {
   bedrooms: number | null;
   bathrooms: number | null;
   square_footage: number | null;
-  location: any; // Geography type
+  location: GeoJSONPoint; // Geography type
   address: string;
-  features: Record<string, any>;
+  features: PropertyFeatures;
   created_by: string | null;
   created_at: string;
   updated_at: string;
