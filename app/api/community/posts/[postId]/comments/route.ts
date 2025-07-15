@@ -4,7 +4,10 @@ import { createCommentSchema } from '@/lib/validation/community';
 import { createClient } from '@/lib/supabase/server';
 
 // POST: 댓글/대댓글 작성
-export async function POST(req: NextRequest, { params }: { params: { postId: string } }) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { postId: string } },
+) {
   try {
     // SSR 인증: 로그인 사용자만 허용
     const supabase = await createClient();
