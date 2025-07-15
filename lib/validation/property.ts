@@ -2,7 +2,7 @@ import {
   PropertyListing,
   ValidationResult,
   PropertySearchParams,
-} from "@/types/property";
+} from "@/lib/types/property";
 
 /**
  * Validates a property listing for the Vietnamese market
@@ -60,30 +60,28 @@ export function validatePropertyListing(
   // Location validation
   if (!property.location) {
     errors.push("Location is required");
+  } else if (
+    !property.location.type ||
+    property.location.type !== "Point" ||
+    !property.location.coordinates ||
+    property.location.coordinates.length !== 2
+  ) {
+    errors.push("Invalid GeoJSON Point format for location");
   } else {
-    // Check if location is in the format 'POINT(longitude latitude)'
-    const pointRegex = /^POINT\((\d+\.\d+) (\d+\.\d+)\)$/;
-    const match = property.location.match(pointRegex);
+    const [longitude, latitude] = property.location.coordinates;
 
-    if (!match) {
-      errors.push('Location must be in the format "POINT(longitude latitude)"');
-    } else {
-      const longitude = parseFloat(match[1]);
-      const latitude = parseFloat(match[2]);
+    // Vietnam longitude range: approximately 102° to 110° E
+    // Vietnam latitude range: approximately 8° to 24° N
+    if (longitude < 102 || longitude > 110) {
+      errors.push(
+        "Longitude must be within Vietnam (approximately 102° to 110° E)",
+      );
+    }
 
-      // Vietnam longitude range: approximately 102° to 110° E
-      // Vietnam latitude range: approximately 8° to 24° N
-      if (longitude < 102 || longitude > 110) {
-        errors.push(
-          "Longitude must be within Vietnam (approximately 102° to 110° E)",
-        );
-      }
-
-      if (latitude < 8 || latitude > 24) {
-        errors.push(
-          "Latitude must be within Vietnam (approximately 8° to 24° N)",
-        );
-      }
+    if (latitude < 8 || latitude > 24) {
+      errors.push(
+        "Latitude must be within Vietnam (approximately 8° to 24° N)",
+      );
     }
   }
 
