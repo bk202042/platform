@@ -3,7 +3,7 @@
 import { memo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { PropertyListing } from "@/types/property";
+import { PropertyListing } from "@/lib/types/property";
 import {
   Card,
   CardContent,

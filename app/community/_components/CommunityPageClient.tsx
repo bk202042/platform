@@ -1,0 +1,138 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ApartmentSelect } from '@/components/community/ApartmentSelect';
+import { PostCard } from '@/components/community/PostCard';
+import { NewPostDialogClient } from './NewPostDialog.client';
+import { CategorySidebar } from './CategorySidebar';
+import { Button } from '@/components/ui/button';
+import { Home, ChevronRight } from 'lucide-react';
+
+// Define types for props
+interface City {
+  id: string;
+  name: string;
+}
+interface Apartment {
+  id: string;
+  name: string;
+  city_id: string;
+  cities: { name: string } | null;
+}
+interface Post {
+  id: string;
+  title?: string;
+  body: string;
+  images?: string[];
+  user?: { name?: string };
+  created_at: string;
+  likes_count: number;
+  comments_count: number;
+}
+interface CommunityPageClientProps {
+  posts: Post[];
+  cities: City[];
+  apartments: Apartment[];
+  initialCategory: string;
+  initialApartmentId: string;
+}
+
+export function CommunityPageClient({
+  posts,
+  cities,
+  apartments,
+  initialApartmentId,
+}: CommunityPageClientProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [apartmentId, setApartmentId] = useState(initialApartmentId);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleApartmentChange = (newApartmentId: string) => {
+    setApartmentId(newApartmentId);
+    const params = new URLSearchParams(searchParams.toString());
+    if (newApartmentId) {
+      params.set('apartmentId', newApartmentId);
+    } else {
+      params.delete('apartmentId');
+    }
+    router.push(`/community?${params.toString()}`);
+  };
+
+  const currentCategory = searchParams.get('category');
+
+  return (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Page Header */}
+      <div className="mb-6">
+        <nav className="flex" aria-label="Breadcrumb">
+          <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+            <li className="inline-flex items-center">
+              <Link href="/" className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                <Home className="w-4 h-4 me-2.5" />
+                Home
+              </Link>
+            </li>
+            <li>
+              <div className="flex items-center">
+                <ChevronRight className="w-4 h-4 text-gray-400" />
+                <Link href="/community" className="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">Community</Link>
+              </div>
+            </li>
+            {currentCategory && (
+               <li>
+                <div className="flex items-center">
+                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2">{currentCategory}</span>
+                </div>
+              </li>
+            )}
+          </ol>
+        </nav>
+        <h1 className="text-3xl font-bold mt-4">Community</h1>
+      </div>
+
+      {/* Two-column layout */}
+      <div className="flex flex-col md:flex-row md:gap-6">
+        {/* Left Sidebar */}
+        <CategorySidebar />
+
+        {/* Main Feed */}
+        <main className="flex-1 min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <ApartmentSelect
+              value={apartmentId}
+              onChange={handleApartmentChange}
+            />
+            <Button onClick={() => setIsDialogOpen(true)}>
+              Write a Post
+            </Button>
+            <NewPostDialogClient
+              open={isDialogOpen}
+              onClose={() => setIsDialogOpen(false)}
+              cities={cities}
+              apartments={apartments}
+              onPostCreated={() => {
+                setIsDialogOpen(false);
+                router.refresh();
+              }}
+            />
+          </div>
+
+          <div className="space-y-4">
+            {posts.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                <p className="text-lg">No posts found.</p>
+                <p>Be the first to post in this community!</p>
+              </div>
+            ) : (
+              posts.map((post) => <PostCard key={post.id} post={post} />)
+            )}
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
