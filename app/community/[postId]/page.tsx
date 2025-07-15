@@ -5,14 +5,14 @@ import { CommentForm } from '@/components/community/CommentForm.client';
 import { getPostById } from '@/lib/data/community';
 
 interface CommunityPostDetailPageProps {
-  params: {
+  params: Promise<{
     postId: string;
-  };
+  }>;
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export default async function CommunityPostDetailPage({ params }: CommunityPostDetailPageProps) {
-  const postId = params.postId;
+  const { postId } = await params;
   // SSR 데이터 패칭
   const post = await getPostById(postId);
   // const commentsSSR: Comment[] = await getComments(postId); // getComments 제거
