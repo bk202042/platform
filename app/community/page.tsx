@@ -10,18 +10,26 @@ function isCommunityCategory(
   );
 }
 
+interface CommunityPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
 export default async function CommunityPage({
   searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  const city = typeof searchParams.city === 'string' ? searchParams.city : '';
+}: CommunityPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const city =
+    typeof resolvedSearchParams.city === 'string'
+      ? resolvedSearchParams.city
+      : '';
   const apartmentId =
-    typeof searchParams.apartmentId === 'string'
-      ? searchParams.apartmentId
+    typeof resolvedSearchParams.apartmentId === 'string'
+      ? resolvedSearchParams.apartmentId
       : '';
   const categoryParam =
-    typeof searchParams.category === 'string' ? searchParams.category : '';
+    typeof resolvedSearchParams.category === 'string'
+      ? resolvedSearchParams.category
+      : '';
   const category = isCommunityCategory(categoryParam)
     ? categoryParam
     : undefined;
