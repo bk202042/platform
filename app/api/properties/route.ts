@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPropertyListings, PropertySearchParams } from "@/lib/data/property";
-import { PropertyType } from "@/types/property";
+import { PropertyType } from "@/lib/types/property";
 
 /**
  * GET handler for property listings
