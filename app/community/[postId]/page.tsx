@@ -4,7 +4,13 @@ import { CommentList, Comment } from '@/components/community/CommentList';
 import { CommentForm } from '@/components/community/CommentForm.client';
 import { getPostById } from '@/lib/data/community';
 
-export default async function CommunityPostDetailPage({ params }: { params: { postId: string } }) {
+interface CommunityPostDetailPageProps {
+  params: {
+    postId: string;
+  };
+}
+
+export default async function CommunityPostDetailPage({ params }: CommunityPostDetailPageProps) {
   const postId = params.postId;
   // SSR 데이터 패칭
   const post = await getPostById(postId);
