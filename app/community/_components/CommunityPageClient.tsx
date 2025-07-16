@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ApartmentSelect } from '@/components/community/ApartmentSelect';
 import { PostList } from '@/components/community/PostList';
+import { SortSelector, SortOption } from '@/components/community/SortSelector';
 import { NewPostDialogClient } from './NewPostDialog.client';
 import { CategorySidebar } from './CategorySidebar';
 import { Button } from '@/components/ui/button';
@@ -63,6 +64,9 @@ export function CommunityPageClient({
   const [apartmentId, setApartmentId] = useState(initialApartmentId);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Get current sort from URL params
+  const currentSort = (searchParams.get('sort') as SortOption) || 'latest';
 
   // Check authentication status
   useEffect(() => {
@@ -134,14 +138,23 @@ export function CommunityPageClient({
 
         {/* Main Feed */}
         <main className="flex-1 min-w-0">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-            <ApartmentSelect
-              value={apartmentId}
-              onChange={handleApartmentChange}
-            />
-            <Button onClick={() => setIsDialogOpen(true)}>
-              Write a Post
-            </Button>
+          <div className="flex flex-col gap-4 mb-6">
+            {/* Top row: Apartment filter and Write Post button */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <ApartmentSelect
+                value={apartmentId}
+                onChange={handleApartmentChange}
+              />
+              <Button onClick={() => setIsDialogOpen(true)}>
+                Write a Post
+              </Button>
+            </div>
+
+            {/* Second row: Sort selector */}
+            <div className="flex justify-end">
+              <SortSelector value={currentSort} />
+            </div>
+
             <NewPostDialogClient
               open={isDialogOpen}
               onClose={() => setIsDialogOpen(false)}

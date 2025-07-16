@@ -29,6 +29,8 @@ export default async function CommunityPage({
   const category = isCommunityCategory(categoryParam)
     ? categoryParam
     : undefined;
+  const sortParam = typeof resolvedSearchParams.sort === 'string' ? resolvedSearchParams.sort : 'latest';
+  const sort = (sortParam === 'popular' || sortParam === 'latest') ? sortParam : 'latest';
 
   // Get current user for like status
   const supabase = await createClient();
@@ -45,7 +47,7 @@ export default async function CommunityPage({
     city: city || undefined,
     apartmentId: apartmentId || undefined,
     category,
-    sort: 'latest',
+    sort,
     userId: user?.id,
   });
 

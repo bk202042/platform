@@ -50,7 +50,7 @@
   - Add loading states for comment submission and deletion
   - _Requirements: 1.3, 5.2, 5.3_
 
-- [ ] 7. Implement SortSelector for filtering options
+- [x] 7. Implement SortSelector for filtering options
   - Create SortSelector dropdown component with Korean labels
   - Add sorting options for "최신순" (latest) and "인기순" (popular)
   - Implement URL state management for sort preferences
@@ -75,7 +75,7 @@
   - Add accessibility features with proper ARIA navigation labels
   - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-- [ ] 10. Enhance NewPostDialog with improved UX
+- [x] 10. Enhance NewPostDialog with improved UX
   - Update NewPostDialog with better form layout and spacing
   - Improve validation feedback with field-level error highlighting
   - Add loading states for form submission
