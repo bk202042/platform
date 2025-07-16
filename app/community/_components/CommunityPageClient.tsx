@@ -1,15 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ApartmentSelect } from '@/components/community/ApartmentSelect';
 import { PostList } from '@/components/community/PostList';
 import { SortSelector, SortOption } from '@/components/community/SortSelector';
 import { NewPostDialogClient } from './NewPostDialog.client';
 import { CategorySidebar } from './CategorySidebar';
+import { CommunityBreadcrumb } from '@/components/community/CommunityBreadcrumb';
 import { Button } from '@/components/ui/button';
-import { Home, ChevronRight } from 'lucide-react';
 import { CommunityCategory } from '@/lib/validation/community';
 import { createClient } from '@/lib/supabase/client';
 
@@ -104,31 +103,12 @@ export function CommunityPageClient({
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Page Header */}
       <div className="mb-6">
-        <nav className="flex" aria-label="Breadcrumb">
-          <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-            <li className="inline-flex items-center">
-              <Link href="/" className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
-                <Home className="w-4 h-4 me-2.5" />
-                Home
-              </Link>
-            </li>
-            <li>
-              <div className="flex items-center">
-                <ChevronRight className="w-4 h-4 text-gray-400" />
-                <Link href="/community" className="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2">Community</Link>
-              </div>
-            </li>
-            {currentCategory && (
-               <li>
-                <div className="flex items-center">
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
-                  <span className="ms-1 text-sm font-medium text-gray-500 md:ms-2">{currentCategory}</span>
-                </div>
-              </li>
-            )}
-          </ol>
-        </nav>
-        <h1 className="text-3xl font-bold mt-4">Community</h1>
+        <CommunityBreadcrumb
+          category={currentCategory as CommunityCategory}
+          apartmentName={apartments.find(apt => apt.id === apartmentId)?.name}
+          cityName={apartments.find(apt => apt.id === apartmentId)?.cities?.name}
+        />
+        <h1 className="text-3xl font-bold mt-4">커뮤니티</h1>
       </div>
 
       {/* Two-column layout */}

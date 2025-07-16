@@ -70,6 +70,9 @@ export default async function CommunityPostDetailPage({ params }: PostDetailPage
             <CommunityBreadcrumb
               postTitle={post.title || post.body.slice(0, 30)}
               category={post.category}
+              apartmentName={post.apartments?.name}
+              cityName={post.apartments?.cities?.name}
+              showMobileBack={true}
             />
           </div>
 
