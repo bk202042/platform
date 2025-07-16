@@ -180,15 +180,16 @@ export async function createPost(data: {
 // 댓글 목록 조회
 export async function getComments(postId: string) {
   const supabase = await createClient();
-  const { data, error } = await supabase
+
+  // First get comments with user IDs
+  const { data: commentsData, error } = await supabase
     .from('community_comments')
     .select(`
       id,
       content,
       created_at,
       parent_id,
-      user_id,
-      profiles!community_comments_user_id_fkey(full_name)
+      user_id
     `)
     .eq('post_id', postId)
     .eq('is_deleted', false)
@@ -199,14 +200,36 @@ export async function getComments(postId: string) {
     return [];
   }
 
+  if (!commentsData || commentsData.length === 0) {
+    return [];
+  }
+
+  // Get unique user IDs
+  const userIds = [...new Set(commentsData.map(comment => comment.user_id))];
+
+  // Get user data from auth.users
+  const { data: usersData, error: usersError } = await supabase
+    .from('auth.users')
+    .select('id, raw_user_meta_data')
+    .in('id', userIds);
+
+  if (usersError) {
+    console.error('getComments users error:', usersError);
+  }
+
+  // Create user lookup map
+  const userMap = new Map();
+  usersData?.forEach(user => {
+    const fullName = user.raw_user_meta_data?.full_name || user.raw_user_meta_data?.name || '익명';
+    userMap.set(user.id, fullName);
+  });
+
   // Transform data to match Comment interface and build hierarchy
-  const comments = data.map(comment => ({
+  const comments = commentsData.map(comment => ({
     id: comment.id,
     body: comment.content,
     user: {
-      name: comment.profiles && typeof comment.profiles === 'object' && 'full_name' in comment.profiles
-        ? (comment.profiles as { full_name: string }).full_name || '익명'
-        : '익명'
+      name: userMap.get(comment.user_id) || '익명'
     },
     created_at: comment.created_at,
     parent_id: comment.parent_id,
