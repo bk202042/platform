@@ -1,5 +1,6 @@
 import { CommunityCategory } from '../validation/community';
 import { createClient } from '../supabase/server';
+import { Comment } from '@/components/community/CommentSection';
 
 // 게시글 목록 조회
 export async function getPosts(params: {
@@ -56,6 +57,98 @@ export async function getPostById(postId: string) {
   return data;
 }
 
+// 게시글 상세 조회 (사용자 좋아요 상태 포함)
+export async function getPostByIdWithLikeStatus(postId: string, userId?: string) {
+  const supabase = await createClient();
+
+  // Get post data
+  const { data: post, error: postError } = await supabase
+    .from('community_posts')
+    .select('*, apartments(city_id, name, slug, cities(name))')
+    .eq('id', postId)
+    .eq('is_deleted', false)
+    .single();
+
+  if (postError) {
+    console.error('getPostByIdWithLikeStatus error:', postError);
+    return null;
+  }
+
+  // Get user's like status if user is provided
+  let isLiked = false;
+  if (userId) {
+    const { data: likeData } = await supabase
+      .from('community_likes')
+      .select('id')
+      .eq('post_id', postId)
+      .eq('user_id', userId)
+      .single();
+
+    isLiked = !!likeData;
+  }
+
+  return {
+    ...post,
+    isLiked
+  };
+}
+
+// 게시글 목록 조회 (사용자 좋아요 상태 포함)
+export async function getPostsWithLikeStatus(params: {
+  city?: string;
+  apartmentId?: string;
+  category?: CommunityCategory;
+  sort?: 'popular' | 'latest';
+  userId?: string;
+}) {
+  const supabase = await createClient();
+  let query = supabase
+    .from('community_posts')
+    .select(`*, apartments(city_id, name, slug, cities(name))`)
+    .eq('is_deleted', false);
+
+  if (params.apartmentId) {
+    query = query.eq('apartment_id', params.apartmentId);
+  }
+  if (params.category) {
+    query = query.eq('category', params.category);
+  }
+  if (params.city) {
+    query = query.eq('apartments.city_id', params.city);
+  }
+
+  // 인기글: 7일 내 좋아요순 상단, 나머지 최신순
+  if (params.sort === 'popular') {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    query = query.gte('created_at', sevenDaysAgo.toISOString()).order('likes_count', { ascending: false });
+  } else {
+    query = query.order('created_at', { ascending: false });
+  }
+
+  const { data: posts, error } = await query;
+  if (error) throw error;
+
+  // Get user's like status for all posts if user is provided
+  if (params.userId && posts) {
+    const postIds = posts.map(post => post.id);
+    const { data: likes } = await supabase
+      .from('community_likes')
+      .select('post_id')
+      .eq('user_id', params.userId)
+      .in('post_id', postIds);
+
+    const likedPostIds = new Set(likes?.map(like => like.post_id) || []);
+
+    return posts.map(post => ({
+      ...post,
+      isLiked: likedPostIds.has(post.id)
+    }));
+  }
+
+  return posts?.map(post => ({ ...post, isLiked: false })) || [];
+}
+
 // 게시글 생성
 export async function createPost(data: {
   apartment_id: string;
@@ -82,6 +175,90 @@ export async function createPost(data: {
     .single();
   if (error) throw error;
   return post;
+}
+
+// 댓글 목록 조회
+export async function getComments(postId: string) {
+  const supabase = await createClient();
+
+  // First get comments with user IDs
+  const { data: commentsData, error } = await supabase
+    .from('community_comments')
+    .select(`
+      id,
+      content,
+      created_at,
+      parent_id,
+      user_id
+    `)
+    .eq('post_id', postId)
+    .eq('is_deleted', false)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('getComments error:', error);
+    return [];
+  }
+
+  if (!commentsData || commentsData.length === 0) {
+    return [];
+  }
+
+  // Get unique user IDs
+  const userIds = [...new Set(commentsData.map(comment => comment.user_id))];
+
+  // Get user data from auth.users
+  const { data: usersData, error: usersError } = await supabase
+    .from('auth.users')
+    .select('id, raw_user_meta_data')
+    .in('id', userIds);
+
+  if (usersError) {
+    console.error('getComments users error:', usersError);
+  }
+
+  // Create user lookup map
+  const userMap = new Map();
+  usersData?.forEach(user => {
+    const fullName = user.raw_user_meta_data?.full_name || user.raw_user_meta_data?.name || '익명';
+    userMap.set(user.id, fullName);
+  });
+
+  // Transform data to match Comment interface and build hierarchy
+  const comments = commentsData.map(comment => ({
+    id: comment.id,
+    body: comment.content,
+    user: {
+      name: userMap.get(comment.user_id) || '익명'
+    },
+    created_at: comment.created_at,
+    parent_id: comment.parent_id,
+    user_id: comment.user_id, // Include user_id for ownership validation
+    children: [] as Comment[]
+  }));
+
+  // Build comment hierarchy
+  const commentMap = new Map<string, Comment>();
+  const rootComments: Comment[] = [];
+
+  // First pass: create map of all comments
+  comments.forEach(comment => {
+    commentMap.set(comment.id, comment);
+  });
+
+  // Second pass: build hierarchy
+  comments.forEach(comment => {
+    if (comment.parent_id) {
+      const parent = commentMap.get(comment.parent_id);
+      if (parent && parent.children) {
+        parent.children.push(comment);
+      }
+    } else {
+      rootComments.push(comment);
+    }
+  });
+
+  return rootComments;
 }
 
 // 댓글 생성
@@ -155,4 +332,41 @@ export async function getApartments() {
     .order('name', { ascending: true });
   if (error) throw error;
   return data;
+}
+
+// 카테고리별 게시글 수 조회
+export async function getPostCountsByCategory(params?: {
+  city?: string;
+  apartmentId?: string;
+}) {
+  const supabase = await createClient();
+  let query = supabase
+    .from('community_posts')
+    .select('category, apartments(city_id)', { count: 'exact' })
+    .eq('is_deleted', false);
+
+  if (params?.apartmentId) {
+    query = query.eq('apartment_id', params.apartmentId);
+  }
+  if (params?.city) {
+    query = query.eq('apartments.city_id', params.city);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+
+  // Count posts by category
+  const counts: Record<string, number> = {};
+  let totalCount = 0;
+
+  data?.forEach((post) => {
+    const category = post.category;
+    counts[category] = (counts[category] || 0) + 1;
+    totalCount++;
+  });
+
+  return {
+    total: totalCount,
+    byCategory: counts
+  };
 }
