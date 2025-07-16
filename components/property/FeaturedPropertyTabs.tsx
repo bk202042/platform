@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { PropertyCard } from "@/components/property/PropertyCard";
-import { PropertyListing } from "@/types/property";
+import { PropertyListing } from "@/lib/types/property";
 
 interface FeaturedPropertyTabsProps {
   rentProperties: PropertyListing[];

@@ -2,7 +2,7 @@ import {
   PropertyListing,
   ValidationResult,
   PropertySearchParams,
-} from "@/types/property";
+} from "@/lib/types/property";
 
 /**
  * Validates a property listing for the Vietnamese market
@@ -61,15 +61,11 @@ export function validatePropertyListing(
   if (!property.location) {
     errors.push("Location is required");
   } else {
-    // Check if location is in the format 'POINT(longitude latitude)'
-    const pointRegex = /^POINT\((\d+\.\d+) (\d+\.\d+)\)$/;
-    const match = property.location.match(pointRegex);
-
-    if (!match) {
-      errors.push('Location must be in the format "POINT(longitude latitude)"');
+    // Check if location is a valid GeoJSON Point object
+    if (property.location.type !== 'Point' || !Array.isArray(property.location.coordinates) || property.location.coordinates.length !== 2) {
+      errors.push('Location must be a valid GeoJSON Point.');
     } else {
-      const longitude = parseFloat(match[1]);
-      const latitude = parseFloat(match[2]);
+      const [longitude, latitude] = property.location.coordinates;
 
       // Vietnam longitude range: approximately 102° to 110° E
       // Vietnam latitude range: approximately 8° to 24° N

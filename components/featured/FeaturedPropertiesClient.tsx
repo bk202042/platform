@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/carousel";
 import { Building2, Home as HomeIcon, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { PropertyListing } from "@/types/property";
+import type { PropertyListing } from "@/lib/types/property";
 import Link from "next/link";
 import { PropertyCard } from "@/components/property/PropertyCard";
 

@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 // POST: 댓글/대댓글 작성
 export async function POST(
   req: NextRequest,
-  { params }: { params: { postId: string } },
+  { params }: { params: Promise<{ postId: string }> },
 ) {
   try {
     // SSR 인증: 로그인 사용자만 허용
@@ -17,7 +17,7 @@ export async function POST(
     if (!user) {
       return NextResponse.json({ success: false, message: '로그인이 필요합니다.' }, { status: 401 });
     }
-    const postId = params.postId;
+    const { postId } = await params;
     if (!postId) {
       return NextResponse.json({ success: false, message: '게시글 정보가 올바르지 않습니다.' }, { status: 400 });
     }

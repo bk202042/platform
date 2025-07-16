@@ -1,6 +1,6 @@
 "use client";
 
-import { PropertyListing } from "@/types/property";
+import { PropertyListing } from "@/lib/types/property";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bath, BedDouble, Home, Maximize, Wifi } from "lucide-react";
 

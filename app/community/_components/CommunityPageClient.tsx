@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ApartmentSelect } from '@/components/community/ApartmentSelect';
-import { PostCard } from '@/components/community/PostCard';
+import { PostList } from '@/components/community/PostList';
 import { NewPostDialogClient } from './NewPostDialog.client';
 import { CategorySidebar } from './CategorySidebar';
 import { Button } from '@/components/ui/button';
 import { Home, ChevronRight } from 'lucide-react';
+import { CommunityCategory } from '@/lib/validation/community';
+import { createClient } from '@/lib/supabase/client';
 
 // Define types for props
 interface City {
@@ -21,6 +23,7 @@ interface Apartment {
   city_id: string;
   cities: { name: string } | null;
 }
+
 interface Post {
   id: string;
   title?: string;
@@ -30,6 +33,11 @@ interface Post {
   created_at: string;
   likes_count: number;
   comments_count: number;
+  category?: CommunityCategory;
+  apartments?: {
+    name: string;
+    cities?: { name: string } | null;
+  };
 }
 interface CommunityPageClientProps {
   posts: Post[];
@@ -37,6 +45,10 @@ interface CommunityPageClientProps {
   apartments: Apartment[];
   initialCategory: string;
   initialApartmentId: string;
+  postCounts?: {
+    total: number;
+    byCategory: Record<string, number>;
+  };
 }
 
 export function CommunityPageClient({
@@ -44,11 +56,32 @@ export function CommunityPageClient({
   cities,
   apartments,
   initialApartmentId,
+  postCounts,
 }: CommunityPageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [apartmentId, setApartmentId] = useState(initialApartmentId);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsAuthenticated(!!user);
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const supabase = createClient();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session?.user);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleApartmentChange = (newApartmentId: string) => {
     setApartmentId(newApartmentId);
@@ -97,7 +130,7 @@ export function CommunityPageClient({
       {/* Two-column layout */}
       <div className="flex flex-col md:flex-row md:gap-6">
         {/* Left Sidebar */}
-        <CategorySidebar />
+        <CategorySidebar postCounts={postCounts} />
 
         {/* Main Feed */}
         <main className="flex-1 min-w-0">
@@ -121,16 +154,14 @@ export function CommunityPageClient({
             />
           </div>
 
-          <div className="space-y-4">
-            {posts.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
-                <p className="text-lg">No posts found.</p>
-                <p>Be the first to post in this community!</p>
-              </div>
-            ) : (
-              posts.map((post) => <PostCard key={post.id} post={post} />)
-            )}
-          </div>
+          <PostList
+            posts={posts}
+            onPostClick={(postId) => router.push(`/community/${postId}`)}
+            onCreatePost={() => setIsDialogOpen(true)}
+            currentFilter={currentCategory || undefined}
+            isAuthenticated={isAuthenticated}
+            onRetry={() => router.refresh()}
+          />
         </main>
       </div>
     </div>

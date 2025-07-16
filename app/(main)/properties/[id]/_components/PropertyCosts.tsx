@@ -1,6 +1,6 @@
 "use client";
 
-import { PropertyListing } from "@/types/property";
+import { PropertyListing } from "@/lib/types/property";
 import { Separator } from "@/components/ui/separator";
 
 interface PropertyCostsProps {

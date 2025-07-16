@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RequestInfoSchema, RequestInfo } from "@/lib/validation/request-info";
 import { toast } from "sonner";
-import type { PropertyListing } from "@/types/property";
+import type { PropertyListing } from "@/lib/types/property";
 
 export default function RequestInfoForm({
   property,

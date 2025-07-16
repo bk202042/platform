@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { createPostSchema, COMMUNITY_CATEGORIES } from '@/lib/validation/community';
+import { ImageUpload } from '@/components/community/ImageUpload';
 import { z } from 'zod';
 
 interface NewPostDialogProps {
@@ -44,7 +45,7 @@ export function NewPostDialog({ open, onClose, onSubmit, cities, apartments, def
     onSubmit(result.data);
   }
 
-  const images = form.images ?? [];
+
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -133,50 +134,14 @@ export function NewPostDialog({ open, onClose, onSubmit, cities, apartments, def
               placeholder="내용을 입력하세요"
             />
           </div>
-          {/* 이미지 업로드(간단 버전) */}
+          {/* 이미지 업로드 */}
           <div>
-            <label className="block text-sm font-medium mb-1">이미지 (최대 5개, URL 입력)</label>
-            <input
-              type="text"
-              className="w-full border rounded-lg px-3 py-2 mb-1"
-              placeholder="이미지 URL 입력 후 Enter"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && e.currentTarget.value) {
-                  e.preventDefault();
-                  if (images.length < 5) {
-                    setForm((prev) => ({ ...prev, images: [...(prev.images ?? []), e.currentTarget.value] }));
-                    e.currentTarget.value = '';
-                  }
-                }
-              }}
-              disabled={images.length >= 5}
+            <label className="block text-sm font-medium mb-2">이미지 (최대 5개)</label>
+            <ImageUpload
+              onImagesChange={(urls) => setForm(prev => ({ ...prev, images: urls }))}
+              maxFiles={5}
+              initialImages={form.images || []}
             />
-            <div className="flex flex-wrap gap-2 mt-1">
-              {/* 이미지 미리보기 삭제: 이미지를 렌더링하지 않음 */}
-              {/* {images.map((url, idx) => (
-                <div key={idx} className="relative w-16 h-16 rounded overflow-hidden border">
-                  <img src={url} alt="업로드 이미지" className="object-cover w-full h-full" />
-                  <button
-                    type="button"
-                    className="absolute top-0 right-0 bg-white bg-opacity-80 rounded-bl px-1 text-xs text-red-500"
-                    aria-label="이미지 삭제"
-                    onClick={() => setForm((prev) => ({ ...prev, images: (prev.images ?? []).filter((_, i) => i !== idx) }))}
-                  >×</button>
-                </div>
-              ))} */}
-              {/* 이미지 삭제 버튼만 남기고 싶으면 아래처럼 구현 가능 */}
-              {images.map((url, idx) => (
-                <div key={idx} className="relative flex items-center gap-2">
-                  <span className="text-xs text-gray-500 truncate max-w-[80px]">{url}</span>
-                  <button
-                    type="button"
-                    className="text-red-500 text-xs px-1"
-                    aria-label="이미지 삭제"
-                    onClick={() => setForm((prev) => ({ ...prev, images: (prev.images ?? []).filter((_, i) => i !== idx) }))}
-                  >×</button>
-                </div>
-              ))}
-            </div>
           </div>
           {(localError || error) && <div className="text-red-500 text-sm mt-1">{localError || error}</div>}
           <button

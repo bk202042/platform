@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { PropertyType } from "@/types/property";
+import { PropertyType } from "@/lib/types/property";
 import { usePropertyData } from "@/components/providers/PropertyDataProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
