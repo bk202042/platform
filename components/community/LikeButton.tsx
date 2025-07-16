@@ -27,11 +27,11 @@ export function LikeButton({
   const [isPending, startTransition] = useTransition();
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Size configurations
+  // Size configurations with mobile-optimized touch targets
   const sizeConfig = {
-    sm: { icon: 14, padding: 'px-2 py-1', text: 'text-xs' },
-    md: { icon: 18, padding: 'px-3 py-1.5', text: 'text-sm' },
-    lg: { icon:20, padding: 'px-4 py-2', text: 'text-base' }
+    sm: { icon: 14, padding: 'px-3 py-2 min-h-[44px]', text: 'text-xs' },
+    md: { icon: 18, padding: 'px-4 py-2.5 min-h-[48px]', text: 'text-sm' },
+    lg: { icon: 20, padding: 'px-5 py-3 min-h-[52px]', text: 'text-base' }
   };
 
   const config = sizeConfig[size];

@@ -57,7 +57,7 @@ export function PostCard({ post, onClick }: PostCardProps) {
 
   return (
     <article
-      className="group relative bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200 cursor-pointer overflow-hidden"
+      className="group relative bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200 cursor-pointer overflow-hidden touch-manipulation"
       onClick={onClick}
       tabIndex={0}
       role="button"
