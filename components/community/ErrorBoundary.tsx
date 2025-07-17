@@ -21,9 +21,9 @@ interface ErrorFallbackProps {
 
 function DefaultErrorFallback({ error, resetError }: ErrorFallbackProps) {
   return (
-    <div className="flex flex-col items-center justify-center p-8 text-center bg-white rounded-lg border border-gray-200 shadow-sm">
+    <div className="flex flex-col items-center justify-center p-8 text-center bg-white rounded-lg border border-gray-200 shadow-sm" role="alertdialog" aria-modal="true">
       <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
-      <h2 className="text-lg font-semibold text-gray-900 mb-2">
+      <h2 className="text-lg font-semibold text-gray-900 mb-2" aria-live="assertive">
         문제가 발생했습니다
       </h2>
       <p className="text-gray-600 mb-4 max-w-md">
@@ -40,7 +40,7 @@ function DefaultErrorFallback({ error, resetError }: ErrorFallbackProps) {
           </pre>
         </details>
       )}
-      <Button onClick={resetError} className="flex items-center gap-2">
+      <Button onClick={resetError} className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
         <RefreshCw size={16} />
         다시 시도
       </Button>

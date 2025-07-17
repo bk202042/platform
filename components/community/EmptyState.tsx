@@ -62,7 +62,7 @@ export function EmptyState({
   const displayIcon = icon || config.icon;
 
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+    <div className="flex flex-col items-center justify-center py-12 px-4 text-center" role="status" aria-live="polite">
       <div className="mb-4">
         {displayIcon}
       </div>
@@ -78,14 +78,14 @@ export function EmptyState({
       {(actionHref || onAction) && (
         <div className="flex flex-col sm:flex-row gap-3">
           {actionHref ? (
-            <Button asChild>
+            <Button asChild className="focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
               <Link href={actionHref} className="flex items-center gap-2">
                 <Plus size={16} />
                 {displayActionLabel}
               </Link>
             </Button>
           ) : onAction ? (
-            <Button onClick={onAction} className="flex items-center gap-2">
+            <Button onClick={onAction} className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
               <Plus size={16} />
               {displayActionLabel}
             </Button>

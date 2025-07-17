@@ -45,12 +45,12 @@ export function NetworkError({
   const displayDescription = description || config.description;
 
   return (
-    <div className="flex flex-col items-center justify-center p-8 text-center bg-white rounded-lg border border-red-200 shadow-sm">
+    <div className="flex flex-col items-center justify-center p-8 text-center bg-white rounded-lg border border-red-200 shadow-sm" role="alert">
       <div className="mb-4">
         {config.icon}
       </div>
 
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+      <h3 className="text-lg font-semibold text-gray-900 mb-2" aria-live="assertive">
         {displayTitle}
       </h3>
 
@@ -59,7 +59,7 @@ export function NetworkError({
       </p>
 
       {showRetryButton && onRetry && (
-        <Button onClick={onRetry} className="flex items-center gap-2">
+        <Button onClick={onRetry} className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
           <RefreshCw size={16} />
           다시 시도
         </Button>

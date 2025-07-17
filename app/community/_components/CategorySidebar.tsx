@@ -49,7 +49,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
   };
 
   return (
-    <aside className="w-full md:w-64 md:flex-shrink-0">
+    <aside className="w-full md:w-64 md:flex-shrink-0" role="navigation" aria-label="카테고리 내비게이션">
       <div className="px-4 md:px-0">
         {/* Desktop Header */}
         <div className="hidden md:flex items-center justify-between mb-6">
@@ -77,15 +77,16 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
           "md:hidden transition-all duration-300 ease-in-out overflow-hidden",
           isCollapsed ? "max-h-0 opacity-0" : "max-h-96 opacity-100 pb-4"
         )}>
-          <div className="flex space-x-3 overflow-x-auto pb-2 scrollbar-hide">
+          <div className="flex space-x-3 overflow-x-auto pb-2 scrollbar-hide" tabIndex={0} aria-label="카테고리 목록">
             <button
               onClick={() => handleCategoryClick('')}
               className={cn(
-                'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200',
+                'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
                 !currentCategory
                   ? 'bg-primary text-primary-foreground shadow-sm'
                   : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
               )}
+              aria-current={!currentCategory ? 'page' : undefined}
             >
               <span>전체</span>
               {postCounts && (
@@ -106,11 +107,12 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                   key={cat}
                   onClick={() => handleCategoryClick(cat)}
                   className={cn(
-                    'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200',
+                    'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
                     currentCategory === cat
                       ? 'bg-primary text-primary-foreground shadow-sm'
                       : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
                   )}
+                  aria-current={currentCategory === cat ? 'page' : undefined}
                 >
                   <span>{getCategoryDisplayName(cat)}</span>
                   {count !== null && (
@@ -130,17 +132,18 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
         </div>
 
         {/* Desktop: Vertical list */}
-        <nav className="hidden md:block">
+        <nav className="hidden md:block" aria-label="카테고리 목록">
           <ul className="space-y-1">
             <li>
               <button
                 onClick={() => handleCategoryClick('')}
                 className={cn(
-                  'w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 group',
+                  'w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
                   !currentCategory
                     ? 'bg-primary text-primary-foreground shadow-sm'
                     : 'text-foreground hover:bg-accent/60 hover:text-accent-foreground'
                 )}
+                aria-current={!currentCategory ? 'page' : undefined}
               >
                 <span>전체 게시글</span>
                 {postCounts && (
@@ -163,11 +166,12 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                   <button
                     onClick={() => handleCategoryClick(cat)}
                     className={cn(
-                      'w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 group',
+                      'w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
                       isActive
                         ? 'bg-primary text-primary-foreground shadow-sm'
                         : 'text-foreground hover:bg-accent/60 hover:text-accent-foreground'
                     )}
+                    aria-current={isActive ? 'page' : undefined}
                   >
                     <span>{getCategoryDisplayName(cat)}</span>
                     {count !== null && (

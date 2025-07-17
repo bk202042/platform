@@ -64,7 +64,7 @@ export function ImageUpload({
   const canUploadMore = totalImages < maxFiles;
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn('space-y-4', className)} role="region" aria-label="이미지 업로드 영역">
       {/* Drag and Drop Zone */}
       {canUploadMore && (
         <div
@@ -237,6 +237,16 @@ export function ImageUpload({
       {/* File Count Info */}
       <div className="text-xs text-gray-500 text-center">
         {totalImages}/{maxFiles} 이미지
+      </div>
+
+      {/* Upload status */}
+      <div aria-live="polite">
+        {loading && <span>이미지 업로드 중...</span>}
+        {errors.length > 0 && (
+          <ul className="text-red-500 text-xs mt-2">
+            {errors.map((err, i) => <li key={i}>{err}</li>)}
+          </ul>
+        )}
       </div>
     </div>
   );

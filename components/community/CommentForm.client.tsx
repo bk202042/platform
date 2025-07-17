@@ -24,7 +24,7 @@ export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
   }
 
   return (
-    <form className="flex flex-col gap-2 mt-2" onSubmit={handleSubmit}>
+    <form className="flex flex-col gap-2 mt-2" onSubmit={handleSubmit} role="form" aria-live="polite">
       <textarea
         className="w-full border rounded-lg px-3 py-2 min-h-[48px] text-sm"
         placeholder="댓글을 입력하세요"
@@ -38,7 +38,7 @@ export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
       <div className="flex justify-end">
         <button
           type="submit"
-          className="bg-primary-600 text-white font-semibold px-4 py-1.5 rounded-lg hover:bg-primary-700 transition-colors text-sm"
+          className="bg-primary-600 text-white font-semibold px-4 py-1.5 rounded-lg hover:bg-primary-700 transition-colors text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           disabled={loading || !body.trim()}
         >
           등록

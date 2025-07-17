@@ -209,6 +209,8 @@ export function MobileNavigation({
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
+        role="navigation"
+        aria-label="모바일 내비게이션 바"
       >
         {/* Swipe indicator */}
         {isSwipeActive && swipeProgress > 0.2 && showBackButton && (
@@ -262,6 +264,8 @@ export function MobileNavigation({
           <div
             ref={menuRef}
             className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-xl transform transition-transform duration-300 ease-in-out"
+            role="navigation"
+            aria-label="모바일 메뉴"
           >
             {/* Menu Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
@@ -287,22 +291,25 @@ export function MobileNavigation({
                 <div className="space-y-1">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start text-left p-3 h-auto min-h-[44px]"
+                    className="w-full justify-start text-left p-3 h-auto min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     onClick={() => {
                       router.push('/');
                       setIsMenuOpen(false);
                     }}
+                    tabIndex={0}
+                    autoFocus
                   >
                     <Home size={18} className="mr-3" />
                     홈
                   </Button>
                   <Button
                     variant="ghost"
-                    className="w-full justify-start text-left p-3 h-auto min-h-[44px]"
+                    className="w-full justify-start text-left p-3 h-auto min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     onClick={() => {
                       router.push('/community');
                       setIsMenuOpen(false);
                     }}
+                    tabIndex={0}
                   >
                     <MessageSquare size={18} className="mr-3" />
                     커뮤니티

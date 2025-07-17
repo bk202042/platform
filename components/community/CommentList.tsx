@@ -17,9 +17,9 @@ interface CommentListProps {
 
 export function CommentList({ comments, onReply, onDelete }: CommentListProps) {
   return (
-    <ul className="flex flex-col gap-3 mt-2">
+    <ul className="flex flex-col gap-3 mt-2" role="list">
       {comments.map((comment) => (
-        <li key={comment.id} className={`bg-gray-50 rounded-lg p-3 ${comment.parent_id ? 'ml-6' : ''}`}>
+        <li key={comment.id} className={`bg-gray-50 rounded-lg p-3 ${comment.parent_id ? 'ml-6' : ''}`} role="listitem">
           <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
             <span>{comment.user?.name || '익명'}</span>
             <span aria-hidden="true">·</span>
@@ -30,7 +30,7 @@ export function CommentList({ comments, onReply, onDelete }: CommentListProps) {
             {onReply && (
               <button
                 type="button"
-                className="text-primary-600 text-xs font-medium hover:underline"
+                className="text-primary-600 text-xs font-medium hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                 onClick={() => onReply(comment)}
                 aria-label="답글 달기"
               >
@@ -40,7 +40,7 @@ export function CommentList({ comments, onReply, onDelete }: CommentListProps) {
             {onDelete && (
               <button
                 type="button"
-                className="text-red-500 text-xs font-medium hover:underline"
+                className="text-red-500 text-xs font-medium hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                 onClick={() => onDelete(comment)}
                 aria-label="댓글 삭제"
               >

@@ -158,8 +158,9 @@ export function CommunityBreadcrumb({
               {item.href ? (
                 <Link
                   href={item.href}
-                  className="hover:text-blue-600 transition-colors duration-200 font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded px-1 py-0.5"
+                  className="hover:text-blue-600 transition-colors duration-200 font-medium hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded px-1 py-0.5"
                   aria-label={`${item.label}로 이동`}
+                  aria-current={index === breadcrumbItems.length - 1 ? 'page' : undefined}
                 >
                   {item.label}
                 </Link>
@@ -195,8 +196,9 @@ export function CommunityBreadcrumb({
             <>
               <Link
                 href={breadcrumbItems[breadcrumbItems.length - 2]?.href || '/community'}
-                className="hover:text-blue-600 transition-colors duration-200 font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded px-1 py-0.5"
+                className="hover:text-blue-600 transition-colors duration-200 font-medium hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded px-1 py-0.5"
                 aria-label={`${breadcrumbItems[breadcrumbItems.length - 2]?.label}로 이동`}
+                aria-current={breadcrumbItems.length === 2 ? 'page' : undefined}
               >
                 {breadcrumbItems[breadcrumbItems.length - 2]?.label}
               </Link>

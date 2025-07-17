@@ -113,7 +113,7 @@ export function LikeButton({
       type="button"
       className={`
         flex items-center gap-1.5 ${config.padding} rounded-lg transition-all duration-200 select-none
-        focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-1
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus:ring-offset-1
         disabled:opacity-50 disabled:cursor-not-allowed
         ${liked
           ? 'text-pink-600 bg-pink-50 hover:bg-pink-100 border border-pink-200'
@@ -122,7 +122,7 @@ export function LikeButton({
         ${isAnimating ? 'scale-110' : 'scale-100'}
         ${isPending ? 'cursor-wait' : 'cursor-pointer'}
       `}
-      aria-pressed={liked}
+      aria-pressed={liked ? 'true' : 'false'}
       aria-label={liked ? '좋아요 취소하기' : '좋아요 누르기'}
       aria-describedby={showCount ? `like-count-${postId}` : undefined}
       onClick={handleToggle}
@@ -149,6 +149,7 @@ export function LikeButton({
           id={`like-count-${postId}`}
           className={`${config.text} font-medium transition-colors duration-200`}
           aria-label={`좋아요 ${count}개`}
+          aria-live="polite"
         >
           {count}
         </span>
