@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ApartmentSelect } from '@/components/community/ApartmentSelect';
 import { PostList } from '@/components/community/PostList';
@@ -11,7 +11,6 @@ import { CommunityBreadcrumb } from '@/components/community/CommunityBreadcrumb'
 import { MobileNavigation } from '@/components/community/MobileNavigation';
 import { Button } from '@/components/ui/button';
 import { CommunityCategory } from '@/lib/validation/community';
-import { createClient } from '@/lib/supabase/client';
 import { Plus } from 'lucide-react';
 
 // Define types for props
@@ -64,29 +63,9 @@ export function CommunityPageClient({
   const searchParams = useSearchParams();
   const [apartmentId, setApartmentId] = useState(initialApartmentId);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Get current sort from URL params
   const currentSort = (searchParams.get('sort') as SortOption) || 'latest';
-
-  // Check authentication status
-  useEffect(() => {
-    const checkAuth = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAuthenticated(!!user);
-    };
-
-    checkAuth();
-
-    // Listen for auth changes
-    const supabase = createClient();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session?.user);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   const handleApartmentChange = (newApartmentId: string) => {
     setApartmentId(newApartmentId);
@@ -169,8 +148,6 @@ export function CommunityPageClient({
             posts={posts}
             onPostClick={(postId) => router.push(`/community/${postId}`)}
             onCreatePost={() => setIsDialogOpen(true)}
-            currentFilter={currentCategory || undefined}
-            isAuthenticated={isAuthenticated}
             onRetry={() => router.refresh()}
           />
         </main>

@@ -5,10 +5,8 @@ import { PostCard, PostCardProps } from './PostCard';
 import { PostCardSkeleton } from './PostCardSkeleton';
 import { MobileLoadingState } from './MobileLoadingState';
 import { MobileErrorState } from './MobileErrorState';
-import { EmptyState, PostsEmptyState, CategoryEmptyState } from './EmptyState';
+import { EmptyState } from './EmptyState';
 import { NetworkError, useErrorType } from './NetworkError';
-import { Button } from '@/components/ui/button';
-import { RefreshCw, MessageSquare, PlusCircle } from 'lucide-react';
 
 interface PostListProps {
   /** Array of posts to display */
@@ -23,14 +21,6 @@ interface PostListProps {
   onPostClick?: (postId: string) => void;
   /** Function called when create post is clicked */
   onCreatePost?: () => void;
-  /** Current filter/category for contextual empty state */
-  currentFilter?: string;
-  /** Whether user is authenticated for contextual messaging */
-  isAuthenticated?: boolean;
-  /** Custom empty state message */
-  emptyStateMessage?: string;
-  /** Custom error message */
-  errorMessage?: string;
   /** Number of skeleton items to show during loading */
   skeletonCount?: number;
 }
@@ -42,12 +32,12 @@ export function PostList({
   onRetry,
   onPostClick,
   onCreatePost,
-  currentFilter,
-  isAuthenticated = false,
-  emptyStateMessage,
-  errorMessage,
   skeletonCount = 3,
 }: PostListProps) {
+  // Always call hooks at the top
+  const errorObj = error ? new Error(error) : null;
+  const errorType = useErrorType(errorObj);
+
   // Loading state
   if (isLoading) {
     return (
@@ -70,15 +60,12 @@ export function PostList({
 
   // Error state
   if (error) {
-    const errorObj = new Error(error);
-    const errorType = useErrorType(errorObj);
-
     return (
       <>
         {/* Mobile error state */}
         <MobileErrorState
           type="network"
-          message={errorMessage}
+          message={error}
           onRetry={onRetry}
           className="md:hidden"
         />
@@ -87,7 +74,7 @@ export function PostList({
         <div className="hidden md:block">
           <NetworkError
             type={errorType || 'generic'}
-            description={errorMessage}
+            description={error}
             onRetry={onRetry}
           />
         </div>
@@ -99,10 +86,8 @@ export function PostList({
   if (posts.length === 0) {
     return (
       <EmptyState
-        currentFilter={currentFilter}
-        isAuthenticated={isAuthenticated}
-        onCreatePost={onCreatePost}
-        customMessage={emptyStateMessage}
+        type="posts"
+        onAction={onCreatePost}
       />
     );
   }
@@ -116,96 +101,15 @@ export function PostList({
       aria-live="polite"
     >
       {posts.map((post, index) => (
-        <PostCard
-          key={post.id}
-          post={post}
-          onClick={() => onPostClick?.(post.id)}
-          aria-posinset={index + 1}
-          aria-setsize={posts.length}
-        />
+        <div role="article" key={post.id}>
+          <PostCard
+            post={post}
+            onClick={() => onPostClick?.(post.id)}
+            aria-posinset={index + 1}
+            aria-setsize={posts.length}
+          />
+        </div>
       ))}
     </div>
   );
 }
-
-interface EmptyStateProps {
-  currentFilter?: string;
-  isAuthenticated?: boolean;
-  onCreatePost?: () => void;
-  customMessage?: string;
-}
-
-function EmptyState({
-  currentFilter,
-  isAuthenticated,
-  onCreatePost,
-  customMessage
-}: EmptyStateProps) {
-  const getEmptyStateContent = () => {
-    if (customMessage) {
-      return {
-        title: '게시글이 없습니다',
-        message: customMessage,
-        actionText: '첫 게시글 작성하기',
-      };
-    }
-
-    if (currentFilter) {
-      return {
-        title: `'${currentFilter}' 카테고리에 게시글이 없습니다`,
-        message: '이 카테고리에서 첫 번째 게시글을 작성해보세요!',
-        actionText: '게시글 작성하기',
-      };
-    }
-
-    return {
-      title: '아직 게시글이 없습니다',
-      message: '우리 아파트 커뮤니티의 첫 번째 게시글을 작성해보세요!',
-      actionText: '첫 게시글 작성하기',
-    };
-  };
-
-  const { title, message, actionText } = getEmptyStateContent();
-
-  return (
-    <div
-      className="flex flex-col items-center justify-center py-16 px-4 text-center"
-      role="status"
-      aria-live="polite"
-    >
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 max-w-md w-full">
-        <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 bg-blue-100 rounded-full">
-          <MessageSquare className="w-8 h-8 text-blue-600" aria-hidden="true" />
-        </div>
-
-        <h3 className="text-xl font-semibold text-gray-900 mb-3">
-          {title}
-        </h3>
-
-        <p className="text-gray-600 mb-6 leading-relaxed">
-          {message}
-        </p>
-
-        {isAuthenticated && onCreatePost && (
-          <Button
-            onClick={onCreatePost}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-            aria-label={actionText}
-          >
-            <PlusCircle className="w-4 h-4 mr-2" aria-hidden="true" />
-            {actionText}
-          </Button>
-        )}
-
-        {!isAuthenticated && (
-          <p className="text-sm text-gray-500 mt-4">
-            게시글을 작성하려면 로그인이 필요합니다.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Export the EmptyState component for standalone use
-export { EmptyState };

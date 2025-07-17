@@ -11,10 +11,10 @@ interface OptimisticUpdateOptions<T> {
   revertOnError?: boolean;
 }
 
-export function useOptimisticUpdate<T = any>() {
+export function useOptimisticUpdate() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const executeOptimistic = useCallback(async <TData>(
+  const executeOptimistic = useCallback(async <TData = unknown>(
     optimisticUpdate: () => void,
     asyncOperation: () => Promise<TData>,
     revertUpdate: () => void,
