@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { MessageCircle, Clock, User } from 'lucide-react';
 import { CommunityCategory } from '@/lib/validation/community';
 import { LikeButton } from './LikeButton';
@@ -31,12 +31,15 @@ const CATEGORY_CONFIG = {
   FREE: { label: '나눔', color: 'bg-purple-100 text-purple-800 border-purple-200' },
 } as const;
 
-export function PostCard({ post, onClick }: PostCardProps) {
-  const categoryConfig = post.category ? CATEGORY_CONFIG[post.category] : null;
+export const PostCard = memo(function PostCard({ post, onClick }: PostCardProps) {
+  const categoryConfig = useMemo(() =>
+    post.category ? CATEGORY_CONFIG[post.category] : null,
+    [post.category]
+  );
 
-  // Format date for better readability
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+  // Format date for better readability - memoized to avoid recalculation
+  const formattedDate = useMemo(() => {
+    const date = new Date(post.created_at);
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
 
@@ -53,7 +56,12 @@ export function PostCard({ post, onClick }: PostCardProps) {
         ...(date.getFullYear() !== now.getFullYear() && { year: 'numeric' })
       });
     }
-  };
+  }, [post.created_at]);
+
+  const ariaLabel = useMemo(() =>
+    post.title ? `게시글: ${post.title}` : `게시글: ${post.body.slice(0, 50)}...`,
+    [post.title, post.body]
+  );
 
   return (
     <article
@@ -61,7 +69,7 @@ export function PostCard({ post, onClick }: PostCardProps) {
       onClick={onClick}
       tabIndex={0}
       role="button"
-      aria-label={post.title ? `게시글: ${post.title}` : `게시글: ${post.body.slice(0, 50)}...`}
+      aria-label={ariaLabel}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -122,7 +130,7 @@ export function PostCard({ post, onClick }: PostCardProps) {
             </div>
             <div className="flex items-center gap-0.5 xs:gap-1 flex-shrink-0">
               <Clock size={10} className="text-gray-400 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5" />
-              <span className="whitespace-nowrap text-xs xs:text-sm">{formatDate(post.created_at)}</span>
+              <span className="whitespace-nowrap text-xs xs:text-sm">{formattedDate}</span>
             </div>
           </div>
 
@@ -146,4 +154,4 @@ export function PostCard({ post, onClick }: PostCardProps) {
       </div>
     </article>
   );
-}
+});

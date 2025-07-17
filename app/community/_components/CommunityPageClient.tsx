@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ApartmentSelect } from '@/components/community/ApartmentSelect';
 import { PostList } from '@/components/community/PostList';
 import { SortSelector, SortOption } from '@/components/community/SortSelector';
-import { NewPostDialogClient } from './NewPostDialog.client';
+import { LazyNewPostDialog } from './NewPostDialog.lazy';
 import { CategorySidebar } from './CategorySidebar';
 import { CommunityBreadcrumb } from '@/components/community/CommunityBreadcrumb';
 import { MobileNavigation } from '@/components/community/MobileNavigation';
@@ -67,7 +67,7 @@ export function CommunityPageClient({
   // Get current sort from URL params
   const currentSort = (searchParams.get('sort') as SortOption) || 'latest';
 
-  const handleApartmentChange = (newApartmentId: string) => {
+  const handleApartmentChange = useCallback((newApartmentId: string) => {
     setApartmentId(newApartmentId);
     const params = new URLSearchParams(searchParams.toString());
     if (newApartmentId) {
@@ -76,9 +76,36 @@ export function CommunityPageClient({
       params.delete('apartmentId');
     }
     router.push(`/community?${params.toString()}`);
-  };
+  }, [searchParams, router]);
 
   const currentCategory = searchParams.get('category');
+
+  // Memoize expensive computations
+  const currentApartment = useMemo(() =>
+    apartments.find(apt => apt.id === apartmentId),
+    [apartments, apartmentId]
+  );
+
+  const handlePostClick = useCallback((postId: string) => {
+    router.push(`/community/${postId}`);
+  }, [router]);
+
+  const handleCreatePost = useCallback(() => {
+    setIsDialogOpen(true);
+  }, []);
+
+  const handleDialogClose = useCallback(() => {
+    setIsDialogOpen(false);
+  }, []);
+
+  const handlePostCreated = useCallback(() => {
+    setIsDialogOpen(false);
+    router.refresh();
+  }, [router]);
+
+  const handleRetry = useCallback(() => {
+    router.refresh();
+  }, [router]);
 
   return (
     <>
@@ -89,7 +116,7 @@ export function CommunityPageClient({
       >
         <Button
           size="sm"
-          onClick={() => setIsDialogOpen(true)}
+          onClick={handleCreatePost}
           className="flex items-center gap-1 px-3 py-2 min-h-[36px]"
         >
           <Plus size={16} />
@@ -102,8 +129,8 @@ export function CommunityPageClient({
         <div className="mb-6">
           <CommunityBreadcrumb
             category={currentCategory as CommunityCategory}
-            apartmentName={apartments.find(apt => apt.id === apartmentId)?.name}
-            cityName={apartments.find(apt => apt.id === apartmentId)?.cities?.name}
+            apartmentName={currentApartment?.name}
+            cityName={currentApartment?.cities?.name}
           />
           <h1 className="text-3xl font-bold mt-4 hidden md:block">커뮤니티</h1>
         </div>
@@ -122,7 +149,7 @@ export function CommunityPageClient({
                 value={apartmentId}
                 onChange={handleApartmentChange}
               />
-              <Button onClick={() => setIsDialogOpen(true)}>
+              <Button onClick={handleCreatePost}>
                 Write a Post
               </Button>
             </div>
@@ -132,23 +159,20 @@ export function CommunityPageClient({
               <SortSelector value={currentSort} />
             </div>
 
-            <NewPostDialogClient
+            <LazyNewPostDialog
               open={isDialogOpen}
-              onClose={() => setIsDialogOpen(false)}
+              onClose={handleDialogClose}
               cities={cities}
               apartments={apartments}
-              onPostCreated={() => {
-                setIsDialogOpen(false);
-                router.refresh();
-              }}
+              onPostCreated={handlePostCreated}
             />
           </div>
 
           <PostList
             posts={posts}
-            onPostClick={(postId) => router.push(`/community/${postId}`)}
-            onCreatePost={() => setIsDialogOpen(true)}
-            onRetry={() => router.refresh()}
+            onPostClick={handlePostClick}
+            onCreatePost={handleCreatePost}
+            onRetry={handleRetry}
           />
         </main>
       </div>

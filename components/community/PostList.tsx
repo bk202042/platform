@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { PostCard, PostCardProps } from './PostCard';
 import { PostCardSkeleton } from './PostCardSkeleton';
 import { MobileLoadingState } from './MobileLoadingState';
@@ -25,7 +25,7 @@ interface PostListProps {
   skeletonCount?: number;
 }
 
-export function PostList({
+export const PostList = memo(function PostList({
   posts = [],
   isLoading = false,
   error = null,
@@ -37,6 +37,11 @@ export function PostList({
   // Always call hooks at the top
   const errorObj = error ? new Error(error) : null;
   const errorType = useErrorType(errorObj);
+
+  // Memoize click handlers to prevent unnecessary re-renders
+  const handlePostClick = useCallback((postId: string) => {
+    onPostClick?.(postId);
+  }, [onPostClick]);
 
   // Loading state
   if (isLoading) {
@@ -102,14 +107,14 @@ export function PostList({
     >
       {posts.map((post, index) => (
         <div role="article" key={post.id}>
-          <PostCard
-            post={post}
-            onClick={() => onPostClick?.(post.id)}
-            aria-posinset={index + 1}
-            aria-setsize={posts.length}
-          />
+        <PostCard
+          post={post}
+          onClick={() => handlePostClick(post.id)}
+          aria-posinset={index + 1}
+          aria-setsize={posts.length}
+        />
         </div>
       ))}
     </div>
   );
-}
+});
