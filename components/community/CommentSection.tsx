@@ -59,47 +59,47 @@ function CommentItem({ comment, currentUserId, onReply, onDelete, depth = 0 }: C
   };
 
   return (
-    <div className={`${depth > 0 ? 'ml-6 pl-4 border-l-2 border-gray-100' : ''}`}>
-      <div className="bg-gray-50 rounded-lg p-4 mb-3">
+    <div className={`${depth > 0 ? 'ml-3 sm:ml-6 pl-2 sm:pl-4 border-l-2 border-gray-100' : ''}`}>
+      <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mb-3">
         {/* Comment header */}
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <span className="font-medium text-gray-900">
+        <div className="flex items-start justify-between mb-2 gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-sm text-gray-600 min-w-0 flex-1">
+            <span className="font-medium text-gray-900 truncate">
               {comment.user?.name || '익명'}
             </span>
-            <span aria-hidden="true">·</span>
-            <span>{formatDate(comment.created_at)}</span>
+            <span aria-hidden="true" className="flex-shrink-0">·</span>
+            <span className="text-xs sm:text-sm whitespace-nowrap">{formatDate(comment.created_at)}</span>
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             {canReply && (
               <button
                 type="button"
-                className="text-blue-600 text-sm font-medium hover:text-blue-700 transition-colors flex items-center gap-1"
+                className="text-blue-600 text-xs sm:text-sm font-medium hover:text-blue-700 transition-colors flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 min-h-[32px]"
                 onClick={() => onReply(comment)}
                 aria-label="답글 달기"
               >
-                <Reply size={14} />
-                답글
+                <Reply size={12} className="sm:w-3.5 sm:h-3.5" />
+                <span className="hidden sm:inline">답글</span>
               </button>
             )}
             {isOwner && (
               <button
                 type="button"
-                className="text-red-500 text-sm font-medium hover:text-red-600 transition-colors flex items-center gap-1"
+                className="text-red-500 text-xs sm:text-sm font-medium hover:text-red-600 transition-colors flex items-center gap-1 px-2 py-1 rounded hover:bg-red-50 min-h-[32px]"
                 onClick={() => onDelete(comment)}
                 aria-label="댓글 삭제"
               >
-                <Trash2 size={14} />
-                삭제
+                <Trash2 size={12} className="sm:w-3.5 sm:h-3.5" />
+                <span className="hidden sm:inline">삭제</span>
               </button>
             )}
           </div>
         </div>
 
         {/* Comment content */}
-        <div className="text-gray-800 whitespace-pre-line leading-relaxed">
+        <div className="text-gray-800 whitespace-pre-line leading-relaxed text-sm sm:text-base">
           {comment.body}
         </div>
       </div>

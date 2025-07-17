@@ -5,6 +5,8 @@ import { PostCard, PostCardProps } from './PostCard';
 import { PostCardSkeleton } from './PostCardSkeleton';
 import { MobileLoadingState } from './MobileLoadingState';
 import { MobileErrorState } from './MobileErrorState';
+import { EmptyState, PostsEmptyState, CategoryEmptyState } from './EmptyState';
+import { NetworkError, useErrorType } from './NetworkError';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, MessageSquare, PlusCircle } from 'lucide-react';
 
@@ -68,6 +70,9 @@ export function PostList({
 
   // Error state
   if (error) {
+    const errorObj = new Error(error);
+    const errorType = useErrorType(errorObj);
+
     return (
       <>
         {/* Mobile error state */}
@@ -79,34 +84,12 @@ export function PostList({
         />
 
         {/* Desktop error state */}
-        <div
-          className="hidden md:flex flex-col items-center justify-center py-12 px-4 text-center"
-          role="alert"
-          aria-live="assertive"
-        >
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md w-full">
-            <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 bg-red-100 rounded-full">
-              <RefreshCw className="w-6 h-6 text-red-600" aria-hidden="true" />
-            </div>
-            <h3 className="text-lg font-semibold text-red-900 mb-2">
-              게시글을 불러올 수 없습니다
-            </h3>
-            <p className="text-sm text-red-700 mb-4">
-              {errorMessage || '네트워크 연결을 확인하고 다시 시도해주세요.'}
-            </p>
-            {onRetry && (
-              <Button
-                onClick={onRetry}
-                variant="outline"
-                size="sm"
-                className="border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400"
-                aria-label="게시글 다시 불러오기"
-              >
-                <RefreshCw className="w-4 h-4 mr-2" aria-hidden="true" />
-                다시 시도
-              </Button>
-            )}
-          </div>
+        <div className="hidden md:block">
+          <NetworkError
+            type={errorType || 'generic'}
+            description={errorMessage}
+            onRetry={onRetry}
+          />
         </div>
       </>
     );
@@ -127,7 +110,7 @@ export function PostList({
   // Posts list
   return (
     <div
-      className="space-y-4"
+      className="space-y-3 sm:space-y-4"
       role="feed"
       aria-label={`게시글 목록 (${posts.length}개)`}
       aria-live="polite"
