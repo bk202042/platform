@@ -1,32 +1,212 @@
 'use client';
 
-import React from 'react';
-import { Toaster } from 'sonner';
+import React, { createContext, useContext, useCallback } from 'react';
+import { toast } from 'sonner';
+import { toastUtils, handleApiError, withRetry } from '@/lib/utils/toast';
 
-export function ToastProvider() {
+interface ToastContextType {
+  // Success toasts
+  showSuccess: (message: string, description?: string) => void;
+  showPostCreated: () => void;
+  showCommentAdded: () => void;
+  showLiked: () => void;
+  showUnliked: () => void;
+
+  // Error toasts
+  showError: (message: string, description?: string) => void;
+  showNetworkError: () => void;
+  showAuthError: () => void;
+  showValidationError: (message: string) => void;
+
+  // Loading toasts
+  showLoading: (message: string) => string; // Returns toast ID
+  dismissToast: (toastId: string) => void;
+
+  // Promise toasts
+  showPromiseToast: <T>(
+    promise: Promise<T>,
+    messages: {
+      loading: string;
+      success: string;
+      error: string;
+    }
+  ) => Promise<T>;
+
+  // Utility functions
+  handleApiError: (error: unknown, context?: string) => void;
+  withRetry: <T>(operation: () => Promise<T>, maxRetries?: number, context?: string) => Promise<T>;
+}
+
+const ToastContext = createContext<ToastContextType | undefined>(undefined);
+
+export function useToast() {
+  const context = useContext(ToastContext);
+  if (context === undefined) {
+    throw new Error('useToast must be used within a ToastProvider');
+  }
+  return context;
+}
+
+interface ToastProviderProps {
+  children: React.ReactNode;
+}
+
+export function ToastProvider({ children }: ToastProviderProps) {
+  // Success toasts
+  const showSuccess = useCallback((message: string, description?: string) => {
+    toast.success(message, description ? { description } : undefined);
+  }, []);
+
+  const showPostCreated = useCallback(() => {
+    toastUtils.success.postCreated();
+  }, []);
+
+  const showCommentAdded = useCallback(() => {
+    toastUtils.success.commentAdded();
+  }, []);
+
+  const showLiked = useCallback(() => {
+    toastUtils.success.liked();
+  }, []);
+
+  const showUnliked = useCallback(() => {
+    toastUtils.success.unliked();
+  }, []);
+
+  // Error toasts
+  const showError = useCallback((message: string, description?: string) => {
+    toast.error(message, description ? { description } : undefined);
+  }, []);
+
+  const showNetworkError = useCallback(() => {
+    toastUtils.error.network();
+  }, []);
+
+  const showAuthError = useCallback(() => {
+    toastUtils.error.auth();
+  }, []);
+
+  const showValidationError = useCallback((message: string) => {
+    toastUtils.error.validation(message);
+  }, []);
+
+  // Loading toasts
+  const showLoading = useCallback((message: string) => {
+    return toast.loading(message);
+  }, []);
+
+  const dismissToast = useCallback((toastId: string) => {
+    toast.dismiss(toastId);
+  }, []);
+
+  // Promise toasts
+  const showPromiseToast = useCallback(<T,>(
+    promise: Promise<T>,
+    messages: {
+      loading: string;
+      success: string;
+      error: string;
+    }
+  ) => {
+    return toast.promise(promise, {
+      loading: messages.loading,
+      success: messages.success,
+      error: (error) => {
+        const errorMessage = error instanceof Error ? error.message : messages.error;
+        return `${messages.error}: ${errorMessage}`;
+      }
+    });
+  }, []);
+
+  const value: ToastContextType = {
+    showSuccess,
+    showPostCreated,
+    showCommentAdded,
+    showLiked,
+    showUnliked,
+    showError,
+    showNetworkError,
+    showAuthError,
+    showValidationError,
+    showLoading,
+    dismissToast,
+    showPromiseToast,
+    handleApiError,
+    withRetry,
+  };
+
   return (
-    <Toaster
-      position="top-right"
-      expand={false}
-      richColors
-      closeButton
-      toastOptions={{
-        duration: 4000,
-        style: {
-          fontFamily: 'var(--font-sans)',
-        },
-        classNames: {
-          toast: 'group toast group-[.toaster]:bg-white group-[.toaster]:text-gray-900 group-[.toaster]:border-gray-200 group-[.toaster]:shadow-lg',
-          description: 'group-[.toast]:text-gray-600',
-          actionButton: 'group-[.toast]:bg-blue-600 group-[.toast]:text-white',
-          cancelButton: 'group-[.toast]:bg-gray-100 group-[.toast]:text-gray-900',
-          closeButton: 'group-[.toast]:bg-gray-100 group-[.toast]:text-gray-900 group-[.toast]:border-gray-200',
-          success: 'group-[.toast]:bg-green-50 group-[.toast]:text-green-900 group-[.toast]:border-green-200',
-          error: 'group-[.toast]:bg-red-50 group-[.toast]:text-red-900 group-[.toast]:border-red-200',
-          warning: 'group-[.toast]:bg-yellow-50 group-[.toast]:text-yellow-900 group-[.toast]:border-yellow-200',
-          info: 'group-[.toast]:bg-blue-50 group-[.toast]:text-blue-900 group-[.toast]:border-blue-200',
-        },
-      }}
-    />
+    <ToastContext.Provider value={value}>
+      {children}
+    </ToastContext.Provider>
   );
+}
+
+// Hook for optimistic updates with toast feedback
+export function useOptimisticToast() {
+  const { showLoading, dismissToast, showSuccess, showError } = useToast();
+
+  const performOptimisticUpdate = useCallback(async <T,>(
+    operation: () => Promise<T>,
+    options: {
+      loadingMessage: string;
+      successMessage: string;
+      errorMessage: string;
+      onSuccess?: (result: T) => void;
+      onError?: (error: unknown) => void;
+      rollback?: () => void;
+    }
+  ) => {
+    const toastId = showLoading(options.loadingMessage);
+
+    try {
+      const result = await operation();
+      dismissToast(toastId);
+      showSuccess(options.successMessage);
+      options.onSuccess?.(result);
+      return result;
+    } catch (error) {
+      dismissToast(toastId);
+      showError(options.errorMessage);
+      options.rollback?.();
+      options.onError?.(error);
+      throw error;
+    }
+  }, [showLoading, dismissToast, showSuccess, showError]);
+
+  return { performOptimisticUpdate };
+}
+
+// Hook for confirmation dialogs with toast feedback
+export function useConfirmationToast() {
+  const { showPromiseToast } = useToast();
+
+  const confirmAction = useCallback(async <T,>(
+    action: () => Promise<T>,
+    options: {
+      title: string;
+      description: string;
+      confirmLabel?: string;
+      cancelLabel?: string;
+      loadingMessage: string;
+      successMessage: string;
+      errorMessage: string;
+    }
+  ) => {
+    // For now, we'll use a simple confirm dialog
+    // In a real app, you might want to use a custom modal
+    const confirmed = window.confirm(`${options.title}\n\n${options.description}`);
+
+    if (!confirmed) {
+      return null;
+    }
+
+    return showPromiseToast(action(), {
+      loading: options.loadingMessage,
+      success: options.successMessage,
+      error: options.errorMessage,
+    });
+  }, [showPromiseToast]);
+
+  return { confirmAction };
 }

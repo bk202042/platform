@@ -9,6 +9,7 @@ import { LazyNewPostDialog } from './NewPostDialog.lazy';
 import { CategorySidebar } from './CategorySidebar';
 import { CommunityBreadcrumb } from '@/components/community/CommunityBreadcrumb';
 import { MobileNavigation } from '@/components/community/MobileNavigation';
+import { ErrorBoundary, AuthErrorBoundary } from '@/components/community/ErrorBoundary';
 import { Button } from '@/components/ui/button';
 import { CommunityCategory } from '@/lib/validation/community';
 import { Plus } from 'lucide-react';
@@ -108,20 +109,22 @@ export function CommunityPageClient({
   }, [router]);
 
   return (
-    <>
+    <ErrorBoundary>
       {/* Mobile Navigation */}
       <MobileNavigation
         showBackButton={false}
         showMenu={true}
       >
-        <Button
-          size="sm"
-          onClick={handleCreatePost}
-          className="flex items-center gap-1 px-3 py-2 min-h-[36px]"
-        >
-          <Plus size={16} />
-          <span className="hidden xs:inline">글쓰기</span>
-        </Button>
+        <AuthErrorBoundary>
+          <Button
+            size="sm"
+            onClick={handleCreatePost}
+            className="flex items-center gap-1 px-3 py-2 min-h-[36px]"
+          >
+            <Plus size={16} />
+            <span className="hidden xs:inline">글쓰기</span>
+          </Button>
+        </AuthErrorBoundary>
       </MobileNavigation>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -135,48 +138,56 @@ export function CommunityPageClient({
           <h1 className="text-3xl font-bold mt-4 hidden md:block">커뮤니티</h1>
         </div>
 
-      {/* Two-column layout */}
-      <div className="flex flex-col md:flex-row md:gap-6">
-        {/* Left Sidebar */}
-        <CategorySidebar postCounts={postCounts} />
+        {/* Two-column layout */}
+        <div className="flex flex-col md:flex-row md:gap-6">
+          {/* Left Sidebar */}
+          <ErrorBoundary>
+            <CategorySidebar postCounts={postCounts} />
+          </ErrorBoundary>
 
-        {/* Main Feed */}
-        <main className="flex-1 min-w-0">
-          <div className="flex flex-col gap-4 mb-6">
-            {/* Top row: Apartment filter and Write Post button */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <ApartmentSelect
-                value={apartmentId}
-                onChange={handleApartmentChange}
+          {/* Main Feed */}
+          <main className="flex-1 min-w-0">
+            <ErrorBoundary>
+              <div className="flex flex-col gap-4 mb-6">
+                {/* Top row: Apartment filter and Write Post button */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <ApartmentSelect
+                    value={apartmentId}
+                    onChange={handleApartmentChange}
+                  />
+                  <AuthErrorBoundary>
+                    <Button onClick={handleCreatePost}>
+                      Write a Post
+                    </Button>
+                  </AuthErrorBoundary>
+                </div>
+
+                {/* Second row: Sort selector */}
+                <div className="flex justify-end">
+                  <SortSelector value={currentSort} />
+                </div>
+
+                <AuthErrorBoundary>
+                  <LazyNewPostDialog
+                    open={isDialogOpen}
+                    onClose={handleDialogClose}
+                    cities={cities}
+                    apartments={apartments}
+                    onPostCreated={handlePostCreated}
+                  />
+                </AuthErrorBoundary>
+              </div>
+
+              <PostList
+                posts={posts}
+                onPostClick={handlePostClick}
+                onCreatePost={handleCreatePost}
+                onRetry={handleRetry}
               />
-              <Button onClick={handleCreatePost}>
-                Write a Post
-              </Button>
-            </div>
-
-            {/* Second row: Sort selector */}
-            <div className="flex justify-end">
-              <SortSelector value={currentSort} />
-            </div>
-
-            <LazyNewPostDialog
-              open={isDialogOpen}
-              onClose={handleDialogClose}
-              cities={cities}
-              apartments={apartments}
-              onPostCreated={handlePostCreated}
-            />
-          </div>
-
-          <PostList
-            posts={posts}
-            onPostClick={handlePostClick}
-            onCreatePost={handleCreatePost}
-            onRetry={handleRetry}
-          />
-        </main>
+            </ErrorBoundary>
+          </main>
+        </div>
       </div>
-    </div>
-    </>
+    </ErrorBoundary>
   );
 }

@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { Home, Heart, User } from "lucide-react";
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,49 +10,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
-
-interface UserWithMetadata {
-  email?: string;
-  user_metadata?: {
-    full_name?: string;
-  };
-}
+import { useAuth } from "@/components/providers/AuthProvider";
 
 export function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<UserWithMetadata | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, loading, signOut } = useAuth();
   const router = useRouter();
-  const supabase = createClient();
-
-  useEffect(() => {
-    const getUser = async () => {
-      setIsLoading(true);
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-      setIsLoggedIn(!!user);
-      setIsLoading(false);
-    };
-
-    getUser();
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
-      setIsLoggedIn(!!session?.user);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [supabase.auth]);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     router.refresh();
   };
 
@@ -92,27 +55,22 @@ export function Header() {
 
         {/* Right section with auth */}
         <div className="flex items-center space-x-4">
-          {isLoading ? (
+          {loading ? (
             <div className="h-9 w-9 rounded-full bg-gray-200 animate-pulse"></div>
-          ) : isLoggedIn ? (
+          ) : user ? (
             <>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 rounded-full px-4 py-2 font-medium transition-colors bg-[rgb(0,120,130)] text-white hover:bg-[rgb(0,95,103)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgb(0,120,130)]">
                     <User className="h-5 w-5" />
                     <span>
-                      {user &&
-                      typeof user === "object" &&
-                      "user_metadata" in user &&
-                      user.user_metadata
-                        ? user.user_metadata.full_name || user.email
-                        : user?.email}
+                      {user.user_metadata?.full_name || user.email}
                     </span>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-2 py-1.5 text-sm font-medium">
-                    {user?.email}
+                    {user.email}
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>

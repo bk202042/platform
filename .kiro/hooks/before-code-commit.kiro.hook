@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "name": "before_code_commit",
+  "description": "This hook automates the critical validation and formatting steps outlined in \"Implementation & Validation\" and \"Code Formatting\" (Sections II.2 & II.3). It acts as a final quality check to prevent errors and ensure stylistic consistency before code enters the repository.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.js",
+      "**/*.jsx",
+      "package.json",
+      "tsconfig.json"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "When the user initiates a commit or submission action, halt the process temporarily. First, execute the command: 'npx tsc --noEmit'. If the command outputs any compilation errors, report them clearly to the user and ABORT the submission. Do not proceed until the errors are fixed. If tsc passes with no errors, then execute the command: 'npx prettier --write .'. Once formatting is complete, automatically proceed with the user's original submission command."
+  }
+}

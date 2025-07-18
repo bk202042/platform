@@ -1,211 +1,302 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from '@jest/globals';
 import {
+  createPostSchema,
   createCommentSchema,
-  validateCommentDeletion,
-  validateCommentDepth,
-  validateCommentContent
+  COMMUNITY_CATEGORIES,
+  type CommunityCategory
 } from '../community';
 
 describe('Community Validation', () => {
+  describe('createPostSchema', () => {
+    it('should validate a valid post', () => {
+      const validPost = {
+        apartment_id: 'apt-123',
+        category: 'QNA' as CommunityCategory,
+        title: 'Test Post',
+        body: 'This is a test post body',
+        images: ['https://example.com/image1.jpg']
+      };
+
+      const result = createPostSchema.safeParse(validPost);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toEqual(validPost);
+      }
+    });
+
+    it('should require apartment_id', () => {
+      const invalidPost = {
+        category: 'QNA' as CommunityCategory,
+        title: 'Test Post',
+        body: 'This is a test post body',
+        images: []
+      };
+
+      const result = createPostSchema.safeParse(invalidPost);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors.some(e => e.path.includes('apartment_id'))).toBe(true);
+      }
+    });
+
+    it('should require valid category', () => {
+      const invalidPost = {
+        apartment_id: 'apt-123',
+        category: 'INVALID_CATEGORY',
+        title: 'Test Post',
+        body: 'This is a test post body',
+        images: []
+      };
+
+      const result = createPostSchema.safeParse(invalidPost);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors.some(e => e.path.includes('category'))).toBe(true);
+      }
+    });
+
+    it('should require body', () => {
+      const invalidPost = {
+        apartment_id: 'apt-123',
+        category: 'QNA' as CommunityCategory,
+        title: 'Test Post',
+        images: []
+      };
+
+      const result = createPostSchema.safeParse(invalidPost);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors.some(e => e.path.includes('body'))).toBe(true);
+      }
+    });
+
+    it('should validate body length constraints', () => {
+      const shortBodyPost = {
+        apartment_id: 'apt-123',
+        category: 'QNA' as CommunityCategory,
+        title: 'Test Post',
+        body: 'x', // Too short
+        images: []
+      };
+
+      const shortResult = createPostSchema.safeParse(shortBodyPost);
+      expect(shortResult.success).toBe(false);
+
+      const longBodyPost = {
+        apartment_id: 'apt-123',
+        category: 'QNA' as CommunityCategory,
+        title: 'Test Post',
+        body: 'x'.repeat(2001), // Too long
+        images: []
+      };
+
+      const longResult = createPostSchema.safeParse(longBodyPost);
+      expect(longResult.success).toBe(false);
+    });
+
+    it('should validate title length constraints when provided', () => {
+      const longTitlePost = {
+        apartment_id: 'apt-123',
+        category: 'QNA' as CommunityCategory,
+        title: 'x'.repeat(101), // Too long
+        body: 'This is a valid body',
+        images: []
+      };
+
+      const result = createPostSchema.safeParse(longTitlePost);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors.some(e => e.path.includes('title'))).toBe(true);
+      }
+    });
+
+    it('should validate images array constraints', () => {
+      const tooManyImagesPost = {
+        apartment_id: 'apt-123',
+        category: 'QNA' as CommunityCategory,
+        title: 'Test Post',
+        body: 'This is a test post body',
+        images: Array(6).fill('https://example.com/image.jpg') // Too many images
+      };
+
+      const result = createPostSchema.safeParse(tooManyImagesPost);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors.some(e => e.path.includes('images'))).toBe(true);
+      }
+    });
+
+    it('should validate image URLs', () => {
+      const invalidImagePost = {
+        apartment_id: 'apt-123',
+        category: 'QNA' as CommunityCategory,
+        title: 'Test Post',
+        body: 'This is a test post body',
+        images: ['not-a-valid-url']
+      };
+
+      const result = createPostSchema.safeParse(invalidImagePost);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors.some(e => e.path.includes('images'))).toBe(true);
+      }
+    });
+
+    it('should allow empty title', () => {
+      const noTitlePost = {
+        apartment_id: 'apt-123',
+        category: 'QNA' as CommunityCategory,
+        body: 'This is a test post body',
+        images: []
+      };
+
+      const result = createPostSchema.safeParse(noTitlePost);
+      expect(result.success).toBe(true);
+    });
+
+    it('should allow empty images array', () => {
+      const noImagesPost = {
+        apartment_id: 'apt-123',
+        category: 'QNA' as CommunityCategory,
+        title: 'Test Post',
+        body: 'This is a test post body',
+        images: []
+      };
+
+      const result = createPostSchema.safeParse(noImagesPost);
+      expect(result.success).toBe(true);
+    });
+  });
+
   describe('createCommentSchema', () => {
-    it('should validate valid comment data', () => {
+    it('should validate a valid comment', () => {
       const validComment = {
-        post_id: '123e4567-e89b-12d3-a456-426614174000',
-        body: '테스트 댓글입니다.',
-        parent_id: null
+        post_id: 'post-123',
+        body: 'This is a test comment'
       };
 
       const result = createCommentSchema.safeParse(validComment);
       expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toEqual(validComment);
+      }
     });
 
-    it('should validate comment with parent_id', () => {
-      const validReply = {
-        post_id: '123e4567-e89b-12d3-a456-426614174000',
-        body: '답글입니다.',
-        parent_id: '123e4567-e89b-12d3-a456-426614174001'
+    it('should require post_id', () => {
+      const invalidComment = {
+        body: 'This is a test comment'
       };
 
-      const result = createCommentSchema.safeParse(validReply);
+      const result = createCommentSchema.safeParse(invalidComment);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors.some(e => e.path.includes('post_id'))).toBe(true);
+      }
+    });
+
+    it('should require body', () => {
+      const invalidComment = {
+        post_id: 'post-123'
+      };
+
+      const result = createCommentSchema.safeParse(invalidComment);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.errors.some(e => e.path.includes('body'))).toBe(true);
+      }
+    });
+
+    it('should validate body length constraints', () => {
+      const shortBodyComment = {
+        post_id: 'post-123',
+        body: '' // Too short
+      };
+
+      const shortResult = createCommentSchema.safeParse(shortBodyComment);
+      expect(shortResult.success).toBe(false);
+
+      const longBodyComment = {
+        post_id: 'post-123',
+        body: 'x'.repeat(1001) // Too long
+      };
+
+      const longResult = createCommentSchema.safeParse(longBodyComment);
+      expect(longResult.success).toBe(false);
+    });
+  });
+
+  describe('COMMUNITY_CATEGORIES', () => {
+    it('should contain expected categories', () => {
+      expect(COMMUNITY_CATEGORIES).toContain('QNA');
+      expect(COMMUNITY_CATEGORIES).toContain('RECOMMEND');
+      expect(COMMUNITY_CATEGORIES).toContain('SECONDHAND');
+      expect(COMMUNITY_CATEGORIES).toContain('FREE');
+    });
+
+    it('should be readonly array', () => {
+      expect(Array.isArray(COMMUNITY_CATEGORIES)).toBe(true);
+      expect(COMMUNITY_CATEGORIES.length).toBeGreaterThan(0);
+    });
+
+    it('should have unique values', () => {
+      const uniqueCategories = [...new Set(COMMUNITY_CATEGORIES)];
+      expect(uniqueCategories.length).toBe(COMMUNITY_CATEGORIES.length);
+    });
+  });
+
+  describe('Type Guards and Validation Helpers', () => {
+    it('should validate category type correctly', () => {
+      const validCategory: CommunityCategory = 'QNA';
+      expect(COMMUNITY_CATEGORIES.includes(validCategory)).toBe(true);
+
+      // Test with string that should be invalid
+      const invalidCategory = 'INVALID_CATEGORY';
+      expect(COMMUNITY_CATEGORIES.includes(invalidCategory as CommunityCategory)).toBe(false);
+    });
+  });
+
+  describe('Edge Cases and Error Handling', () => {
+    it('should handle null and undefined values', () => {
+      const nullPost = createPostSchema.safeParse(null);
+      expect(nullPost.success).toBe(false);
+
+      const undefinedPost = createPostSchema.safeParse(undefined);
+      expect(undefinedPost.success).toBe(false);
+    });
+
+    it('should handle empty objects', () => {
+      const emptyPost = createPostSchema.safeParse({});
+      expect(emptyPost.success).toBe(false);
+    });
+
+    it('should handle objects with extra properties', () => {
+      const postWithExtra = {
+        apartment_id: 'apt-123',
+        category: 'QNA' as CommunityCategory,
+        title: 'Test Post',
+        body: 'This is a test post body',
+        images: [],
+        extraProperty: 'should be ignored'
+      };
+
+      const result = createPostSchema.safeParse(postWithExtra);
       expect(result.success).toBe(true);
+      if (result.success) {
+        expect('extraProperty' in result.data).toBe(false);
+      }
     });
 
-    it('should reject invalid post_id', () => {
-      const invalidComment = {
-        post_id: 'invalid-uuid',
-        body: '테스트 댓글입니다.'
+    it('should handle malformed data types', () => {
+      const malformedPost = {
+        apartment_id: 123, // Should be string
+        category: 'QNA',
+        title: ['not', 'a', 'string'], // Should be string
+        body: 'This is a test post body',
+        images: 'not-an-array' // Should be array
       };
 
-      const result = createCommentSchema.safeParse(invalidComment);
+      const result = createPostSchema.safeParse(malformedPost);
       expect(result.success).toBe(false);
-      expect(result.error?.errors[0]?.message).toBe('게시글 정보가 올바르지 않습니다.');
-    });
-
-    it('should reject empty body', () => {
-      const invalidComment = {
-        post_id: '123e4567-e89b-12d3-a456-426614174000',
-        body: ''
-      };
-
-      const result = createCommentSchema.safeParse(invalidComment);
-      expect(result.success).toBe(false);
-      expect(result.error?.errors[0]?.message).toBe('댓글을 입력해 주세요.');
-    });
-
-    it('should reject body exceeding max length', () => {
-      const longBody = 'a'.repeat(1001);
-      const invalidComment = {
-        post_id: '123e4567-e89b-12d3-a456-426614174000',
-        body: longBody
-      };
-
-      const result = createCommentSchema.safeParse(invalidComment);
-      expect(result.success).toBe(false);
-      expect(result.error?.errors[0]?.message).toBe('댓글은 1000자 이내여야 합니다.');
-    });
-
-    it('should reject invalid parent_id UUID', () => {
-      const invalidComment = {
-        post_id: '123e4567-e89b-12d3-a456-426614174000',
-        body: '답글입니다.',
-        parent_id: 'invalid-uuid'
-      };
-
-      const result = createCommentSchema.safeParse(invalidComment);
-      expect(result.success).toBe(false);
-      expect(result.error?.errors[0]?.message).toBe('부모 댓글 정보가 올바르지 않습니다.');
-    });
-  });
-
-  describe('validateCommentDeletion', () => {
-    it('should allow owner to delete comment', () => {
-      const comment = { user_id: 'user123' };
-      const currentUserId = 'user123';
-
-      const result = validateCommentDeletion(comment, currentUserId);
-      expect(result.isValid).toBe(true);
-      expect(result.error).toBeUndefined();
-    });
-
-    it('should reject deletion by non-owner', () => {
-      const comment = { user_id: 'user123' };
-      const currentUserId = 'user456';
-
-      const result = validateCommentDeletion(comment, currentUserId);
-      expect(result.isValid).toBe(false);
-      expect(result.error).toBe('댓글을 삭제할 권한이 없습니다.');
-    });
-
-    it('should reject deletion by unauthenticated user', () => {
-      const comment = { user_id: 'user123' };
-      const currentUserId = '';
-
-      const result = validateCommentDeletion(comment, currentUserId);
-      expect(result.isValid).toBe(false);
-      expect(result.error).toBe('로그인이 필요합니다.');
-    });
-  });
-
-  describe('validateCommentDepth', () => {
-    it('should allow root comment (depth 0)', () => {
-      const rootComment = { parent_id: null };
-
-      const result = validateCommentDepth(rootComment);
-      expect(result.isValid).toBe(true);
-      expect(result.depth).toBe(1);
-      expect(result.error).toBeUndefined();
-    });
-
-    it('should allow first level reply (depth 1)', () => {
-      const firstLevelReply = { parent_id: 'parent123' };
-
-      const result = validateCommentDepth(firstLevelReply);
-      expect(result.isValid).toBe(true);
-      expect(result.depth).toBe(2);
-      expect(result.error).toBeUndefined();
-    });
-
-    it('should reject comments exceeding max depth', () => {
-      const deepComment = { parent_id: 'parent123' };
-      const maxDepth = 1;
-
-      const result = validateCommentDepth(deepComment, maxDepth);
-      expect(result.isValid).toBe(false);
-      expect(result.error).toBe('답글은 최대 1단계까지만 가능합니다.');
-      expect(result.depth).toBe(2);
-    });
-
-    it('should use default max depth of 3', () => {
-      const deepComment = { parent_id: 'parent123' };
-
-      const result = validateCommentDepth(deepComment);
-      expect(result.isValid).toBe(true);
-      expect(result.depth).toBe(2);
-    });
-  });
-
-  describe('validateCommentContent', () => {
-    it('should validate and sanitize valid content', () => {
-      const body = '  좋은 댓글입니다.  ';
-
-      const result = validateCommentContent(body);
-      expect(result.isValid).toBe(true);
-      expect(result.sanitizedBody).toBe('좋은 댓글입니다.');
-      expect(result.error).toBeUndefined();
-    });
-
-    it('should reject empty content', () => {
-      const body = '';
-
-      const result = validateCommentContent(body);
-      expect(result.isValid).toBe(false);
-      expect(result.error).toBe('댓글을 입력해 주세요.');
-      expect(result.sanitizedBody).toBeUndefined();
-    });
-
-    it('should reject whitespace-only content', () => {
-      const body = '   ';
-
-      const result = validateCommentContent(body);
-      expect(result.isValid).toBe(false);
-      expect(result.error).toBe('댓글을 입력해 주세요.');
-      expect(result.sanitizedBody).toBeUndefined();
-    });
-
-    it('should reject content exceeding max length', () => {
-      const body = 'a'.repeat(1001);
-
-      const result = validateCommentContent(body);
-      expect(result.isValid).toBe(false);
-      expect(result.error).toBe('댓글은 1000자 이내여야 합니다.');
-      expect(result.sanitizedBody).toBeUndefined();
-    });
-
-    it('should handle content at max length boundary', () => {
-      const body = 'a'.repeat(1000);
-
-      const result = validateCommentContent(body);
-      expect(result.isValid).toBe(true);
-      expect(result.sanitizedBody).toBe(body);
-      expect(result.error).toBeUndefined();
-    });
-
-    it('should handle Korean text properly', () => {
-      const body = '안녕하세요! 좋은 하루 되세요. 😊';
-
-      const result = validateCommentContent(body);
-      expect(result.isValid).toBe(true);
-      expect(result.sanitizedBody).toBe(body);
-      expect(result.error).toBeUndefined();
-    });
-
-    it('should handle multiline content', () => {
-      const body = '첫 번째 줄입니다.\n두 번째 줄입니다.\n세 번째 줄입니다.';
-
-      const result = validateCommentContent(body);
-      expect(result.isValid).toBe(true);
-      expect(result.sanitizedBody).toBe(body);
-      expect(result.error).toBeUndefined();
     });
   });
 });

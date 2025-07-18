@@ -2,8 +2,8 @@
 
 import React, { useState, useTransition } from 'react';
 import { Heart, Loader2 } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
-import { toast } from 'sonner';
+import { useAuth } from '@/components/providers/AuthProvider';
+import { useToast } from '@/components/community/ToastProvider';
 
 export interface LikeButtonProps {
   postId: string;
@@ -36,23 +36,15 @@ export function LikeButton({
 
   const config = sizeConfig[size];
 
+  const { user } = useAuth();
+  const { showAuthError, showLiked, showUnliked, showError } = useToast();
+
   const handleToggle = async () => {
     if (disabled || isPending) return;
 
     // Check authentication first
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
     if (!user) {
-      toast.error('로그인이 필요합니다', {
-        description: '좋아요를 누르려면 먼저 로그인해주세요.',
-        action: {
-          label: '로그인',
-          onClick: () => {
-            window.location.href = '/auth/sign-in';
-          }
-        }
-      });
+      showAuthError();
       return;
     }
 
@@ -85,9 +77,9 @@ export function LikeButton({
 
         // Show success feedback
         if (result.data.liked) {
-          toast.success('좋아요를 눌렀습니다! ❤️');
+          showLiked();
         } else {
-          toast.success('좋아요를 취소했습니다.');
+          showUnliked();
         }
 
       } catch (error) {
@@ -97,13 +89,7 @@ export function LikeButton({
 
         const errorMessage = error instanceof Error ? error.message : '좋아요 처리에 실패했습니다.';
 
-        toast.error('오류가 발생했습니다', {
-          description: errorMessage,
-          action: {
-            label: '다시 시도',
-            onClick: () => handleToggle()
-          }
-        });
+        showError('좋아요 처리 실패', errorMessage);
       }
     });
   };

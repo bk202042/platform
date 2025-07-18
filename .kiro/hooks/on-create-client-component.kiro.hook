@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "name": "Client Component Creator",
+  "description": "Automatically ensures new React components that require client-side interactivity include the 'use client' directive as the first line",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.tsx",
+      "**/*.jsx",
+      "components/**/*.tsx",
+      "components/**/*.jsx",
+      "app/**/*.tsx",
+      "app/**/*.jsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A new React component file has been created or modified. Please analyze the file content and check if it contains client-side hooks (useState, useEffect, useCallback, useMemo, useRef), event handlers (onClick, onChange, onSubmit, etc.), or other client-side interactivity features. If the component requires client-side functionality but does not have 'use client'; as the absolute first line of the file (before any imports or other statements), please add it. This is critical for Next.js server-side vs. client-side distinction compliance as per Section IV.5 requirements."
+  }
+}

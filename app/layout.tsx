@@ -5,6 +5,8 @@ import Footer from "@/components/layout/Footer";
 import { Toaster } from "@/components/ui/sonner"; // Import Toaster component for notifications
 import { Noto_Sans_KR } from "next/font/google";
 import StagewiseToolbarLoader from "@/components/stagewise/StagewiseToolbarLoader";
+import { AuthProvider, getInitialUser } from "@/components/providers/AuthProvider";
+import { ToastProvider } from "@/components/community/ToastProvider";
 
 const notoSansKR = Noto_Sans_KR({
   // @ts-expect-error // Allow 'korean' subset, expect a type error here which we are overriding.
@@ -21,11 +23,14 @@ export const metadata: Metadata = {
     "하노이 호치민 다낭 부동산 플랫폼은 베트남의 한국인 거주자를 위한 맞춤형 부동산을 찾아보세요",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Get initial user data on server side to prevent hydration mismatch
+  const initialUser = await getInitialUser();
+
   return (
     <html lang="ko" className={`${notoSansKR.variable} antialiased`}>
       <head>
@@ -35,13 +40,17 @@ export default function RootLayout({
         suppressHydrationWarning
         className="bg-background text-foreground" // Use theme variables. Font is now on HTML tag.
       >
-        <div className="relative flex min-h-screen flex-col bg-background">
-          <StagewiseToolbarLoader />
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Toaster />
-          <Footer /> {/* Add the Footer component */}
-        </div>
+        <AuthProvider initialUser={initialUser}>
+          <ToastProvider>
+            <div className="relative flex min-h-screen flex-col bg-background">
+              <StagewiseToolbarLoader />
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Toaster />
+              <Footer /> {/* Add the Footer component */}
+            </div>
+          </ToastProvider>
+        </AuthProvider>
       </body>
     </html>
   );

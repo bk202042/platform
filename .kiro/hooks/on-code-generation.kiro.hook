@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Code Generation Standards",
+  "description": "A persistent hook that ensures all generated TypeScript and JSX code follows strict syntax rules: single quotes for strings/imports/props, semicolons on all statements, and no trailing commas",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.js",
+      "**/*.jsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "For all TypeScript and JSX code generation, strictly enforce these formatting rules: 1) Use single quotes (') for all strings, imports, and JSX props 2) Terminate every statement with a semicolon (;) 3) Do not use trailing commas in arrays, objects, or function parameters. This is a fundamental directive that must be followed for all code output."
+  }
+}

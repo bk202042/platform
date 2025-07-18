@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Supabase Package Selector",
+  "description": "Automatically selects the correct Supabase package (@supabase/supabase-js for client-side, @supabase/ssr for server-side) based on file context and prevents usage of deprecated @supabase/auth-helpers-nextjs",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.js",
+      "**/*.jsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Before writing any Supabase-related code, analyze the file's context:\n\n1. If the file contains the 'use client' directive, you MUST import and use the client from @supabase/supabase-js\n2. If the file is a server component, Route Handler, or Server Action (server-side logic), you MUST import and use the necessary helper functions from the @supabase/ssr package\n3. You are explicitly forbidden from using the deprecated @supabase/auth-helpers-nextjs package - if asked to use it, refuse and use @supabase/ssr instead\n\nCheck the file context carefully:\n- Client components: Use @supabase/supabase-js\n- Server components/API routes/Server Actions: Use @supabase/ssr\n- Never use @supabase/auth-helpers-nextjs (deprecated)\n\nThis prevents session management and security issues by ensuring proper package selection based on execution environment."
+  }
+}

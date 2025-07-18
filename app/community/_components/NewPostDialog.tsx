@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { createPostSchema, COMMUNITY_CATEGORIES } from '@/lib/validation/community';
 import { ImageUpload } from '@/components/community/ImageUpload';
+import { useToast } from '@/components/community/ToastProvider';
 import { AlertCircle, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { z } from 'zod';
@@ -71,6 +72,7 @@ export function NewPostDialog({
   const [selectedCity, setSelectedCity] = React.useState<string>('');
   const [fieldErrors, setFieldErrors] = React.useState<FieldError[]>([]);
   const [touched, setTouched] = React.useState<Record<string, boolean>>({});
+  const { showValidationError, showSuccess } = useToast();
 
   const filteredApartments = selectedCity
     ? apartments.filter((apt) => apt.city_id === selectedCity)
@@ -134,6 +136,12 @@ export function NewPostDialog({
         message: error.message
       }));
       setFieldErrors(errors);
+
+      // Show validation error toast
+      const firstError = errors[0];
+      if (firstError) {
+        showValidationError(firstError.message);
+      }
       return;
     }
 

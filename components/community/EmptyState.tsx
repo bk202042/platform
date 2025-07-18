@@ -1,50 +1,65 @@
+'use client';
+
 import React from 'react';
-import { MessageSquare, Plus, Search, Filter } from 'lucide-react';
+import { MessageSquare, Plus, Search, Users, Heart, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 interface EmptyStateProps {
-  type: 'posts' | 'comments' | 'search' | 'category' | 'apartment';
+  type: 'posts' | 'comments' | 'search' | 'category' | 'apartment' | 'likes';
   title?: string;
   description?: string;
   actionLabel?: string;
   actionHref?: string;
   onAction?: () => void;
   icon?: React.ReactNode;
+  className?: string;
 }
 
 const EMPTY_STATE_CONFIG = {
   posts: {
-    icon: <MessageSquare className="w-12 h-12 text-gray-400" />,
+    icon: <MessageSquare className="h-12 w-12 text-gray-400" />,
     title: '아직 게시글이 없습니다',
     description: '첫 번째 게시글을 작성해서 커뮤니티를 시작해보세요!',
-    actionLabel: '게시글 작성하기',
+    actionLabel: '새 글 작성하기',
+    actionIcon: <Plus className="h-4 w-4" />
   },
   comments: {
-    icon: <MessageSquare className="w-8 h-8 text-gray-400" />,
-    title: '첫 번째 댓글을 작성해보세요!',
-    description: '이 게시글에 대한 의견을 나눠주세요.',
-    actionLabel: '댓글 작성',
+    icon: <MessageSquare className="h-10 w-10 text-gray-400" />,
+    title: '댓글이 없습니다',
+    description: '첫 번째 댓글을 남겨보세요!',
+    actionLabel: '댓글 작성하기',
+    actionIcon: <Plus className="h-4 w-4" />
   },
   search: {
-    icon: <Search className="w-12 h-12 text-gray-400" />,
+    icon: <Search className="h-12 w-12 text-gray-400" />,
     title: '검색 결과가 없습니다',
     description: '다른 키워드로 검색해보시거나 필터를 조정해보세요.',
-    actionLabel: '검색 조건 변경',
+    actionLabel: '필터 초기화',
+    actionIcon: <Filter className="h-4 w-4" />
   },
   category: {
-    icon: <Filter className="w-12 h-12 text-gray-400" />,
+    icon: <Filter className="h-12 w-12 text-gray-400" />,
     title: '이 카테고리에 게시글이 없습니다',
-    description: '다른 카테고리를 확인해보시거나 새 게시글을 작성해보세요.',
-    actionLabel: '게시글 작성하기',
+    description: '다른 카테고리를 확인해보시거나 새 글을 작성해보세요.',
+    actionLabel: '새 글 작성하기',
+    actionIcon: <Plus className="h-4 w-4" />
   },
   apartment: {
-    icon: <MessageSquare className="w-12 h-12 text-gray-400" />,
+    icon: <Users className="h-12 w-12 text-gray-400" />,
     title: '이 아파트에 게시글이 없습니다',
-    description: '우리 아파트의 첫 번째 게시글을 작성해보세요!',
-    actionLabel: '게시글 작성하기',
+    description: '같은 아파트 주민들과 소통을 시작해보세요!',
+    actionLabel: '새 글 작성하기',
+    actionIcon: <Plus className="h-4 w-4" />
   },
-};
+  likes: {
+    icon: <Heart className="h-12 w-12 text-gray-400" />,
+    title: '좋아요한 게시글이 없습니다',
+    description: '마음에 드는 게시글에 좋아요를 눌러보세요!',
+    actionLabel: '커뮤니티 둘러보기',
+    actionIcon: <MessageSquare className="h-4 w-4" />
+  }
+} as const;
 
 export function EmptyState({
   type,
@@ -54,16 +69,18 @@ export function EmptyState({
   actionHref,
   onAction,
   icon,
+  className = ''
 }: EmptyStateProps) {
   const config = EMPTY_STATE_CONFIG[type];
+
   const displayTitle = title || config.title;
   const displayDescription = description || config.description;
   const displayActionLabel = actionLabel || config.actionLabel;
   const displayIcon = icon || config.icon;
 
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4 text-center" role="status" aria-live="polite">
-      <div className="mb-4">
+    <div className={`flex flex-col items-center justify-center py-12 px-6 text-center ${className}`}>
+      <div className="mb-6">
         {displayIcon}
       </div>
 
@@ -71,56 +88,82 @@ export function EmptyState({
         {displayTitle}
       </h3>
 
-      <p className="text-gray-600 mb-6 max-w-md text-sm sm:text-base">
+      <p className="text-gray-600 mb-8 max-w-md">
         {displayDescription}
       </p>
 
       {(actionHref || onAction) && (
         <div className="flex flex-col sm:flex-row gap-3">
           {actionHref ? (
-            <Button asChild className="focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
-              <Link href={actionHref} className="flex items-center gap-2">
-                <Plus size={16} />
+            <Button asChild className="flex items-center gap-2">
+              <Link href={actionHref}>
+                {config.actionIcon}
                 {displayActionLabel}
               </Link>
             </Button>
           ) : onAction ? (
-            <Button onClick={onAction} className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
-              <Plus size={16} />
+            <Button onClick={onAction} className="flex items-center gap-2">
+              {config.actionIcon}
               {displayActionLabel}
             </Button>
           ) : null}
+
+          {type !== 'posts' && (
+            <Button variant="outline" asChild>
+              <Link href="/community">
+                전체 게시글 보기
+              </Link>
+            </Button>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-// Specialized empty state components for common use cases
-export function PostsEmptyState({ onCreatePost }: { onCreatePost?: () => void }) {
+// Specialized empty state components
+export function PostsEmptyState({
+  onCreatePost,
+  showCreateButton = true
+}: {
+  onCreatePost?: () => void;
+  showCreateButton?: boolean;
+}) {
   return (
     <EmptyState
       type="posts"
-      onAction={onCreatePost}
+      actionHref={showCreateButton ? undefined : undefined}
+      onAction={showCreateButton ? onCreatePost : undefined}
     />
   );
 }
 
-export function CommentsEmptyState({ onAddComment }: { onAddComment?: () => void }) {
+export function CommentsEmptyState({
+  onAddComment
+}: {
+  onAddComment?: () => void;
+}) {
   return (
     <EmptyState
       type="comments"
       onAction={onAddComment}
+      className="py-8"
     />
   );
 }
 
-export function SearchEmptyState({ onClearSearch }: { onClearSearch?: () => void }) {
+export function SearchEmptyState({
+  query,
+  onClearFilters
+}: {
+  query?: string;
+  onClearFilters?: () => void;
+}) {
   return (
     <EmptyState
       type="search"
-      actionLabel="검색 초기화"
-      onAction={onClearSearch}
+      title={query ? `"${query}"에 대한 검색 결과가 없습니다` : undefined}
+      onAction={onClearFilters}
     />
   );
 }
@@ -129,13 +172,13 @@ export function CategoryEmptyState({
   category,
   onCreatePost
 }: {
-  category: string;
+  category?: string;
   onCreatePost?: () => void;
 }) {
   return (
     <EmptyState
       type="category"
-      title={`${category} 카테고리에 게시글이 없습니다`}
+      title={category ? `${category} 카테고리에 게시글이 없습니다` : undefined}
       onAction={onCreatePost}
     />
   );
@@ -145,14 +188,13 @@ export function ApartmentEmptyState({
   apartmentName,
   onCreatePost
 }: {
-  apartmentName: string;
+  apartmentName?: string;
   onCreatePost?: () => void;
 }) {
   return (
     <EmptyState
       type="apartment"
-      title={`${apartmentName}에 게시글이 없습니다`}
-      description={`${apartmentName}의 첫 번째 게시글을 작성해보세요!`}
+      title={apartmentName ? `${apartmentName}에 게시글이 없습니다` : undefined}
       onAction={onCreatePost}
     />
   );
