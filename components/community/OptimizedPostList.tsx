@@ -4,7 +4,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { PostCard } from './PostCard';
 import { PostCardSkeleton } from './PostCardSkeleton';
 import { EmptyState } from './EmptyState';
-import { NetworkError, useErrorType } from './NetworkError';
+import { NetworkError, useNetworkError } from './NetworkError';
 import { MobileErrorState } from './MobileErrorState';
 import { MobileLoadingState } from './MobileLoadingState';
 import { LazyLoad } from '@/components/common/LazyLoad';
@@ -49,13 +49,20 @@ export const OptimizedPostList = memo(function OptimizedPostList({
   lazyLoadThreshold = 5,
 }: OptimizedPostListProps) {
   // Always call hooks at the top
-  const errorObj = error ? new Error(error) : null;
-  const networkErrorType = useErrorType(errorObj);
+  const { error: networkError, handleError } = useNetworkError();
+
+  // Handle error if present
+  React.useEffect(() => {
+    if (error) {
+      handleError(new Error(error));
+    }
+  }, [error, handleError]);
 
   // Map error types for different components
-  const mobileErrorType = networkErrorType === 'timeout' ? 'server' :
-                         networkErrorType === 'generic' ? 'general' :
-                         networkErrorType || 'general';
+  const errorType = networkError?.type || 'generic';
+  const mobileErrorType = errorType === 'timeout' ? 'network' :
+                         errorType === 'server' ? 'network' :
+                         'generic';
 
   // Memoize click handlers to prevent unnecessary re-renders
   const handlePostClick = useCallback((postId: string) => {
@@ -77,7 +84,7 @@ export const OptimizedPostList = memo(function OptimizedPostList({
     return (
       <>
         {/* Mobile loading state */}
-        <MobileLoadingState type="posts" className="md:hidden" />
+        <MobileLoadingState message="게시글을 불러오는 중..." className="md:hidden" />
 
         {/* Desktop loading state */}
         <div
@@ -99,7 +106,7 @@ export const OptimizedPostList = memo(function OptimizedPostList({
         {/* Mobile error state */}
         <MobileErrorState
           type={mobileErrorType}
-          message={error}
+          description={error}
           onRetry={onRetry}
           className="md:hidden"
         />
@@ -107,7 +114,7 @@ export const OptimizedPostList = memo(function OptimizedPostList({
         {/* Desktop error state */}
         <div className="hidden md:block">
           <NetworkError
-            type={networkErrorType || 'generic'}
+            type={errorType}
             description={error}
             onRetry={onRetry}
           />

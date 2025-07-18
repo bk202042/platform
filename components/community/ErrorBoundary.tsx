@@ -148,7 +148,7 @@ export function AuthErrorBoundary({ children, onAuthError }: AuthErrorBoundaryPr
     }
   };
 
-  const AuthErrorFallback = ({ error, retry }: { error: Error; retry: () => void }) => (
+  const AuthErrorFallback = ({ retry }: { error: Error; retry: () => void }) => (
     <div className="min-h-[300px] flex items-center justify-center p-6">
       <div className="text-center max-w-md mx-auto">
         <AlertTriangle className="h-12 w-12 text-amber-500 mx-auto mb-4" />

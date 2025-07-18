@@ -87,27 +87,27 @@ export const toastUtils = {
 
   // Promise-based toasts for async operations
   promise: {
-    createPost: (promise: Promise<any>) => toast.promise(promise, {
+    createPost: (promise: Promise<unknown>) => toast.promise(promise, {
       loading: '게시글을 작성하는 중...',
       success: '게시글이 성공적으로 작성되었습니다! 🎉',
       error: (error) => `작성 실패: ${error.message || '다시 시도해주세요.'}`
     }),
-    updatePost: (promise: Promise<any>) => toast.promise(promise, {
+    updatePost: (promise: Promise<unknown>) => toast.promise(promise, {
       loading: '게시글을 수정하는 중...',
       success: '게시글이 수정되었습니다.',
       error: (error) => `수정 실패: ${error.message || '다시 시도해주세요.'}`
     }),
-    deletePost: (promise: Promise<any>) => toast.promise(promise, {
+    deletePost: (promise: Promise<unknown>) => toast.promise(promise, {
       loading: '게시글을 삭제하는 중...',
       success: '게시글이 삭제되었습니다.',
       error: (error) => `삭제 실패: ${error.message || '다시 시도해주세요.'}`
     }),
-    uploadImage: (promise: Promise<any>) => toast.promise(promise, {
+    uploadImage: (promise: Promise<unknown>) => toast.promise(promise, {
       loading: '이미지를 업로드하는 중...',
       success: '이미지가 업로드되었습니다.',
       error: (error) => `업로드 실패: ${error.message || '다시 시도해주세요.'}`
     }),
-    signOut: (promise: Promise<any>) => toast.promise(promise, {
+    signOut: (promise: Promise<unknown>) => toast.promise(promise, {
       loading: '로그아웃하는 중...',
       success: '로그아웃되었습니다.',
       error: '로그아웃 중 오류가 발생했습니다.'

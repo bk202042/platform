@@ -5,7 +5,8 @@ import Footer from "@/components/layout/Footer";
 import { Toaster } from "@/components/ui/sonner"; // Import Toaster component for notifications
 import { Noto_Sans_KR } from "next/font/google";
 import StagewiseToolbarLoader from "@/components/stagewise/StagewiseToolbarLoader";
-import { AuthProvider, getInitialUser } from "@/components/providers/AuthProvider";
+import { AuthProvider } from "@/components/providers/AuthProvider";
+import { getInitialUser } from "@/lib/auth";
 import { ToastProvider } from "@/components/community/ToastProvider";
 
 const notoSansKR = Noto_Sans_KR({

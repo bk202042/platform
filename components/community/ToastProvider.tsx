@@ -19,18 +19,18 @@ interface ToastContextType {
   showValidationError: (message: string) => void;
 
   // Loading toasts
-  showLoading: (message: string) => string; // Returns toast ID
-  dismissToast: (toastId: string) => void;
+  showLoading: (message: string) => string | number; // Returns toast ID
+  dismissToast: (toastId: string | number) => void;
 
   // Promise toasts
-  showPromiseToast: <T>(
-    promise: Promise<T>,
+  showPromiseToast: (
+    promise: Promise<unknown>,
     messages: {
       loading: string;
       success: string;
       error: string;
     }
-  ) => Promise<T>;
+  ) => void;
 
   // Utility functions
   handleApiError: (error: unknown, context?: string) => void;
@@ -95,20 +95,20 @@ export function ToastProvider({ children }: ToastProviderProps) {
     return toast.loading(message);
   }, []);
 
-  const dismissToast = useCallback((toastId: string) => {
+  const dismissToast = useCallback((toastId: string | number) => {
     toast.dismiss(toastId);
   }, []);
 
   // Promise toasts
-  const showPromiseToast = useCallback(<T,>(
-    promise: Promise<T>,
+  const showPromiseToast = useCallback((
+    promise: Promise<unknown>,
     messages: {
       loading: string;
       success: string;
       error: string;
     }
   ) => {
-    return toast.promise(promise, {
+    toast.promise(promise, {
       loading: messages.loading,
       success: messages.success,
       error: (error) => {

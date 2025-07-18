@@ -108,7 +108,7 @@ export function LikeButton({
         ${isAnimating ? 'scale-110' : 'scale-100'}
         ${isPending ? 'cursor-wait' : 'cursor-pointer'}
       `}
-      aria-pressed={liked ? 'true' : 'false'}
+      aria-pressed={liked}
       aria-label={liked ? '좋아요 취소하기' : '좋아요 누르기'}
       aria-describedby={showCount ? `like-count-${postId}` : undefined}
       onClick={handleToggle}

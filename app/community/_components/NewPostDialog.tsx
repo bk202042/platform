@@ -72,7 +72,7 @@ export function NewPostDialog({
   const [selectedCity, setSelectedCity] = React.useState<string>('');
   const [fieldErrors, setFieldErrors] = React.useState<FieldError[]>([]);
   const [touched, setTouched] = React.useState<Record<string, boolean>>({});
-  const { showValidationError, showSuccess } = useToast();
+  const { showValidationError } = useToast();
 
   const filteredApartments = selectedCity
     ? apartments.filter((apt) => apt.city_id === selectedCity)

@@ -26,74 +26,45 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(initialUser || null);
-  const [loading, setLoading] = useState(!initialUser);
+  // Simple state initialization - use initialUser if provided, otherwise null
+  const [user, setUser] = useState<User | null>(initialUser ?? null);
+  const [loading, setLoading] = useState(initialUser === undefined);
+
   const supabase = createClient();
 
   useEffect(() => {
-    // Only fetch user if we don't have initial user data
-    if (!initialUser) {
-      const getUser = async () => {
-        try {
-          const { data: { user } } = await supabase.auth.getUser();
-          setUser(user);
-        } catch (error) {
-          console.error('Error fetching user:', error);
-          setUser(null);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      getUser();
+    // Only fetch user if we don't have initial data
+    if (initialUser === undefined) {
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        setUser(user);
+        setLoading(false);
+      }).catch(() => {
+        setUser(null);
+        setLoading(false);
+      });
     } else {
       setLoading(false);
     }
 
     // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setUser(session?.user || null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, [supabase.auth, initialUser]);
 
   const signOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      setUser(null);
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
-  };
-
-  const value = {
-    user,
-    loading,
-    signOut,
+    await supabase.auth.signOut();
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, loading, signOut }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-// Hook to get initial user data on server side
-export async function getInitialUser() {
-  try {
-    const { createClient } = await import('@/lib/supabase/server');
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    return user;
-  } catch (error) {
-    console.error('Error getting initial user:', error);
-    return null;
-  }
-}
+
