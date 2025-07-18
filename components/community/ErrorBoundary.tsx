@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import React from "react";
+import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -17,7 +17,10 @@ interface ErrorBoundaryProps {
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
 }
 
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -37,8 +40,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     });
 
     // Log error to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
+    if (process.env.NODE_ENV === "development") {
+      console.error("ErrorBoundary caught an error:", error, errorInfo);
     }
 
     // Call optional error handler
@@ -54,7 +57,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
       // Use custom fallback if provided
       if (this.props.fallback && this.state.error) {
         const FallbackComponent = this.props.fallback;
-        return <FallbackComponent error={this.state.error} retry={this.handleRetry} />;
+        return (
+          <FallbackComponent
+            error={this.state.error}
+            retry={this.handleRetry}
+          />
+        );
       }
 
       // Default error UI
@@ -67,8 +75,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
                 문제가 발생했습니다
               </h2>
               <p className="text-gray-600 mb-6">
-                페이지를 불러오는 중에 오류가 발생했습니다.
-                잠시 후 다시 시도해주세요.
+                페이지를 불러오는 중에 오류가 발생했습니다. 잠시 후 다시
+                시도해주세요.
               </p>
             </div>
 
@@ -88,7 +96,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               </Button>
             </div>
 
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {process.env.NODE_ENV === "development" && this.state.error && (
               <details className="mt-6 text-left">
                 <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
                   개발자 정보 (개발 환경에서만 표시)
@@ -135,38 +143,41 @@ interface AuthErrorBoundaryProps {
   onAuthError?: () => void;
 }
 
-export function AuthErrorBoundary({ children, onAuthError }: AuthErrorBoundaryProps) {
+export function AuthErrorBoundary({
+  children,
+  onAuthError,
+}: AuthErrorBoundaryProps) {
   const handleError = (error: Error) => {
     // Check if it's an authentication-related error
     if (
-      error.message.includes('auth') ||
-      error.message.includes('unauthorized') ||
-      error.message.includes('login') ||
-      error.message.includes('session')
+      error.message.includes("auth") ||
+      error.message.includes("unauthorized") ||
+      error.message.includes("login") ||
+      error.message.includes("session")
     ) {
       onAuthError?.();
     }
   };
 
-  const AuthErrorFallback = ({ retry }: { error: Error; retry: () => void }) => (
+  const AuthErrorFallback = ({
+    retry,
+  }: {
+    error: Error;
+    retry: () => void;
+  }) => (
     <div className="min-h-[300px] flex items-center justify-center p-6">
       <div className="text-center max-w-md mx-auto">
         <AlertTriangle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          인증 오류
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">인증 오류</h3>
         <p className="text-gray-600 mb-6">
-          로그인 상태를 확인할 수 없습니다.
-          다시 로그인해주세요.
+          로그인 상태를 확인할 수 없습니다. 다시 로그인해주세요.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button onClick={retry} variant="outline">
             다시 시도
           </Button>
           <Button asChild>
-            <Link href="/auth/sign-in">
-              로그인하기
-            </Link>
+            <Link href="/auth/sign-in">로그인하기</Link>
           </Button>
         </div>
       </div>
@@ -174,10 +185,7 @@ export function AuthErrorBoundary({ children, onAuthError }: AuthErrorBoundaryPr
   );
 
   return (
-    <ErrorBoundary
-      fallback={AuthErrorFallback}
-      onError={handleError}
-    >
+    <ErrorBoundary fallback={AuthErrorFallback} onError={handleError}>
       {children}
     </ErrorBoundary>
   );

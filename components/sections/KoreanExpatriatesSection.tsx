@@ -11,7 +11,8 @@ export function KoreanExpatriatesSection() {
           베트남에 있는 한국인 거주자들을 위한 서비스
         </h2>
         <p className="text-muted-foreground mb-6 text-center max-w-2xl mx-auto">
-          저희 플랫폼은 한인 커뮤니티, 국제학교, 한국인 편의시설 근처의 부동산을 전문으로 합니다
+          저희 플랫폼은 한인 커뮤니티, 국제학교, 한국인 편의시설 근처의 부동산을
+          전문으로 합니다
         </p>
         <div className="flex justify-center">
           <Link href="/search">

@@ -24,8 +24,8 @@ export default function SignInForm() {
   const supabase = createClient();
 
   useEffect(() => {
-    // Get returnTo from URL parameters if it exists
-    const returnPath = searchParams.get("returnTo");
+    // Get returnUrl from URL parameters if it exists
+    const returnPath = searchParams.get("returnUrl");
     if (returnPath) {
       setReturnTo(returnPath);
     }

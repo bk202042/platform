@@ -1,6 +1,7 @@
 # Supabase Apartment Database Session Summary
 
 ## Project Information
+
 - **Project ID**: khtcoztdkxhhrudwhhjv
 - **Project Name**: bayfront
 - **Region**: ap-southeast-1
@@ -10,6 +11,7 @@
 ## Database Schema Overview
 
 ### Cities Table
+
 ```sql
 CREATE TABLE cities (
   id text PRIMARY KEY,
@@ -18,11 +20,13 @@ CREATE TABLE cities (
 ```
 
 **Current Cities:**
+
 - `hanoi` - 하노이
 - `hcm` - 호치민
 - `danang` - 다낭
 
 ### Apartments Table
+
 ```sql
 CREATE TABLE apartments (
   id text PRIMARY KEY,
@@ -35,6 +39,7 @@ CREATE TABLE apartments (
 ## Complete Apartment Listings (20 Total)
 
 ### Hanoi Apartments (7)
+
 1. **apt1** - 경남 랜드마크 72 (`keangnam-landmark-72-hanoi`)
 2. **apt2** - 빈홈 스카이레이크 (`vinhomes-skylake-hanoi`)
 3. **apt3** - 빈홈 메트로폴리스 (`vinhomes-metropolis-hanoi`)
@@ -44,6 +49,7 @@ CREATE TABLE apartments (
 7. **apt7** - 썬샤인 시티 (`sunshine-city-hanoi`)
 
 ### Ho Chi Minh Apartments (8)
+
 8. **apt8** - 미드타운 (`midtown-hcm`)
 9. **apt9** - 선라이즈 시티 (`sunrise-city-hcm`)
 10. **apt10** - 스카이가든 (`sky-garden-hcm`)
@@ -54,6 +60,7 @@ CREATE TABLE apartments (
 15. **apt15** - 시티 가든 (`city-garden-hcm`)
 
 ### Danang Apartments (5)
+
 16. **apt16** - 히요리 가든 타워 (`hiyori-garden-tower-danang`)
 17. **apt17** - 다낭 모나치 (`danang-monarchy-danang`)
 18. **apt18** - 아주라 (`azura-danang`)
@@ -63,11 +70,13 @@ CREATE TABLE apartments (
 ## Key SQL Operations Performed
 
 ### 1. Added Danang City
+
 ```sql
 INSERT INTO cities (id, name) VALUES ('danang', '다낭');
 ```
 
 ### 2. Updated Existing Apartments
+
 ```sql
 UPDATE apartments SET name = '경남 랜드마크 72', city_id = 'hanoi', slug = 'keangnam-landmark-72-hanoi' WHERE id = 'apt1';
 UPDATE apartments SET name = '빈홈 스카이레이크', city_id = 'hanoi', slug = 'vinhomes-skylake-hanoi' WHERE id = 'apt2';
@@ -75,6 +84,7 @@ UPDATE apartments SET name = '빈홈 메트로폴리스', city_id = 'hanoi', slu
 ```
 
 ### 3. Batch Inserted New Apartments
+
 ```sql
 -- Hanoi apartments (apt4-apt7)
 INSERT INTO apartments (id, name, city_id, slug) VALUES
@@ -104,6 +114,7 @@ INSERT INTO apartments (id, name, city_id, slug) VALUES
 ```
 
 ## Validation Results
+
 - ✅ All 20 apartments successfully added
 - ✅ All slugs are unique
 - ✅ All foreign key relationships valid
@@ -112,13 +123,16 @@ INSERT INTO apartments (id, name, city_id, slug) VALUES
 - ✅ URL-friendly slugs generated
 
 ## Next Apartment ID
+
 For future additions, use **apt21** as the next sequential ID.
 
 ## Connection Info for Future Sessions
+
 - Use project ID: `khtcoztdkxhhrudwhhjv`
 - All tables have proper RLS policies
 - Community posts can reference apartment_id foreign keys
 
 ---
-*Session completed: 2025-01-17*
-*Vietnamese Real Estate Platform for Korean Expatriates*
+
+_Session completed: 2025-01-17_
+_Vietnamese Real Estate Platform for Korean Expatriates_

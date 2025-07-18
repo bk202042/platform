@@ -1,39 +1,54 @@
-import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { createPostSchema, COMMUNITY_CATEGORIES } from '@/lib/validation/community';
-import { ImageUpload } from '@/components/community/ImageUpload';
-import { useToast } from '@/components/community/ToastProvider';
-import { AlertCircle, Loader2, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { z } from 'zod';
+import React from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  createPostSchema,
+  COMMUNITY_CATEGORIES,
+} from "@/lib/validation/community";
+import { ImageUpload } from "@/components/community/ImageUpload";
+import { useToast } from "@/components/community/ToastProvider";
+import { AlertCircle, Loader2, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { z } from "zod";
 
 // Category descriptions for better UX
 const CATEGORY_INFO = {
   QNA: {
-    label: '질문/답변',
-    description: '궁금한 것을 물어보고 답변을 받아보세요',
-    icon: '❓'
+    label: "질문/답변",
+    description: "궁금한 것을 물어보고 답변을 받아보세요",
+    icon: "❓",
   },
   RECOMMEND: {
-    label: '추천',
-    description: '좋은 장소나 서비스를 추천해주세요',
-    icon: '👍'
+    label: "추천",
+    description: "좋은 장소나 서비스를 추천해주세요",
+    icon: "👍",
   },
   SECONDHAND: {
-    label: '중고거래',
-    description: '중고 물품을 사고팔아보세요',
-    icon: '🛒'
+    label: "중고거래",
+    description: "중고 물품을 사고팔아보세요",
+    icon: "🛒",
   },
   FREE: {
-    label: '자유게시판',
-    description: '자유롭게 이야기를 나눠보세요',
-    icon: '💬'
-  }
+    label: "자유게시판",
+    description: "자유롭게 이야기를 나눠보세요",
+    icon: "💬",
+  },
 } as const;
 
 interface NewPostDialogProps {
@@ -60,16 +75,16 @@ export function NewPostDialog({
   apartments,
   defaultValues,
   loading = false,
-  error
+  error,
 }: NewPostDialogProps) {
   const [form, setForm] = React.useState<z.infer<typeof createPostSchema>>({
-    apartment_id: defaultValues?.apartment_id || '',
+    apartment_id: defaultValues?.apartment_id || "",
     category: defaultValues?.category || COMMUNITY_CATEGORIES[0],
-    title: defaultValues?.title || '',
-    body: defaultValues?.body || '',
+    title: defaultValues?.title || "",
+    body: defaultValues?.body || "",
     images: defaultValues?.images || [],
   });
-  const [selectedCity, setSelectedCity] = React.useState<string>('');
+  const [selectedCity, setSelectedCity] = React.useState<string>("");
   const [fieldErrors, setFieldErrors] = React.useState<FieldError[]>([]);
   const [touched, setTouched] = React.useState<Record<string, boolean>>({});
   const { showValidationError } = useToast();
@@ -87,10 +102,10 @@ export function NewPostDialog({
   React.useEffect(() => {
     if (open) {
       setForm({
-        apartment_id: defaultValues?.apartment_id || '',
+        apartment_id: defaultValues?.apartment_id || "",
         category: defaultValues?.category || COMMUNITY_CATEGORIES[0],
-        title: defaultValues?.title || '',
-        body: defaultValues?.body || '',
+        title: defaultValues?.title || "",
+        body: defaultValues?.body || "",
         images: defaultValues?.images || [],
       });
       setFieldErrors([]);
@@ -99,22 +114,22 @@ export function NewPostDialog({
   }, [open, defaultValues]);
 
   const handleInputChange = (field: string, value: string) => {
-    setForm(prev => ({ ...prev, [field]: value }));
-    setTouched(prev => ({ ...prev, [field]: true }));
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
   const handleCityChange = (cityId: string) => {
     setSelectedCity(cityId);
-    setForm(prev => ({ ...prev, apartment_id: '' }));
-    setTouched(prev => ({ ...prev, apartment_id: false }));
+    setForm((prev) => ({ ...prev, apartment_id: "" }));
+    setTouched((prev) => ({ ...prev, apartment_id: false }));
   };
 
   const getFieldError = (field: string) => {
-    return fieldErrors.find(error => error.field === field)?.message;
+    return fieldErrors.find((error) => error.field === field)?.message;
   };
 
   const hasFieldError = (field: string) => {
-    return fieldErrors.some(error => error.field === field);
+    return fieldErrors.some((error) => error.field === field);
   };
 
   function handleSubmit(e: React.FormEvent) {
@@ -126,14 +141,14 @@ export function NewPostDialog({
       category: true,
       title: true,
       body: true,
-      images: true
+      images: true,
     });
 
     const result = createPostSchema.safeParse(form);
     if (!result.success) {
-      const errors: FieldError[] = result.error.errors.map(error => ({
+      const errors: FieldError[] = result.error.errors.map((error) => ({
         field: error.path[0] as string,
-        message: error.message
+        message: error.message,
       }));
       setFieldErrors(errors);
 
@@ -154,7 +169,9 @@ export function NewPostDialog({
       <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <DialogHeader className="space-y-3">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-semibold">새 글 작성</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">
+              새 글 작성
+            </DialogTitle>
             <DialogClose asChild>
               <Button
                 variant="ghost"
@@ -178,14 +195,13 @@ export function NewPostDialog({
               <Label htmlFor="city" className="text-sm font-medium">
                 도시 <span className="text-red-500">*</span>
               </Label>
-              <Select
-                value={selectedCity}
-                onValueChange={handleCityChange}
-              >
+              <Select value={selectedCity} onValueChange={handleCityChange}>
                 <SelectTrigger
                   className={cn(
                     "w-full",
-                    hasFieldError('apartment_id') && touched.apartment_id && "border-red-500"
+                    hasFieldError("apartment_id") &&
+                      touched.apartment_id &&
+                      "border-red-500",
                   )}
                 >
                   <SelectValue placeholder="도시를 선택하세요" />
@@ -206,13 +222,17 @@ export function NewPostDialog({
               </Label>
               <Select
                 value={form.apartment_id}
-                onValueChange={(value) => handleInputChange('apartment_id', value)}
+                onValueChange={(value) =>
+                  handleInputChange("apartment_id", value)
+                }
                 disabled={!selectedCity}
               >
                 <SelectTrigger
                   className={cn(
                     "w-full",
-                    hasFieldError('apartment_id') && touched.apartment_id && "border-red-500"
+                    hasFieldError("apartment_id") &&
+                      touched.apartment_id &&
+                      "border-red-500",
                   )}
                 >
                   <SelectValue placeholder="아파트를 선택하세요" />
@@ -225,10 +245,10 @@ export function NewPostDialog({
                   ))}
                 </SelectContent>
               </Select>
-              {hasFieldError('apartment_id') && touched.apartment_id && (
+              {hasFieldError("apartment_id") && touched.apartment_id && (
                 <div className="flex items-center gap-1 text-sm text-red-600">
                   <AlertCircle className="h-4 w-4" />
-                  {getFieldError('apartment_id')}
+                  {getFieldError("apartment_id")}
                 </div>
               )}
             </div>
@@ -250,15 +270,17 @@ export function NewPostDialog({
                       "relative cursor-pointer rounded-lg border-2 p-4 transition-all hover:bg-muted/50",
                       isSelected
                         ? "border-primary bg-primary/5"
-                        : "border-muted-foreground/20"
+                        : "border-muted-foreground/20",
                     )}
-                    onClick={() => handleInputChange('category', category)}
+                    onClick={() => handleInputChange("category", category)}
                   >
                     <div className="flex items-start gap-3">
                       <span className="text-2xl">{info.icon}</span>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm">{info.label}</span>
+                          <span className="font-medium text-sm">
+                            {info.label}
+                          </span>
                           {isSelected && (
                             <div className="h-2 w-2 rounded-full bg-primary" />
                           )}
@@ -282,23 +304,23 @@ export function NewPostDialog({
             <Input
               id="title"
               value={form.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
-              onBlur={() => setTouched(prev => ({ ...prev, title: true }))}
+              onChange={(e) => handleInputChange("title", e.target.value)}
+              onBlur={() => setTouched((prev) => ({ ...prev, title: true }))}
               maxLength={100}
               placeholder="제목을 입력하세요"
               className={cn(
-                hasFieldError('title') && touched.title && "border-red-500"
+                hasFieldError("title") && touched.title && "border-red-500",
               )}
             />
             <div className="flex justify-between items-center">
-              {hasFieldError('title') && touched.title && (
+              {hasFieldError("title") && touched.title && (
                 <div className="flex items-center gap-1 text-sm text-red-600">
                   <AlertCircle className="h-4 w-4" />
-                  {getFieldError('title')}
+                  {getFieldError("title")}
                 </div>
               )}
               <span className="text-xs text-muted-foreground ml-auto">
-                {(form.title || '').length}/100
+                {(form.title || "").length}/100
               </span>
             </div>
           </div>
@@ -311,20 +333,20 @@ export function NewPostDialog({
             <Textarea
               id="body"
               value={form.body}
-              onChange={(e) => handleInputChange('body', e.target.value)}
-              onBlur={() => setTouched(prev => ({ ...prev, body: true }))}
+              onChange={(e) => handleInputChange("body", e.target.value)}
+              onBlur={() => setTouched((prev) => ({ ...prev, body: true }))}
               maxLength={2000}
               placeholder="내용을 입력하세요"
               className={cn(
                 "min-h-[120px] resize-none",
-                hasFieldError('body') && touched.body && "border-red-500"
+                hasFieldError("body") && touched.body && "border-red-500",
               )}
             />
             <div className="flex justify-between items-center">
-              {hasFieldError('body') && touched.body && (
+              {hasFieldError("body") && touched.body && (
                 <div className="flex items-center gap-1 text-sm text-red-600">
                   <AlertCircle className="h-4 w-4" />
-                  {getFieldError('body')}
+                  {getFieldError("body")}
                 </div>
               )}
               <span className="text-xs text-muted-foreground ml-auto">
@@ -335,19 +357,19 @@ export function NewPostDialog({
 
           {/* Image Upload */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">
-              이미지 (최대 5개)
-            </Label>
+            <Label className="text-sm font-medium">이미지 (최대 5개)</Label>
             <ImageUpload
-              onImagesChange={(urls) => setForm(prev => ({ ...prev, images: urls }))}
+              onImagesChange={(urls) =>
+                setForm((prev) => ({ ...prev, images: urls }))
+              }
               maxFiles={5}
               initialImages={form.images || []}
               className="border rounded-lg p-4"
             />
-            {hasFieldError('images') && touched.images && (
+            {hasFieldError("images") && touched.images && (
               <div className="flex items-center gap-1 text-sm text-red-600">
                 <AlertCircle className="h-4 w-4" />
-                {getFieldError('images')}
+                {getFieldError("images")}
               </div>
             )}
           </div>
@@ -371,18 +393,14 @@ export function NewPostDialog({
             >
               취소
             </Button>
-            <Button
-              type="submit"
-              className="flex-1"
-              disabled={loading}
-            >
+            <Button type="submit" className="flex-1" disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   등록 중...
                 </>
               ) : (
-                '등록하기'
+                "등록하기"
               )}
             </Button>
           </div>

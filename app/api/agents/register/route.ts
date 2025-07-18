@@ -7,7 +7,7 @@ import "server-only";
 
 // Check if RESEND_API_KEY is properly set
 if (!process.env.RESEND_API_KEY) {
-  console.error('RESEND_API_KEY environment variable is not set');
+  console.error("RESEND_API_KEY environment variable is not set");
 }
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Log the incoming request body for debugging
-    console.log('Agent registration request body:', {
+    console.log("Agent registration request body:", {
       ...body,
       email: body.email ? `${body.email.substring(0, 3)}***@***` : undefined, // Mask email for privacy
     });
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const validationResult = validateAgentRegistration(body);
 
     if (!validationResult.success) {
-      console.error('Validation errors:', validationResult.error.format());
+      console.error("Validation errors:", validationResult.error.format());
       return NextResponse.json(
         {
           success: false,
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       const adminEmail = process.env.ADMIN_EMAIL || "admin@bkmind.com";
       const fromEmail = process.env.FROM_EMAIL || "admin@bkmind.com";
 
-      console.log('Sending email notification to:', adminEmail);
+      console.log("Sending email notification to:", adminEmail);
 
       const emailResponse = await resend.emails.send({
         from: `VinaHome <${fromEmail}>`,
@@ -91,13 +91,13 @@ export async function POST(request: NextRequest) {
         throw new Error(`Resend API error: ${emailResponse.error.message}`);
       }
 
-      console.log('Email sent successfully. ID:', emailResponse.data?.id);
+      console.log("Email sent successfully. ID:", emailResponse.data?.id);
     } catch (emailError) {
       console.error("Error sending email notification:", emailError);
       // Log detailed error information for debugging
       if (emailError instanceof Error) {
-        console.error('Error details:', emailError.message);
-        console.error('Error stack:', emailError.stack);
+        console.error("Error details:", emailError.message);
+        console.error("Error stack:", emailError.stack);
       }
       // Continue with success response even if email fails
     }

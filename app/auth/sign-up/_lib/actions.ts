@@ -1,9 +1,9 @@
-'use server';
+"use server";
 
-import { createClient } from '@/lib/supabase/server';
-import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { z } from 'zod';
+import { createClient } from "@/lib/supabase/server";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { z } from "zod";
 
 const signUpSchema = z
   .object({
@@ -13,11 +13,11 @@ const signUpSchema = z
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
-    path: ['confirmPassword'],
+    path: ["confirmPassword"],
   });
 
 export async function signup(formData: FormData) {
-  const origin = (await headers()).get('origin');
+  const origin = (await headers()).get("origin");
   const data = Object.fromEntries(formData.entries());
 
   const result = signUpSchema.safeParse(data);
@@ -42,12 +42,12 @@ export async function signup(formData: FormData) {
   });
 
   if (error) {
-    console.error('Supabase sign-up error:', error);
+    console.error("Supabase sign-up error:", error);
     // TODO: Provide more user-friendly error messages
     return {
-      error: { _form: 'Server error. Please try again later.' },
+      error: { _form: "Server error. Please try again later." },
     };
   }
 
-  redirect('/auth/sign-up-success');
+  redirect("/auth/sign-up-success");
 }

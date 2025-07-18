@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useState, useTransition } from 'react';
-import Link from 'next/link';
-import { signup } from '../_lib/actions';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useState, useTransition } from "react";
+import Link from "next/link";
+import { signup } from "../_lib/actions";
 
 const signUpSchema = z
   .object({
-    email: z.string().email('유효하지 않은 이메일 주소입니다'),
-    password: z.string().min(6, '비밀번호는 6자 이상이어야 합니다'),
+    email: z.string().email("유효하지 않은 이메일 주소입니다"),
+    password: z.string().min(6, "비밀번호는 6자 이상이어야 합니다"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: '비밀번호가 일치하지 않습니다',
-    path: ['confirmPassword'],
+    message: "비밀번호가 일치하지 않습니다",
+    path: ["confirmPassword"],
   });
 
 type SignUpFormData = z.infer<typeof signUpSchema>;
@@ -36,16 +36,16 @@ export default function SignUpForm() {
     setError(null);
     startTransition(async () => {
       const formData = new FormData();
-      formData.append('email', data.email);
-      formData.append('password', data.password);
-      formData.append('confirmPassword', data.confirmPassword);
+      formData.append("email", data.email);
+      formData.append("password", data.password);
+      formData.append("confirmPassword", data.confirmPassword);
 
       const result = await signup(formData);
       if (result?.error) {
         // TODO: Handle specific field errors
         setError(
-          Object.values(result.error).flat().join(', ') ||
-            'An unexpected error occurred.'
+          Object.values(result.error).flat().join(", ") ||
+            "An unexpected error occurred.",
         );
       }
     });
@@ -66,7 +66,7 @@ export default function SignUpForm() {
             type="email"
             autoComplete="email"
             disabled={isPending}
-            {...register('email')}
+            {...register("email")}
             className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
           />
           {errors.email && (
@@ -88,7 +88,7 @@ export default function SignUpForm() {
             type="password"
             autoComplete="new-password"
             disabled={isPending}
-            {...register('password')}
+            {...register("password")}
             className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
           />
           {errors.password && (
@@ -112,7 +112,7 @@ export default function SignUpForm() {
             type="password"
             autoComplete="new-password"
             disabled={isPending}
-            {...register('confirmPassword')}
+            {...register("confirmPassword")}
             className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
           />
           {errors.confirmPassword && (
@@ -148,7 +148,7 @@ export default function SignUpForm() {
           disabled={isPending}
           className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
         >
-          {isPending ? '계정 생성 중...' : '계정 만들기'}
+          {isPending ? "계정 생성 중..." : "계정 만들기"}
         </button>
       </div>
     </form>

@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import * as React from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
 
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from "@/components/ui/popover";
 
 interface Apartment {
   id: string;
@@ -36,14 +36,14 @@ export function ApartmentSelect({ value, onChange }: ApartmentSelectProps) {
   React.useEffect(() => {
     async function loadApartments() {
       try {
-        const response = await fetch('/api/community/apartments');
+        const response = await fetch("/api/community/apartments");
         if (!response.ok) {
-          throw new Error('Failed to fetch apartments');
+          throw new Error("Failed to fetch apartments");
         }
         const data = await response.json();
         setApartments(data);
       } catch (error) {
-        console.error('Failed to load apartments:', error);
+        console.error("Failed to load apartments:", error);
       }
     }
     loadApartments();
@@ -62,7 +62,7 @@ export function ApartmentSelect({ value, onChange }: ApartmentSelectProps) {
         >
           {selectedApartment
             ? `${selectedApartment.cities?.name} - ${selectedApartment.name}`
-            : 'Select apartment...'}
+            : "Select apartment..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -76,14 +76,14 @@ export function ApartmentSelect({ value, onChange }: ApartmentSelectProps) {
                 key={apartment.id}
                 value={apartment.id}
                 onSelect={(currentValue) => {
-                  onChange(currentValue === value ? '' : currentValue);
+                  onChange(currentValue === value ? "" : currentValue);
                   setOpen(false);
                 }}
               >
                 <Check
                   className={cn(
-                    'mr-2 h-4 w-4',
-                    value === apartment.id ? 'opacity-100' : 'opacity-0'
+                    "mr-2 h-4 w-4",
+                    value === apartment.id ? "opacity-100" : "opacity-0",
                   )}
                 />
                 {apartment.cities?.name} - {apartment.name}

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import type { User } from '@supabase/supabase-js';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 interface AuthContextType {
   user: User | null;
@@ -15,7 +15,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }
@@ -26,7 +26,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
-  // Simple state initialization - use initialUser if provided, otherwise null
+  // Initialize state with server-provided user data to prevent hydration mismatch
   const [user, setUser] = useState<User | null>(initialUser ?? null);
   const [loading, setLoading] = useState(initialUser === undefined);
 
@@ -35,19 +35,24 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   useEffect(() => {
     // Only fetch user if we don't have initial data
     if (initialUser === undefined) {
-      supabase.auth.getUser().then(({ data: { user } }) => {
-        setUser(user);
-        setLoading(false);
-      }).catch(() => {
-        setUser(null);
-        setLoading(false);
-      });
+      supabase.auth
+        .getUser()
+        .then(({ data: { user } }) => {
+          setUser(user);
+          setLoading(false);
+        })
+        .catch(() => {
+          setUser(null);
+          setLoading(false);
+        });
     } else {
       setLoading(false);
     }
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
@@ -66,5 +71,3 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
     </AuthContext.Provider>
   );
 }
-
-

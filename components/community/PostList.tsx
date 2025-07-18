@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React, { memo, useCallback } from 'react';
-import { PostCard, PostCardProps } from './PostCard';
-import { PostCardSkeleton } from './PostCardSkeleton';
-import { MobileLoadingState } from './MobileLoadingState';
-import { MobileErrorState } from './MobileErrorState';
-import { EmptyState } from './EmptyState';
-import { NetworkError, useNetworkError } from './NetworkError';
+import React, { memo, useCallback } from "react";
+import { PostCard, PostCardProps } from "./PostCard";
+import { PostCardSkeleton } from "./PostCardSkeleton";
+import { MobileLoadingState } from "./MobileLoadingState";
+import { MobileErrorState } from "./MobileErrorState";
+import { EmptyState } from "./EmptyState";
+import { NetworkError, useNetworkError } from "./NetworkError";
 
 interface PostListProps {
   /** Array of posts to display */
-  posts?: PostCardProps['post'][];
+  posts?: PostCardProps["post"][];
   /** Loading state */
   isLoading?: boolean;
   /** Error state */
@@ -45,16 +45,22 @@ export const PostList = memo(function PostList({
   }, [error, handleError]);
 
   // Memoize click handlers to prevent unnecessary re-renders
-  const handlePostClick = useCallback((postId: string) => {
-    onPostClick?.(postId);
-  }, [onPostClick]);
+  const handlePostClick = useCallback(
+    (postId: string) => {
+      onPostClick?.(postId);
+    },
+    [onPostClick],
+  );
 
   // Loading state
   if (isLoading) {
     return (
       <>
         {/* Mobile loading state */}
-        <MobileLoadingState message="게시글을 불러오는 중..." className="md:hidden" />
+        <MobileLoadingState
+          message="게시글을 불러오는 중..."
+          className="md:hidden"
+        />
 
         {/* Desktop loading state */}
         <div
@@ -84,7 +90,7 @@ export const PostList = memo(function PostList({
         {/* Desktop error state */}
         <div className="hidden md:block">
           <NetworkError
-            type={networkError?.type || 'generic'}
+            type={networkError?.type || "generic"}
             description={error}
             onRetry={onRetry}
           />
@@ -95,12 +101,7 @@ export const PostList = memo(function PostList({
 
   // Empty state
   if (posts.length === 0) {
-    return (
-      <EmptyState
-        type="posts"
-        onAction={onCreatePost}
-      />
-    );
+    return <EmptyState type="posts" onAction={onCreatePost} />;
   }
 
   // Posts list
@@ -113,12 +114,12 @@ export const PostList = memo(function PostList({
     >
       {posts.map((post, index) => (
         <div role="article" key={post.id}>
-        <PostCard
-          post={post}
-          onClick={() => handlePostClick(post.id)}
-          aria-posinset={index + 1}
-          aria-setsize={posts.length}
-        />
+          <PostCard
+            post={post}
+            onClick={() => handlePostClick(post.id)}
+            aria-posinset={index + 1}
+            aria-setsize={posts.length}
+          />
         </div>
       ))}
     </div>

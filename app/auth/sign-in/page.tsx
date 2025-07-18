@@ -3,14 +3,24 @@ import { redirect } from "next/navigation";
 import SignInForm from "./_components/SignInForm";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 
-export default async function SignInPage() {
+interface SignInPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function SignInPage({ searchParams }: SignInPageProps) {
   const supabase = await createClient();
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
+  const resolvedSearchParams = await searchParams;
+  const returnUrl =
+    typeof resolvedSearchParams.returnUrl === "string"
+      ? resolvedSearchParams.returnUrl
+      : "/";
+
   if (session) {
-    redirect("/");
+    redirect(returnUrl);
   }
 
   return (
@@ -23,7 +33,9 @@ export default async function SignInPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
           <div className="mb-6">
-            <GoogleSignInButton>Google로 로그인</GoogleSignInButton>
+            <GoogleSignInButton returnUrl={returnUrl}>
+              Google로 로그인
+            </GoogleSignInButton>
           </div>
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">

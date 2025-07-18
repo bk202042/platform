@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React, { memo, useCallback, useMemo } from 'react';
-import { PostCard } from './PostCard';
-import { PostCardSkeleton } from './PostCardSkeleton';
-import { EmptyState } from './EmptyState';
-import { NetworkError, useNetworkError } from './NetworkError';
-import { MobileErrorState } from './MobileErrorState';
-import { MobileLoadingState } from './MobileLoadingState';
-import { LazyLoad } from '@/components/common/LazyLoad';
-import { CommunityCategory } from '@/lib/validation/community';
+import React, { memo, useCallback, useMemo } from "react";
+import { PostCard } from "./PostCard";
+import { PostCardSkeleton } from "./PostCardSkeleton";
+import { EmptyState } from "./EmptyState";
+import { NetworkError, useNetworkError } from "./NetworkError";
+import { MobileErrorState } from "./MobileErrorState";
+import { MobileLoadingState } from "./MobileLoadingState";
+import { LazyLoad } from "@/components/common/LazyLoad";
+import { CommunityCategory } from "@/lib/validation/community";
 
 interface Post {
   id: string;
@@ -59,15 +59,21 @@ export const OptimizedPostList = memo(function OptimizedPostList({
   }, [error, handleError]);
 
   // Map error types for different components
-  const errorType = networkError?.type || 'generic';
-  const mobileErrorType = errorType === 'timeout' ? 'network' :
-                         errorType === 'server' ? 'network' :
-                         'generic';
+  const errorType = networkError?.type || "generic";
+  const mobileErrorType =
+    errorType === "timeout"
+      ? "network"
+      : errorType === "server"
+        ? "network"
+        : "generic";
 
   // Memoize click handlers to prevent unnecessary re-renders
-  const handlePostClick = useCallback((postId: string) => {
-    onPostClick?.(postId);
-  }, [onPostClick]);
+  const handlePostClick = useCallback(
+    (postId: string) => {
+      onPostClick?.(postId);
+    },
+    [onPostClick],
+  );
 
   // Split posts into immediate and lazy-loaded sections
   const { immediatePosts, lazyPosts } = useMemo(() => {
@@ -84,7 +90,10 @@ export const OptimizedPostList = memo(function OptimizedPostList({
     return (
       <>
         {/* Mobile loading state */}
-        <MobileLoadingState message="게시글을 불러오는 중..." className="md:hidden" />
+        <MobileLoadingState
+          message="게시글을 불러오는 중..."
+          className="md:hidden"
+        />
 
         {/* Desktop loading state */}
         <div

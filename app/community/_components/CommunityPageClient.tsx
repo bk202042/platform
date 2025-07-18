@@ -1,18 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useCallback, useMemo } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { ApartmentSelect } from '@/components/community/ApartmentSelect';
-import { PostList } from '@/components/community/PostList';
-import { SortSelector, SortOption } from '@/components/community/SortSelector';
-import { LazyNewPostDialog } from './NewPostDialog.lazy';
-import { CategorySidebar } from './CategorySidebar';
-import { CommunityBreadcrumb } from '@/components/community/CommunityBreadcrumb';
-import { MobileNavigation } from '@/components/community/MobileNavigation';
-import { ErrorBoundary, AuthErrorBoundary } from '@/components/community/ErrorBoundary';
-import { Button } from '@/components/ui/button';
-import { CommunityCategory } from '@/lib/validation/community';
-import { Plus } from 'lucide-react';
+import { useState, useCallback, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ApartmentSelect } from "@/components/community/ApartmentSelect";
+import { PostList } from "@/components/community/PostList";
+import { SortSelector, SortOption } from "@/components/community/SortSelector";
+import { LazyNewPostDialog } from "./NewPostDialog.lazy";
+import { CategorySidebar } from "./CategorySidebar";
+import { CommunityBreadcrumb } from "@/components/community/CommunityBreadcrumb";
+import { MobileNavigation } from "@/components/community/MobileNavigation";
+import {
+  ErrorBoundary,
+  AuthErrorBoundary,
+} from "@/components/community/ErrorBoundary";
+import { Button } from "@/components/ui/button";
+import { CommunityCategory } from "@/lib/validation/community";
+import { Plus } from "lucide-react";
 
 // Define types for props
 interface City {
@@ -66,30 +69,36 @@ export function CommunityPageClient({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Get current sort from URL params
-  const currentSort = (searchParams.get('sort') as SortOption) || 'latest';
+  const currentSort = (searchParams.get("sort") as SortOption) || "latest";
 
-  const handleApartmentChange = useCallback((newApartmentId: string) => {
-    setApartmentId(newApartmentId);
-    const params = new URLSearchParams(searchParams.toString());
-    if (newApartmentId) {
-      params.set('apartmentId', newApartmentId);
-    } else {
-      params.delete('apartmentId');
-    }
-    router.push(`/community?${params.toString()}`);
-  }, [searchParams, router]);
-
-  const currentCategory = searchParams.get('category');
-
-  // Memoize expensive computations
-  const currentApartment = useMemo(() =>
-    apartments.find(apt => apt.id === apartmentId),
-    [apartments, apartmentId]
+  const handleApartmentChange = useCallback(
+    (newApartmentId: string) => {
+      setApartmentId(newApartmentId);
+      const params = new URLSearchParams(searchParams.toString());
+      if (newApartmentId) {
+        params.set("apartmentId", newApartmentId);
+      } else {
+        params.delete("apartmentId");
+      }
+      router.push(`/community?${params.toString()}`);
+    },
+    [searchParams, router],
   );
 
-  const handlePostClick = useCallback((postId: string) => {
-    router.push(`/community/${postId}`);
-  }, [router]);
+  const currentCategory = searchParams.get("category");
+
+  // Memoize expensive computations
+  const currentApartment = useMemo(
+    () => apartments.find((apt) => apt.id === apartmentId),
+    [apartments, apartmentId],
+  );
+
+  const handlePostClick = useCallback(
+    (postId: string) => {
+      router.push(`/community/${postId}`);
+    },
+    [router],
+  );
 
   const handleCreatePost = useCallback(() => {
     setIsDialogOpen(true);
@@ -111,10 +120,7 @@ export function CommunityPageClient({
   return (
     <ErrorBoundary>
       {/* Mobile Navigation */}
-      <MobileNavigation
-        showBackButton={false}
-        showMenu={true}
-      >
+      <MobileNavigation showBackButton={false} showMenu={true}>
         <AuthErrorBoundary>
           <Button
             size="sm"
@@ -156,9 +162,7 @@ export function CommunityPageClient({
                     onChange={handleApartmentChange}
                   />
                   <AuthErrorBoundary>
-                    <Button onClick={handleCreatePost}>
-                      Write a Post
-                    </Button>
+                    <Button onClick={handleCreatePost}>Write a Post</Button>
                   </AuthErrorBoundary>
                 </div>
 
@@ -178,12 +182,24 @@ export function CommunityPageClient({
                 </AuthErrorBoundary>
               </div>
 
-              <PostList
-                posts={posts}
-                onPostClick={handlePostClick}
-                onCreatePost={handleCreatePost}
-                onRetry={handleRetry}
-              />
+              {posts && posts.length > 0 ? (
+                <PostList
+                  posts={posts}
+                  onPostClick={handlePostClick}
+                  onCreatePost={handleCreatePost}
+                  onRetry={handleRetry}
+                />
+              ) : (
+                <div className="text-center py-12">
+                  <h3 className="text-lg font-semibold">No posts found</h3>
+                  <p className="text-sm text-gray-500">
+                    Be the first to post in this community!
+                  </p>
+                  <Button onClick={handleCreatePost} className="mt-4">
+                    Create Post
+                  </Button>
+                </div>
+              )}
             </ErrorBoundary>
           </main>
         </div>

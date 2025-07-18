@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { ArrowLeft, Menu, X, Home, MessageSquare } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { CommunityCategory } from '@/lib/validation/community';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { ArrowLeft, Menu, X, Home, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { CommunityCategory } from "@/lib/validation/community";
 
 interface MobileNavigationProps {
   showBackButton?: boolean;
@@ -18,10 +18,10 @@ interface MobileNavigationProps {
 
 // Category labels in Korean
 const CATEGORY_LABELS = {
-  QNA: 'Q&A',
-  RECOMMEND: '추천',
-  SECONDHAND: '중고거래',
-  FREE: '나눔',
+  QNA: "Q&A",
+  RECOMMEND: "추천",
+  SECONDHAND: "중고거래",
+  FREE: "나눔",
 } as const;
 
 export function MobileNavigation({
@@ -30,14 +30,22 @@ export function MobileNavigation({
   onBack,
   showMenu = true,
   className,
-  children
+  children,
 }: MobileNavigationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [touchStart, setTouchStart] = useState<{ x: number; y: number; time: number } | null>(null);
-  const [touchEnd, setTouchEnd] = useState<{ x: number; y: number; time: number } | null>(null);
+  const [touchStart, setTouchStart] = useState<{
+    x: number;
+    y: number;
+    time: number;
+  } | null>(null);
+  const [touchEnd, setTouchEnd] = useState<{
+    x: number;
+    y: number;
+    time: number;
+  } | null>(null);
   const [swipeProgress, setSwipeProgress] = useState(0);
   const [isSwipeActive, setIsSwipeActive] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -55,12 +63,12 @@ export function MobileNavigation({
       router.back();
     } else {
       // Fallback based on current path
-      if (pathname.startsWith('/community/')) {
+      if (pathname.startsWith("/community/")) {
         // From post detail, go back to community with preserved filters
         const currentFilters = {
-          category: searchParams.get('category'),
-          apartmentId: searchParams.get('apartmentId'),
-          sort: searchParams.get('sort')
+          category: searchParams.get("category"),
+          apartmentId: searchParams.get("apartmentId"),
+          sort: searchParams.get("sort"),
         };
 
         const params = new URLSearchParams();
@@ -69,9 +77,9 @@ export function MobileNavigation({
         });
 
         const filterUrl = params.toString();
-        router.push(`/community${filterUrl ? `?${filterUrl}` : ''}`);
+        router.push(`/community${filterUrl ? `?${filterUrl}` : ""}`);
       } else {
-        router.push('/');
+        router.push("/");
       }
     }
   }, [onBack, router, pathname, searchParams]);
@@ -82,40 +90,43 @@ export function MobileNavigation({
     setTouchStart({
       x: touch.clientX,
       y: touch.clientY,
-      time: Date.now()
+      time: Date.now(),
     });
     setTouchEnd(null);
     setSwipeProgress(0);
     setIsSwipeActive(false);
   }, []);
 
-  const onTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!touchStart) return;
+  const onTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!touchStart) return;
 
-    const touch = e.targetTouches[0];
-    const currentTouch = {
-      x: touch.clientX,
-      y: touch.clientY,
-      time: Date.now()
-    };
+      const touch = e.targetTouches[0];
+      const currentTouch = {
+        x: touch.clientX,
+        y: touch.clientY,
+        time: Date.now(),
+      };
 
-    setTouchEnd(currentTouch);
+      setTouchEnd(currentTouch);
 
-    // Calculate swipe progress for visual feedback
-    const deltaX = currentTouch.x - touchStart.x;
-    const deltaY = Math.abs(currentTouch.y - touchStart.y);
+      // Calculate swipe progress for visual feedback
+      const deltaX = currentTouch.x - touchStart.x;
+      const deltaY = Math.abs(currentTouch.y - touchStart.y);
 
-    // Only consider horizontal swipes (ignore if too much vertical movement)
-    if (deltaY < 50) {
-      const progress = Math.abs(deltaX) / 150; // Normalize to 0-1
-      setSwipeProgress(Math.min(progress, 1));
+      // Only consider horizontal swipes (ignore if too much vertical movement)
+      if (deltaY < 50) {
+        const progress = Math.abs(deltaX) / 150; // Normalize to 0-1
+        setSwipeProgress(Math.min(progress, 1));
 
-      // Activate swipe feedback when movement is significant
-      if (Math.abs(deltaX) > 20) {
-        setIsSwipeActive(true);
+        // Activate swipe feedback when movement is significant
+        if (Math.abs(deltaX) > 20) {
+          setIsSwipeActive(true);
+        }
       }
-    }
-  }, [touchStart]);
+    },
+    [touchStart],
+  );
 
   const onTouchEnd = useCallback(() => {
     if (!touchStart || !touchEnd) {
@@ -150,10 +161,22 @@ export function MobileNavigation({
     }
 
     // Left swipe to open menu (only if menu is available)
-    if (isLeftSwipe && showMenu && !isMenuOpen && (isFastSwipe || isLongSwipe)) {
+    if (
+      isLeftSwipe &&
+      showMenu &&
+      !isMenuOpen &&
+      (isFastSwipe || isLongSwipe)
+    ) {
       setIsMenuOpen(true);
     }
-  }, [touchStart, touchEnd, showBackButton, showMenu, isMenuOpen, handleBackNavigation]);
+  }, [
+    touchStart,
+    touchEnd,
+    showBackButton,
+    showMenu,
+    isMenuOpen,
+    handleBackNavigation,
+  ]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -164,15 +187,15 @@ export function MobileNavigation({
     };
 
     if (isMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.body.style.overflow = 'hidden';
+      document.addEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "unset";
     };
   }, [isMenuOpen]);
 
@@ -180,15 +203,15 @@ export function MobileNavigation({
   const getPageTitle = () => {
     if (title) return title;
 
-    const category = searchParams.get('category') as CommunityCategory;
+    const category = searchParams.get("category") as CommunityCategory;
     if (category && CATEGORY_LABELS[category]) {
       return CATEGORY_LABELS[category];
     }
 
-    if (pathname === '/community') return '커뮤니티';
-    if (pathname.startsWith('/community/')) return '게시글';
+    if (pathname === "/community") return "커뮤니티";
+    if (pathname.startsWith("/community/")) return "게시글";
 
-    return '커뮤니티';
+    return "커뮤니티";
   };
 
   return (
@@ -199,12 +222,13 @@ export function MobileNavigation({
         className={cn(
           "md:hidden sticky top-16 z-40 bg-white border-b border-gray-200 shadow-sm transition-transform duration-200",
           isSwipeActive && swipeProgress > 0.1 && "transform",
-          className
+          className,
         )}
         style={{
-          transform: isSwipeActive && showBackButton && swipeProgress > 0
-            ? `translateX(${Math.min(swipeProgress * 20, 20)}px)`
-            : undefined
+          transform:
+            isSwipeActive && showBackButton && swipeProgress > 0
+              ? `translateX(${Math.min(swipeProgress * 20, 20)}px)`
+              : undefined,
         }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
@@ -293,20 +317,19 @@ export function MobileNavigation({
                     variant="ghost"
                     className="w-full justify-start text-left p-3 h-auto min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     onClick={() => {
-                      router.push('/');
+                      router.push("/");
                       setIsMenuOpen(false);
                     }}
                     tabIndex={0}
                     autoFocus
                   >
-                    <Home size={18} className="mr-3" />
-                    홈
+                    <Home size={18} className="mr-3" />홈
                   </Button>
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-left p-3 h-auto min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     onClick={() => {
-                      router.push('/community');
+                      router.push("/community");
                       setIsMenuOpen(false);
                     }}
                     tabIndex={0}
@@ -318,7 +341,7 @@ export function MobileNavigation({
               </div>
 
               {/* Category Filters (only show on community pages) */}
-              {pathname.startsWith('/community') && (
+              {pathname.startsWith("/community") && (
                 <div className="space-y-2">
                   <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
                     카테고리
@@ -328,8 +351,10 @@ export function MobileNavigation({
                       variant="ghost"
                       className="w-full justify-start text-left p-3 h-auto min-h-[44px]"
                       onClick={() => {
-                        const params = new URLSearchParams(searchParams.toString());
-                        params.delete('category');
+                        const params = new URLSearchParams(
+                          searchParams.toString(),
+                        );
+                        params.delete("category");
                         router.push(`/community?${params.toString()}`);
                         setIsMenuOpen(false);
                       }}
@@ -342,11 +367,14 @@ export function MobileNavigation({
                         variant="ghost"
                         className={cn(
                           "w-full justify-start text-left p-3 h-auto min-h-[44px]",
-                          searchParams.get('category') === key.toLowerCase() && "bg-blue-50 text-blue-600"
+                          searchParams.get("category") === key.toLowerCase() &&
+                            "bg-blue-50 text-blue-600",
                         )}
                         onClick={() => {
-                          const params = new URLSearchParams(searchParams.toString());
-                          params.set('category', key.toLowerCase());
+                          const params = new URLSearchParams(
+                            searchParams.toString(),
+                          );
+                          params.set("category", key.toLowerCase());
                           router.push(`/community?${params.toString()}`);
                           setIsMenuOpen(false);
                         }}

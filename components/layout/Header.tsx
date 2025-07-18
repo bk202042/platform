@@ -61,11 +61,12 @@ export function Header() {
             <>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button type="button" className="flex items-center gap-2 rounded-full px-4 py-2 font-medium transition-colors bg-[rgb(0,120,130)] text-white hover:bg-[rgb(0,95,103)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgb(0,120,130)]">
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 rounded-full px-4 py-2 font-medium transition-colors bg-[rgb(0,120,130)] text-white hover:bg-[rgb(0,95,103)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgb(0,120,130)]"
+                  >
                     <User className="h-5 w-5" />
-                    <span>
-                      {user.user_metadata?.full_name || user.email}
-                    </span>
+                    <span>{user.user_metadata?.full_name || user.email}</span>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -105,12 +106,18 @@ export function Header() {
           ) : (
             <div className="flex items-center space-x-4">
               <Link href="/auth/sign-in">
-                <button type="button" className="px-3 py-2 font-medium text-lg text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors">
+                <button
+                  type="button"
+                  className="px-3 py-2 font-medium text-lg text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors"
+                >
                   로그인
                 </button>
               </Link>
               <Link href="/auth/sign-up">
-                <button type="button" className="px-3 py-2 font-medium text-lg text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors">
+                <button
+                  type="button"
+                  className="px-3 py-2 font-medium text-lg text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded transition-colors"
+                >
                   회원가입
                 </button>
               </Link>

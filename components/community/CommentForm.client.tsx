@@ -1,30 +1,43 @@
-'use client';
-import { useState } from 'react';
+"use client";
+import { useState } from "react";
 
 interface CommentFormProps {
   postId: string;
-  onCommentAdded: (comment: { body: string; user: { name: string }; created_at: string }) => void;
+  onCommentAdded: (comment: {
+    body: string;
+    user: { name: string };
+    created_at: string;
+  }) => void;
 }
 
 export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
-  const [body, setBody] = useState('');
+  const [body, setBody] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    onCommentAdded({ body, user: { name: '나' }, created_at: new Date().toISOString() });
-    setBody('');
+    onCommentAdded({
+      body,
+      user: { name: "나" },
+      created_at: new Date().toISOString(),
+    });
+    setBody("");
     await fetch(`/api/community/posts/${postId}/comments`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ body }),
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
     setLoading(false);
   }
 
   return (
-    <form className="flex flex-col gap-2 mt-2" onSubmit={handleSubmit} role="form" aria-live="polite">
+    <form
+      className="flex flex-col gap-2 mt-2"
+      onSubmit={handleSubmit}
+      role="form"
+      aria-live="polite"
+    >
       <textarea
         className="w-full border rounded-lg px-3 py-2 min-h-[48px] text-sm"
         placeholder="댓글을 입력하세요"

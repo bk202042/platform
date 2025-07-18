@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 
 interface PostCardSkeletonProps {
   /** Number of skeleton cards to render */
@@ -40,7 +40,7 @@ function PostCardSkeletonItem({
   showApartment,
   showTitle,
   showImages,
-}: Omit<PostCardSkeletonProps, 'count'>) {
+}: Omit<PostCardSkeletonProps, "count">) {
   return (
     <article
       className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden animate-pulse"

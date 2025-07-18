@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { createCommentSchema } from '@/lib/validation/community';
+import React, { useState } from "react";
+import { createCommentSchema } from "@/lib/validation/community";
 
 interface CommentFormProps {
   onSubmit: (values: { body: string; parent_id?: string | null }) => void;
@@ -8,20 +8,29 @@ interface CommentFormProps {
   defaultValue?: string;
 }
 
-export function CommentForm({ onSubmit, parentId, loading, defaultValue }: CommentFormProps) {
-  const [body, setBody] = useState(defaultValue || '');
+export function CommentForm({
+  onSubmit,
+  parentId,
+  loading,
+  defaultValue,
+}: CommentFormProps) {
+  const [body, setBody] = useState(defaultValue || "");
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const result = createCommentSchema.safeParse({ post_id: 'dummy', body, parent_id: parentId });
+    const result = createCommentSchema.safeParse({
+      post_id: "dummy",
+      body,
+      parent_id: parentId,
+    });
     if (!result.success) {
-      setError(result.error.errors[0]?.message || '댓글을 입력해 주세요.');
+      setError(result.error.errors[0]?.message || "댓글을 입력해 주세요.");
       return;
     }
     setError(null);
     onSubmit({ body, parent_id: parentId });
-    setBody('');
+    setBody("");
   }
 
   return (

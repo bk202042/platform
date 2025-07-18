@@ -1,7 +1,11 @@
-import 'server-only';
-import { createAnonClient } from '@/lib/supabase/server-anon';
-import { createClient } from '@/lib/supabase/server';
-import { PropertyListing, PropertyType, PropertyImage } from "@/lib/types/property";
+import "server-only";
+import { createAnonClient } from "@/lib/supabase/server-anon";
+import { createClient } from "@/lib/supabase/server";
+import {
+  PropertyListing,
+  PropertyType,
+  PropertyImage,
+} from "@/lib/types/property";
 import { unstable_cache } from "next/cache";
 import { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 
@@ -342,12 +346,12 @@ export async function getSimilarProperties(
 export async function createProperty(
   property: Omit<
     PropertyListing,
-    'id' | 'created_at' | 'property_images' | 'primary_image'
-  >
+    "id" | "created_at" | "property_images" | "primary_image"
+  >,
 ): Promise<PropertyListing> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from('property_listings')
+    .from("property_listings")
     .insert(property)
     .select()
     .single();
@@ -357,7 +361,7 @@ export async function createProperty(
 
 export async function updateProperty(
   id: string,
-  updates: Partial<PropertyListing>
+  updates: Partial<PropertyListing>,
 ): Promise<PropertyListing> {
   const supabase = await createClient();
   // Exclude processed fields explicitly before update
@@ -378,7 +382,7 @@ export async function deleteProperty(id: string): Promise<boolean> {
   const supabase = await createClient();
   // TODO: Consider deleting related images from storage and property_images table first
   const { error } = await supabase
-    .from('property_listings')
+    .from("property_listings")
     .delete()
     .eq("id", id);
   if (error) throw error;
@@ -420,12 +424,12 @@ export async function addPropertyImage(
   propertyId: string,
   imageData: Omit<
     PropertyImage,
-    'id' | 'created_at' | 'updated_at' | 'url' | 'publicUrl'
-  >
+    "id" | "created_at" | "updated_at" | "url" | "publicUrl"
+  >,
 ): Promise<{ data: PropertyImage | null; error: PostgrestError | null }> {
   const supabase = await createClient();
   return await supabase
-    .from('property_images')
+    .from("property_images")
     .insert(imageData)
     .select()
     .single();
@@ -434,11 +438,11 @@ export async function addPropertyImage(
 // Update display order
 export async function updatePropertyImageOrder(
   imageId: string,
-  newOrder: number
+  newOrder: number,
 ): Promise<{ data: PropertyImage | null; error: PostgrestError | null }> {
   const supabase = await createClient();
   return await supabase
-    .from('property_images')
+    .from("property_images")
     .update({ display_order: newOrder })
     .eq("id", imageId)
     .select()
@@ -447,12 +451,12 @@ export async function updatePropertyImageOrder(
 
 // Delete image record
 export async function deletePropertyImage(
-  imageId: string
+  imageId: string,
 ): Promise<{ data: PropertyImage | null; error: PostgrestError | null }> {
   const supabase = await createClient();
   // TODO: Add logic to delete from storage bucket using img.storage_path before deleting DB record
   return await supabase
-    .from('property_images')
+    .from("property_images")
     .delete()
     .eq("id", imageId)
     .select()

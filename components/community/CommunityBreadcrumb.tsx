@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { ChevronRight, Home, ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { CommunityCategory } from '@/lib/validation/community';
-import { cn } from '@/lib/utils';
+import React from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ChevronRight, Home, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CommunityCategory } from "@/lib/validation/community";
+import { cn } from "@/lib/utils";
 
 interface BreadcrumbItem {
   label: string;
@@ -26,10 +26,10 @@ interface CommunityBreadcrumbProps {
 
 // Category labels in Korean
 const CATEGORY_LABELS = {
-  QNA: 'Q&A',
-  RECOMMEND: '추천',
-  SECONDHAND: '중고거래',
-  FREE: '나눔',
+  QNA: "Q&A",
+  RECOMMEND: "추천",
+  SECONDHAND: "중고거래",
+  FREE: "나눔",
 } as const;
 
 export function CommunityBreadcrumb({
@@ -39,7 +39,7 @@ export function CommunityBreadcrumb({
   apartmentName,
   cityName,
   showMobileBack = false,
-  className
+  className,
 }: CommunityBreadcrumbProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -49,16 +49,16 @@ export function CommunityBreadcrumb({
     if (items) return items;
 
     const breadcrumbItems: BreadcrumbItem[] = [
-      { label: '홈', href: '/' },
-      { label: '커뮤니티', href: '/community', preserveFilters: true },
+      { label: "홈", href: "/" },
+      { label: "커뮤니티", href: "/community", preserveFilters: true },
     ];
 
     // Add location context if available
     if (cityName && apartmentName) {
       breadcrumbItems.push({
         label: `${cityName} · ${apartmentName}`,
-        href: `/community?${buildFilterUrl({ apartmentId: searchParams.get('apartmentId') })}`,
-        preserveFilters: true
+        href: `/community?${buildFilterUrl({ apartmentId: searchParams.get("apartmentId") })}`,
+        preserveFilters: true,
       });
     }
 
@@ -66,21 +66,22 @@ export function CommunityBreadcrumb({
     if (category) {
       const categoryUrl = buildFilterUrl({
         category: category.toLowerCase(),
-        apartmentId: searchParams.get('apartmentId'),
-        sort: searchParams.get('sort')
+        apartmentId: searchParams.get("apartmentId"),
+        sort: searchParams.get("sort"),
       });
 
       breadcrumbItems.push({
         label: CATEGORY_LABELS[category],
         href: `/community?${categoryUrl}`,
-        preserveFilters: true
+        preserveFilters: true,
       });
     }
 
     // Add post title if provided (current page, no link)
     if (postTitle) {
       breadcrumbItems.push({
-        label: postTitle.length > 40 ? `${postTitle.slice(0, 40)}...` : postTitle
+        label:
+          postTitle.length > 40 ? `${postTitle.slice(0, 40)}...` : postTitle,
       });
     }
 
@@ -108,13 +109,13 @@ export function CommunityBreadcrumb({
     } else {
       // Fallback to community page with current filters
       const currentFilters = {
-        category: searchParams.get('category'),
-        apartmentId: searchParams.get('apartmentId'),
-        sort: searchParams.get('sort')
+        category: searchParams.get("category"),
+        apartmentId: searchParams.get("apartmentId"),
+        sort: searchParams.get("sort"),
       };
 
       const filterUrl = buildFilterUrl(currentFilters);
-      router.push(`/community${filterUrl ? `?${filterUrl}` : ''}`);
+      router.push(`/community${filterUrl ? `?${filterUrl}` : ""}`);
     }
   };
 
@@ -160,15 +161,14 @@ export function CommunityBreadcrumb({
                   href={item.href}
                   className="hover:text-blue-600 transition-colors duration-200 font-medium hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded px-1 py-0.5"
                   aria-label={`${item.label}로 이동`}
-                  aria-current={index === breadcrumbItems.length - 1 ? 'page' : undefined}
+                  aria-current={
+                    index === breadcrumbItems.length - 1 ? "page" : undefined
+                  }
                 >
                   {item.label}
                 </Link>
               ) : (
-                <span
-                  className="text-gray-900 font-medium"
-                  aria-current="page"
-                >
+                <span className="text-gray-900 font-medium" aria-current="page">
                   {item.label}
                 </span>
               )}
@@ -186,26 +186,32 @@ export function CommunityBreadcrumb({
       </nav>
 
       {/* Mobile breadcrumb - simplified version */}
-      <nav
-        aria-label="페이지 경로"
-        className="md:hidden"
-        role="navigation"
-      >
+      <nav aria-label="페이지 경로" className="md:hidden" role="navigation">
         <div className="flex items-center gap-2 text-sm text-gray-600">
           {breadcrumbItems.length > 1 && (
             <>
               <Link
-                href={breadcrumbItems[breadcrumbItems.length - 2]?.href || '/community'}
+                href={
+                  breadcrumbItems[breadcrumbItems.length - 2]?.href ||
+                  "/community"
+                }
                 className="hover:text-blue-600 transition-colors duration-200 font-medium hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded px-1 py-0.5"
                 aria-label={`${breadcrumbItems[breadcrumbItems.length - 2]?.label}로 이동`}
-                aria-current={breadcrumbItems.length === 2 ? 'page' : undefined}
+                aria-current={breadcrumbItems.length === 2 ? "page" : undefined}
               >
                 {breadcrumbItems[breadcrumbItems.length - 2]?.label}
               </Link>
-              <ChevronRight size={16} className="text-gray-400" aria-hidden="true" />
+              <ChevronRight
+                size={16}
+                className="text-gray-400"
+                aria-hidden="true"
+              />
             </>
           )}
-          <span className="text-gray-900 font-medium truncate" aria-current="page">
+          <span
+            className="text-gray-900 font-medium truncate"
+            aria-current="page"
+          >
             {breadcrumbItems[breadcrumbItems.length - 1]?.label}
           </span>
         </div>

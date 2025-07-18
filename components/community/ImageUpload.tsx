@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useSupabaseUpload } from '@/lib/hooks/useSupabaseUpload';
-import { Button } from '@/components/ui/button';
-import { Upload, X, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import Image from 'next/image';
+import React from "react";
+import { useSupabaseUpload } from "@/lib/hooks/useSupabaseUpload";
+import { Button } from "@/components/ui/button";
+import { Upload, X, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface ImageUploadProps {
   onImagesChange: (urls: string[]) => void;
@@ -20,7 +20,7 @@ export function ImageUpload({
   maxFiles = 5,
   maxFileSize = 5 * 1024 * 1024, // 5MB
   initialImages = [],
-  className
+  className,
 }: ImageUploadProps) {
   const {
     files,
@@ -37,17 +37,18 @@ export function ImageUpload({
   } = useSupabaseUpload({
     maxFiles,
     maxFileSize,
-    allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    allowedTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
   });
 
   // Initialize with existing images
-  const [existingImages, setExistingImages] = React.useState<string[]>(initialImages);
+  const [existingImages, setExistingImages] =
+    React.useState<string[]>(initialImages);
 
   // Update parent when images change
   React.useEffect(() => {
     const allImageUrls = [
       ...existingImages,
-      ...uploadedFiles.map(file => file.url)
+      ...uploadedFiles.map((file) => file.url),
     ];
     onImagesChange(allImageUrls);
   }, [existingImages, uploadedFiles, onImagesChange]);
@@ -57,24 +58,29 @@ export function ImageUpload({
   };
 
   const handleRemoveExisting = (index: number) => {
-    setExistingImages(prev => prev.filter((_, i) => i !== index));
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const totalImages = existingImages.length + uploadedFiles.length + files.length;
+  const totalImages =
+    existingImages.length + uploadedFiles.length + files.length;
   const canUploadMore = totalImages < maxFiles;
 
   return (
-    <div className={cn('space-y-4', className)} role="region" aria-label="이미지 업로드 영역">
+    <div
+      className={cn("space-y-4", className)}
+      role="region"
+      aria-label="이미지 업로드 영역"
+    >
       {/* Drag and Drop Zone */}
       {canUploadMore && (
         <div
           {...getRootProps()}
           className={cn(
-            'border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer',
+            "border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer",
             isDragActive
-              ? 'border-primary bg-primary/10'
-              : 'border-gray-300 hover:border-gray-400',
-            'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+              ? "border-primary bg-primary/10"
+              : "border-gray-300 hover:border-gray-400",
+            "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
           )}
         >
           <input {...getInputProps()} className="sr-only" />
@@ -87,11 +93,10 @@ export function ImageUpload({
               <span className="text-gray-600"> 여기에 드래그하세요</span>
             </div>
             <p className="text-xs text-gray-500">
-              PNG, JPG, WEBP, GIF (최대 {Math.round(maxFileSize / 1024 / 1024)}MB)
+              PNG, JPG, WEBP, GIF (최대 {Math.round(maxFileSize / 1024 / 1024)}
+              MB)
             </p>
-            <p className="text-xs text-gray-500">
-              최대 {maxFiles}개 파일
-            </p>
+            <p className="text-xs text-gray-500">최대 {maxFiles}개 파일</p>
           </div>
         </div>
       )}
@@ -119,7 +124,10 @@ export function ImageUpload({
                 >
                   <X className="h-3 w-3" />
                 </button>
-                <p className="text-xs text-gray-600 mt-1 truncate" title={file.name}>
+                <p
+                  className="text-xs text-gray-600 mt-1 truncate"
+                  title={file.name}
+                >
                   {file.name}
                 </p>
               </div>
@@ -199,7 +207,10 @@ export function ImageUpload({
                 >
                   <X className="h-3 w-3" />
                 </button>
-                <p className="text-xs text-gray-600 mt-1 truncate" title={file.name}>
+                <p
+                  className="text-xs text-gray-600 mt-1 truncate"
+                  title={file.name}
+                >
                   {file.name}
                 </p>
               </div>
@@ -220,7 +231,9 @@ export function ImageUpload({
       )}
 
       {/* Clear All Button */}
-      {(files.length > 0 || uploadedFiles.length > 0 || existingImages.length > 0) && (
+      {(files.length > 0 ||
+        uploadedFiles.length > 0 ||
+        existingImages.length > 0) && (
         <Button
           type="button"
           variant="outline"
@@ -244,7 +257,9 @@ export function ImageUpload({
         {loading && <span>이미지 업로드 중...</span>}
         {errors.length > 0 && (
           <ul className="text-red-500 text-xs mt-2">
-            {errors.map((err, i) => <li key={i}>{err}</li>)}
+            {errors.map((err, i) => (
+              <li key={i}>{err}</li>
+            ))}
           </ul>
         )}
       </div>

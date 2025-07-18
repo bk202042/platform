@@ -1,8 +1,8 @@
-import React from 'react';
-import Image from 'next/image';
-import { MessageCircle, Clock, User, MapPin } from 'lucide-react';
-import { CommunityCategory } from '@/lib/validation/community';
-import { LikeButton } from './LikeButton';
+import React from "react";
+import Image from "next/image";
+import { MessageCircle, Clock, User, MapPin } from "lucide-react";
+import { CommunityCategory } from "@/lib/validation/community";
+import { LikeButton } from "./LikeButton";
 
 export interface PostDetailProps {
   post: {
@@ -25,10 +25,19 @@ export interface PostDetailProps {
 
 // Category badge configuration with Korean labels and colors
 const CATEGORY_CONFIG = {
-  QNA: { label: 'Q&A', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-  RECOMMEND: { label: '추천', color: 'bg-green-100 text-green-800 border-green-200' },
-  SECONDHAND: { label: '중고거래', color: 'bg-orange-100 text-orange-800 border-orange-200' },
-  FREE: { label: '나눔', color: 'bg-purple-100 text-purple-800 border-purple-200' },
+  QNA: { label: "Q&A", color: "bg-blue-100 text-blue-800 border-blue-200" },
+  RECOMMEND: {
+    label: "추천",
+    color: "bg-green-100 text-green-800 border-green-200",
+  },
+  SECONDHAND: {
+    label: "중고거래",
+    color: "bg-orange-100 text-orange-800 border-orange-200",
+  },
+  FREE: {
+    label: "나눔",
+    color: "bg-purple-100 text-purple-800 border-purple-200",
+  },
 } as const;
 
 export function PostDetail({ post }: PostDetailProps) {
@@ -37,12 +46,12 @@ export function PostDetail({ post }: PostDetailProps) {
   // Format date for better readability
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return date.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -53,15 +62,22 @@ export function PostDetail({ post }: PostDetailProps) {
         <div className="flex items-start justify-between gap-2 xs:gap-3 sm:gap-4 mb-4 xs:mb-5 sm:mb-6">
           <div className="flex items-center gap-2 xs:gap-2.5 sm:gap-3 flex-wrap">
             {categoryConfig && (
-              <span className={`inline-flex items-center px-2 xs:px-2.5 sm:px-3 py-0.5 xs:py-1 rounded-full text-xs sm:text-sm font-medium border ${categoryConfig.color}`}>
+              <span
+                className={`inline-flex items-center px-2 xs:px-2.5 sm:px-3 py-0.5 xs:py-1 rounded-full text-xs sm:text-sm font-medium border ${categoryConfig.color}`}
+              >
                 {categoryConfig.label}
               </span>
             )}
             {post.apartments && (
               <div className="flex items-center gap-1 xs:gap-1.5 text-xs sm:text-sm text-gray-600 bg-gray-50 px-2 xs:px-2.5 sm:px-3 py-0.5 xs:py-1 rounded-full">
-                <MapPin size={10} className="text-gray-400 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5" />
+                <MapPin
+                  size={10}
+                  className="text-gray-400 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5"
+                />
                 <span className="truncate max-w-[120px] xs:max-w-[150px] sm:max-w-none">
-                  <span className="hidden sm:inline">{post.apartments.cities?.name} · </span>
+                  <span className="hidden sm:inline">
+                    {post.apartments.cities?.name} ·{" "}
+                  </span>
                   {post.apartments.name}
                 </span>
               </div>
@@ -79,12 +95,20 @@ export function PostDetail({ post }: PostDetailProps) {
         {/* Author and date info */}
         <div className="flex items-center gap-2 xs:gap-3 sm:gap-4 mb-4 xs:mb-5 sm:mb-6 pb-3 xs:pb-4 sm:pb-5 border-b border-gray-100">
           <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 text-xs xs:text-sm text-gray-600">
-            <User size={12} className="text-gray-400 xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4" />
-            <span className="font-medium">{post.user?.name || '익명'}</span>
+            <User
+              size={12}
+              className="text-gray-400 xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4"
+            />
+            <span className="font-medium">{post.user?.name || "익명"}</span>
           </div>
           <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 text-xs xs:text-sm text-gray-500">
-            <Clock size={12} className="text-gray-400 xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4" />
-            <span className="text-xs xs:text-sm">{formatDate(post.created_at)}</span>
+            <Clock
+              size={12}
+              className="text-gray-400 xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4"
+            />
+            <span className="text-xs xs:text-sm">
+              {formatDate(post.created_at)}
+            </span>
           </div>
         </div>
 
@@ -100,7 +124,10 @@ export function PostDetail({ post }: PostDetailProps) {
           <div className="mb-4 xs:mb-5 sm:mb-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 xs:gap-3 sm:gap-4">
               {post.images.slice(0, 4).map((image, index) => (
-                <div key={index} className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                <div
+                  key={index}
+                  className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden"
+                >
                   <Image
                     src={image}
                     alt={`게시글 이미지 ${index + 1}`}
@@ -130,8 +157,14 @@ export function PostDetail({ post }: PostDetailProps) {
             size="lg"
           />
           <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2 text-gray-600">
-            <MessageCircle size={16} className="text-gray-400 xs:w-4 xs:h-4 sm:w-5 sm:h-5" aria-label="댓글" />
-            <span className="font-medium text-sm xs:text-base">{post.comments_count}</span>
+            <MessageCircle
+              size={16}
+              className="text-gray-400 xs:w-4 xs:h-4 sm:w-5 sm:h-5"
+              aria-label="댓글"
+            />
+            <span className="font-medium text-sm xs:text-base">
+              {post.comments_count}
+            </span>
             <span className="text-xs xs:text-sm text-gray-500">댓글</span>
           </div>
         </div>

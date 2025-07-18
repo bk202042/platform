@@ -1,21 +1,30 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { createClient } from '@/lib/supabase/client';
-import { Button } from '@/components/ui/button';
+import Image from "next/image";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
 
 interface GoogleSignInButtonProps {
   children: React.ReactNode;
+  returnUrl?: string;
 }
 
-export default function GoogleSignInButton({ children }: GoogleSignInButtonProps) {
+export default function GoogleSignInButton({
+  children,
+  returnUrl = "/",
+}: GoogleSignInButtonProps) {
   const supabase = createClient();
 
   const handleSignIn = async () => {
+    const redirectUrl = new URL("/auth/callback", location.origin);
+    if (returnUrl !== "/") {
+      redirectUrl.searchParams.set("returnUrl", returnUrl);
+    }
+
     await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider: "google",
       options: {
-        redirectTo: `${location.origin}/auth/callback`,
+        redirectTo: redirectUrl.toString(),
       },
     });
   };

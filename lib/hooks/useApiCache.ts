@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from "react";
 
 interface CacheEntry<T> {
   data: T;
@@ -20,7 +20,7 @@ const cache = new Map<string, CacheEntry<unknown>>();
 export function useApiCache<T>(
   key: string,
   fetcher: () => Promise<T>,
-  options: UseApiCacheOptions = {}
+  options: UseApiCacheOptions = {},
 ) {
   const {
     cacheTime = 5 * 60 * 1000, // 5 minutes
@@ -36,66 +36,72 @@ export function useApiCache<T>(
   const fetcherRef = useRef(fetcher);
   fetcherRef.current = fetcher;
 
-  const fetchData = useCallback(async (force = false) => {
-    const now = Date.now();
-    const cached = cache.get(key);
+  const fetchData = useCallback(
+    async (force = false) => {
+      const now = Date.now();
+      const cached = cache.get(key);
 
-    // Return cached data if it's still valid and not forced
-    if (!force && cached && now < cached.expiresAt) {
-      setData(cached.data as T);
-      setIsLoading(false);
-      setError(null);
-      setIsStale(now > cached.timestamp + staleTime);
-      return cached.data as T;
-    }
-
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const result = await fetcherRef.current();
-
-      // Cache the result
-      cache.set(key, {
-        data: result,
-        timestamp: now,
-        expiresAt: now + cacheTime,
-      });
-
-      setData(result);
-      setIsStale(false);
-      return result;
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Unknown error');
-      setError(error);
-
-      // If we have cached data, return it even if fetch failed
-      if (cached) {
+      // Return cached data if it's still valid and not forced
+      if (!force && cached && now < cached.expiresAt) {
         setData(cached.data as T);
-        setIsStale(true);
+        setIsLoading(false);
+        setError(null);
+        setIsStale(now > cached.timestamp + staleTime);
+        return cached.data as T;
       }
 
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [key, cacheTime, staleTime]);
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const result = await fetcherRef.current();
+
+        // Cache the result
+        cache.set(key, {
+          data: result,
+          timestamp: now,
+          expiresAt: now + cacheTime,
+        });
+
+        setData(result);
+        setIsStale(false);
+        return result;
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error("Unknown error");
+        setError(error);
+
+        // If we have cached data, return it even if fetch failed
+        if (cached) {
+          setData(cached.data as T);
+          setIsStale(true);
+        }
+
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [key, cacheTime, staleTime],
+  );
 
   const invalidate = useCallback(() => {
     cache.delete(key);
     fetchData(true);
   }, [key, fetchData]);
 
-  const mutate = useCallback((newData: T) => {
-    const now = Date.now();
-    cache.set(key, {
-      data: newData,
-      timestamp: now,
-      expiresAt: now + cacheTime,
-    });
-    setData(newData);
-    setIsStale(false);
-  }, [key, cacheTime]);
+  const mutate = useCallback(
+    (newData: T) => {
+      const now = Date.now();
+      cache.set(key, {
+        data: newData,
+        timestamp: now,
+        expiresAt: now + cacheTime,
+      });
+      setData(newData);
+      setIsStale(false);
+    },
+    [key, cacheTime],
+  );
 
   // Initial fetch
   useEffect(() => {
@@ -113,8 +119,8 @@ export function useApiCache<T>(
       }
     };
 
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
   }, [key, staleTime, refetchOnWindowFocus, fetchData]);
 
   return {
@@ -136,8 +142,10 @@ export function clearAllCache() {
 // Utility function to clear specific cache entries
 export function clearCache(pattern: string | RegExp) {
   const keys = Array.from(cache.keys());
-  keys.forEach(key => {
-    if (typeof pattern === 'string' ? key.includes(pattern) : pattern.test(key)) {
+  keys.forEach((key) => {
+    if (
+      typeof pattern === "string" ? key.includes(pattern) : pattern.test(key)
+    ) {
       cache.delete(key);
     }
   });

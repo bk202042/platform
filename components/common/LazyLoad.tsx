@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef, ReactNode } from 'react';
-import { createIntersectionObserver } from '@/lib/utils/performance';
+import React, { useState, useEffect, useRef, ReactNode } from "react";
+import { createIntersectionObserver } from "@/lib/utils/performance";
 
 interface LazyLoadProps {
   children: ReactNode;
@@ -14,7 +14,7 @@ interface LazyLoadProps {
 export function LazyLoad({
   children,
   fallback = <div className="h-32 bg-gray-100 animate-pulse rounded" />,
-  rootMargin = '50px',
+  rootMargin = "50px",
   threshold = 0.1,
   className,
 }: LazyLoadProps) {
@@ -33,7 +33,7 @@ export function LazyLoad({
           observer.disconnect();
         }
       },
-      { rootMargin, threshold }
+      { rootMargin, threshold },
     );
 
     observer.observe(element);

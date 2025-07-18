@@ -19,7 +19,8 @@ export default function SignUpSuccessPage() {
               등록 성공
             </h3>
             <p className="text-[#2E7D32] text-base leading-relaxed">
-              등록을 완료하려면 이메일에서 확인 링크를 확인하세요. 보이지 않으면 스팸 폴더를 확인하세요.
+              등록을 완료하려면 이메일에서 확인 링크를 확인하세요. 보이지 않으면
+              스팸 폴더를 확인하세요.
             </p>
           </div>
 

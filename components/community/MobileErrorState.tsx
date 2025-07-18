@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { AlertTriangle, RefreshCw, WifiOff, Home } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import React from "react";
+import { AlertTriangle, RefreshCw, WifiOff, Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface MobileErrorStateProps {
-  type?: 'network' | 'auth' | 'generic';
+  type?: "network" | "auth" | "generic";
   title?: string;
   description?: string;
   onRetry?: () => void;
@@ -15,35 +15,36 @@ interface MobileErrorStateProps {
 }
 
 export function MobileErrorState({
-  type = 'generic',
+  type = "generic",
   title,
   description,
   onRetry,
   showHomeButton = true,
-  className = ''
+  className = "",
 }: MobileErrorStateProps) {
   const getErrorConfig = () => {
     switch (type) {
-      case 'network':
+      case "network":
         return {
           icon: <WifiOff className="h-8 w-8 text-red-500" />,
-          title: title || '연결 오류',
-          description: description || '인터넷 연결을 확인해주세요',
-          actionLabel: '다시 시도'
+          title: title || "연결 오류",
+          description: description || "인터넷 연결을 확인해주세요",
+          actionLabel: "다시 시도",
         };
-      case 'auth':
+      case "auth":
         return {
           icon: <AlertTriangle className="h-8 w-8 text-amber-500" />,
-          title: title || '로그인 필요',
-          description: description || '이 기능을 사용하려면 로그인이 필요합니다',
-          actionLabel: '로그인하기'
+          title: title || "로그인 필요",
+          description:
+            description || "이 기능을 사용하려면 로그인이 필요합니다",
+          actionLabel: "로그인하기",
         };
       default:
         return {
           icon: <AlertTriangle className="h-8 w-8 text-gray-500" />,
-          title: title || '오류 발생',
-          description: description || '문제가 발생했습니다',
-          actionLabel: '다시 시도'
+          title: title || "오류 발생",
+          description: description || "문제가 발생했습니다",
+          actionLabel: "다시 시도",
         };
     }
   };
@@ -51,10 +52,10 @@ export function MobileErrorState({
   const config = getErrorConfig();
 
   return (
-    <div className={`flex flex-col items-center justify-center py-8 px-4 text-center min-h-[200px] ${className}`}>
-      <div className="mb-4">
-        {config.icon}
-      </div>
+    <div
+      className={`flex flex-col items-center justify-center py-8 px-4 text-center min-h-[200px] ${className}`}
+    >
+      <div className="mb-4">{config.icon}</div>
 
       <h3 className="text-base font-semibold text-gray-900 mb-2">
         {config.title}
@@ -76,11 +77,9 @@ export function MobileErrorState({
           </Button>
         )}
 
-        {type === 'auth' && !onRetry && (
+        {type === "auth" && !onRetry && (
           <Button asChild className="w-full" size="sm">
-            <Link href="/auth/sign-in">
-              로그인하기
-            </Link>
+            <Link href="/auth/sign-in">로그인하기</Link>
           </Button>
         )}
 
@@ -109,7 +108,7 @@ export function MobileAuthError({ onRetry }: { onRetry?: () => void }) {
 export function MobileGenericError({
   title,
   description,
-  onRetry
+  onRetry,
 }: {
   title?: string;
   description?: string;

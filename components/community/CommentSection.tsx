@@ -1,12 +1,22 @@
-'use client';
+"use client";
 
-import React, { useState, useCallback } from 'react';
-import { MessageCircle, Trash2, Reply, AlertCircle } from 'lucide-react';
-import { CommentForm } from './CommentForm';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { toast } from 'sonner';
-import { validateCommentContent, validateCommentDeletion } from '@/lib/validation/community';
+import React, { useState, useCallback } from "react";
+import { MessageCircle, Trash2, Reply, AlertCircle } from "lucide-react";
+import { CommentForm } from "./CommentForm";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import {
+  validateCommentContent,
+  validateCommentDeletion,
+} from "@/lib/validation/community";
 
 export interface Comment {
   id: string;
@@ -32,7 +42,13 @@ interface CommentItemProps {
   depth?: number;
 }
 
-function CommentItem({ comment, currentUserId, onReply, onDelete, depth = 0 }: CommentItemProps) {
+function CommentItem({
+  comment,
+  currentUserId,
+  onReply,
+  onDelete,
+  depth = 0,
+}: CommentItemProps) {
   const isOwner = currentUserId && comment.user_id === currentUserId;
   const maxDepth = 3; // Maximum nesting depth for readability
   const canReply = depth < maxDepth;
@@ -41,34 +57,44 @@ function CommentItem({ comment, currentUserId, onReply, onDelete, depth = 0 }: C
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60),
+    );
 
     if (diffInHours < 1) {
-      const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-      return diffInMinutes < 1 ? '방금 전' : `${diffInMinutes}분 전`;
+      const diffInMinutes = Math.floor(
+        (now.getTime() - date.getTime()) / (1000 * 60),
+      );
+      return diffInMinutes < 1 ? "방금 전" : `${diffInMinutes}분 전`;
     } else if (diffInHours < 24) {
       return `${diffInHours}시간 전`;
     } else {
-      return date.toLocaleDateString('ko-KR', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+      return date.toLocaleDateString("ko-KR", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       });
     }
   };
 
   return (
-    <div className={`${depth > 0 ? 'ml-3 sm:ml-6 pl-2 sm:pl-4 border-l-2 border-gray-100' : ''}`}>
+    <div
+      className={`${depth > 0 ? "ml-3 sm:ml-6 pl-2 sm:pl-4 border-l-2 border-gray-100" : ""}`}
+    >
       <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mb-3">
         {/* Comment header */}
         <div className="flex items-start justify-between mb-2 gap-2">
           <div className="flex items-center gap-1.5 sm:gap-2 text-sm text-gray-600 min-w-0 flex-1">
             <span className="font-medium text-gray-900 truncate">
-              {comment.user?.name || '익명'}
+              {comment.user?.name || "익명"}
             </span>
-            <span aria-hidden="true" className="flex-shrink-0">·</span>
-            <span className="text-xs sm:text-sm whitespace-nowrap">{formatDate(comment.created_at)}</span>
+            <span aria-hidden="true" className="flex-shrink-0">
+              ·
+            </span>
+            <span className="text-xs sm:text-sm whitespace-nowrap">
+              {formatDate(comment.created_at)}
+            </span>
           </div>
 
           {/* Action buttons */}
@@ -126,7 +152,7 @@ function CommentItem({ comment, currentUserId, onReply, onDelete, depth = 0 }: C
 export function CommentSection({
   postId,
   initialComments,
-  currentUserId
+  currentUserId,
 }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [replyingTo, setReplyingTo] = useState<Comment | null>(null);
@@ -135,134 +161,154 @@ export function CommentSection({
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Handle comment submission
-  const handleCommentSubmit = useCallback(async (values: { body: string; parent_id?: string | null }) => {
-    if (!currentUserId) {
-      toast.error('로그인이 필요합니다.');
-      return;
-    }
-
-    // Validate comment content before submission
-    const contentValidation = validateCommentContent(values.body);
-    if (!contentValidation.isValid) {
-      toast.error(contentValidation.error || '댓글 내용이 올바르지 않습니다.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const response = await fetch(`/api/community/posts/${postId}/comments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...values,
-          body: contentValidation.sanitizedBody // Use sanitized content
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || '댓글 작성에 실패했습니다.');
+  const handleCommentSubmit = useCallback(
+    async (values: { body: string; parent_id?: string | null }) => {
+      if (!currentUserId) {
+        toast.error("로그인이 필요합니다.");
+        return;
       }
 
-      // Create optimistic comment for immediate UI feedback
-      const optimisticComment: Comment = {
-        id: result.data.id,
-        body: contentValidation.sanitizedBody!,
-        user: { name: '나' }, // Will be updated on page refresh
-        created_at: new Date().toISOString(),
-        parent_id: values.parent_id,
-        children: [],
-        user_id: currentUserId
-      };
-
-      // Add comment to local state
-      if (values.parent_id) {
-        // Add as reply to existing comment
-        setComments(prevComments => {
-          const addReplyToComment = (comments: Comment[]): Comment[] => {
-            return comments.map(comment => {
-              if (comment.id === values.parent_id) {
-                return {
-                  ...comment,
-                  children: [...(comment.children || []), optimisticComment]
-                };
-              } else if (comment.children && comment.children.length > 0) {
-                return {
-                  ...comment,
-                  children: addReplyToComment(comment.children)
-                };
-              }
-              return comment;
-            });
-          };
-          return addReplyToComment(prevComments);
-        });
-      } else {
-        // Add as top-level comment
-        setComments(prevComments => [...prevComments, optimisticComment]);
+      // Validate comment content before submission
+      const contentValidation = validateCommentContent(values.body);
+      if (!contentValidation.isValid) {
+        toast.error(
+          contentValidation.error || "댓글 내용이 올바르지 않습니다.",
+        );
+        return;
       }
 
-      setReplyingTo(null);
-      toast.success('댓글이 작성되었습니다.');
-    } catch (error) {
-      console.error('Comment submission error:', error);
-      toast.error(error instanceof Error ? error.message : '댓글 작성에 실패했습니다.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [postId, currentUserId]);
+      setIsSubmitting(true);
+      try {
+        const response = await fetch(
+          `/api/community/posts/${postId}/comments`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...values,
+              body: contentValidation.sanitizedBody, // Use sanitized content
+            }),
+          },
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || "댓글 작성에 실패했습니다.");
+        }
+
+        // Create optimistic comment for immediate UI feedback
+        const optimisticComment: Comment = {
+          id: result.data.id,
+          body: contentValidation.sanitizedBody!,
+          user: { name: "나" }, // Will be updated on page refresh
+          created_at: new Date().toISOString(),
+          parent_id: values.parent_id,
+          children: [],
+          user_id: currentUserId,
+        };
+
+        // Add comment to local state
+        if (values.parent_id) {
+          // Add as reply to existing comment
+          setComments((prevComments) => {
+            const addReplyToComment = (comments: Comment[]): Comment[] => {
+              return comments.map((comment) => {
+                if (comment.id === values.parent_id) {
+                  return {
+                    ...comment,
+                    children: [...(comment.children || []), optimisticComment],
+                  };
+                } else if (comment.children && comment.children.length > 0) {
+                  return {
+                    ...comment,
+                    children: addReplyToComment(comment.children),
+                  };
+                }
+                return comment;
+              });
+            };
+            return addReplyToComment(prevComments);
+          });
+        } else {
+          // Add as top-level comment
+          setComments((prevComments) => [...prevComments, optimisticComment]);
+        }
+
+        setReplyingTo(null);
+        toast.success("댓글이 작성되었습니다.");
+      } catch (error) {
+        console.error("Comment submission error:", error);
+        toast.error(
+          error instanceof Error ? error.message : "댓글 작성에 실패했습니다.",
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [postId, currentUserId],
+  );
 
   // Handle comment deletion
-  const handleCommentDelete = useCallback(async (comment: Comment) => {
-    // Validate deletion permission using validation function
-    const deletionValidation = validateCommentDeletion(
-      { user_id: comment.user_id || '' },
-      currentUserId || ''
-    );
+  const handleCommentDelete = useCallback(
+    async (comment: Comment) => {
+      // Validate deletion permission using validation function
+      const deletionValidation = validateCommentDeletion(
+        { user_id: comment.user_id || "" },
+        currentUserId || "",
+      );
 
-    if (!deletionValidation.isValid) {
-      toast.error(deletionValidation.error || '댓글을 삭제할 권한이 없습니다.');
-      return;
-    }
-
-    setIsDeleting(true);
-    try {
-      const response = await fetch(`/api/community/posts/${postId}/comments/${comment.id}`, {
-        method: 'DELETE',
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || '댓글 삭제에 실패했습니다.');
+      if (!deletionValidation.isValid) {
+        toast.error(
+          deletionValidation.error || "댓글을 삭제할 권한이 없습니다.",
+        );
+        return;
       }
 
-      // Remove comment from local state
-      setComments(prevComments => {
-        const removeComment = (comments: Comment[]): Comment[] => {
-          return comments.filter(c => {
-            if (c.id === comment.id) {
-              return false;
-            }
-            if (c.children && c.children.length > 0) {
-              c.children = removeComment(c.children);
-            }
-            return true;
-          });
-        };
-        return removeComment(prevComments);
-      });
+      setIsDeleting(true);
+      try {
+        const response = await fetch(
+          `/api/community/posts/${postId}/comments/${comment.id}`,
+          {
+            method: "DELETE",
+          },
+        );
 
-      setDeletingComment(null);
-      toast.success('댓글이 삭제되었습니다.');
-    } catch (error) {
-      console.error('Comment deletion error:', error);
-      toast.error(error instanceof Error ? error.message : '댓글 삭제에 실패했습니다.');
-    } finally {
-      setIsDeleting(false);
-    }
-  }, [postId, currentUserId]);
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || "댓글 삭제에 실패했습니다.");
+        }
+
+        // Remove comment from local state
+        setComments((prevComments) => {
+          const removeComment = (comments: Comment[]): Comment[] => {
+            return comments.filter((c) => {
+              if (c.id === comment.id) {
+                return false;
+              }
+              if (c.children && c.children.length > 0) {
+                c.children = removeComment(c.children);
+              }
+              return true;
+            });
+          };
+          return removeComment(prevComments);
+        });
+
+        setDeletingComment(null);
+        toast.success("댓글이 삭제되었습니다.");
+      } catch (error) {
+        console.error("Comment deletion error:", error);
+        toast.error(
+          error instanceof Error ? error.message : "댓글 삭제에 실패했습니다.",
+        );
+      } finally {
+        setIsDeleting(false);
+      }
+    },
+    [postId, currentUserId],
+  );
 
   // Handle reply button click
   const handleReply = useCallback((comment: Comment) => {
@@ -278,14 +324,9 @@ export function CommentSection({
     <section className="space-y-6">
       {/* Comment form */}
       <div className="bg-white border border-gray-200 rounded-lg p-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          댓글 작성
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">댓글 작성</h3>
         {currentUserId ? (
-          <CommentForm
-            onSubmit={handleCommentSubmit}
-            loading={isSubmitting}
-          />
+          <CommentForm onSubmit={handleCommentSubmit} loading={isSubmitting} />
         ) : (
           <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
             <div className="w-12 h-12 mx-auto mb-3 bg-gray-200 rounded-full flex items-center justify-center">
@@ -343,14 +384,16 @@ export function CommentSection({
             <DialogHeader>
               <DialogTitle>답글 작성</DialogTitle>
               <DialogDescription>
-                {replyingTo.user?.name || '익명'}님의 댓글에 답글을 작성합니다.
+                {replyingTo.user?.name || "익명"}님의 댓글에 답글을 작성합니다.
               </DialogDescription>
             </DialogHeader>
 
             {/* Original comment preview */}
             <div className="bg-gray-50 rounded-lg p-3 mb-4">
               <div className="text-sm text-gray-600 mb-1">
-                <span className="font-medium">{replyingTo.user?.name || '익명'}</span>
+                <span className="font-medium">
+                  {replyingTo.user?.name || "익명"}
+                </span>
               </div>
               <div className="text-sm text-gray-800 line-clamp-3">
                 {replyingTo.body}
@@ -359,7 +402,9 @@ export function CommentSection({
 
             {currentUserId ? (
               <CommentForm
-                onSubmit={(values) => handleCommentSubmit({ ...values, parent_id: replyingTo.id })}
+                onSubmit={(values) =>
+                  handleCommentSubmit({ ...values, parent_id: replyingTo.id })
+                }
                 loading={isSubmitting}
                 defaultValue=""
               />
@@ -374,7 +419,10 @@ export function CommentSection({
 
       {/* Delete confirmation dialog */}
       {deletingComment && (
-        <Dialog open={!!deletingComment} onOpenChange={() => setDeletingComment(null)}>
+        <Dialog
+          open={!!deletingComment}
+          onOpenChange={() => setDeletingComment(null)}
+        >
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
@@ -406,7 +454,7 @@ export function CommentSection({
                 onClick={() => handleCommentDelete(deletingComment)}
                 disabled={isDeleting}
               >
-                {isDeleting ? '삭제 중...' : '삭제'}
+                {isDeleting ? "삭제 중..." : "삭제"}
               </Button>
             </DialogFooter>
           </DialogContent>
