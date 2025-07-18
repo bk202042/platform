@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner"; // Import Toaster component fo
 import { Noto_Sans_KR } from "next/font/google";
 import StagewiseToolbarLoader from "@/components/stagewise/StagewiseToolbarLoader";
 import { AuthProvider } from "@/components/providers/AuthProvider";
-import { getInitialUser } from "@/lib/auth";
+import { getInitialUser } from "@/lib/auth/server";
 import { ToastProvider } from "@/components/community/ToastProvider";
 
 const notoSansKR = Noto_Sans_KR({
