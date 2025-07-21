@@ -1,5 +1,5 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 
 export async function createClient() {
   const cookieStore = await cookies();
@@ -9,34 +9,39 @@ export async function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
+        getAll() {
+          return cookieStore.getAll();
         },
-        set(_name: string, _value: string, _options: CookieOptions) {
-          // The `set` method was called from a Server Component.
-          // This can be ignored if you have middleware refreshing
-          // user sessions.
-        },
-        remove(_name: string, _options: CookieOptions) {
-          // The `delete` method was called from a Server Component.
-          // This can be ignored if you have middleware refreshing
-          // user sessions.
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // The `setAll` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing
+            // user sessions.
+          }
         },
       },
     }
   );
 }
 
-export function createAnonClient() {
+// 익명 클라이언트 추가 (서비스 키 없이 공개 데이터만 접근)
+export async function createAnonClient() {
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get() {
-          return undefined;
+        getAll() {
+          return [];
+        },
+        setAll() {
+          // 쿠키를 설정하지 않음
         },
       },
-    },
+    }
   );
 }

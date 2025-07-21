@@ -8,7 +8,7 @@ import { AgentRegistrationData } from "@/lib/types/agent";
  */
 export async function registerAgent(agentData: AgentRegistrationData) {
   try {
-    const supabase = createApiClient();
+    const supabase = await createApiClient();
 
     // Log to help debug
     console.log("Registering agent with data:", {
@@ -52,7 +52,7 @@ export async function registerAgent(agentData: AgentRegistrationData) {
  */
 export const getPendingAgentRegistrations = unstable_cache(
   async () => {
-    const supabase = createApiClient();
+    const supabase = await createApiClient();
 
     const { data, error } = await supabase
       .from("agent_registrations")
@@ -80,7 +80,7 @@ export async function updateAgentRegistrationStatus(
   status: "pending" | "approved" | "rejected",
   notes?: string,
 ) {
-  const supabase = createApiClient();
+  const supabase = await createApiClient();
 
   const updateData: Record<string, string | Date> = {
     status,

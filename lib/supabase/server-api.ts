@@ -1,69 +1,35 @@
-import "server-only";
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-// Define a simplified Database type directly inline to avoid import issues
-interface Database {
-  public: {
-    Tables: {
-      agent_registrations: {
-        Row: {
-          id: string;
-          first_name: string;
-          last_name: string;
-          email: string;
-          phone: string;
-          sales_volume: string;
-          zip_code: string;
-          status: string;
-          notes?: string;
-          created_at: string;
-          updated_at?: string;
-          processed_at?: string;
-        };
-        Insert: {
-          id?: string;
-          first_name: string;
-          last_name: string;
-          email: string;
-          phone: string;
-          sales_volume: string;
-          zip_code: string;
-          status?: string;
-          notes?: string;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          first_name?: string;
-          last_name?: string;
-          email?: string;
-          phone?: string;
-          sales_volume?: string;
-          zip_code?: string;
-          status?: string;
-          notes?: string;
-          updated_at?: string;
-          processed_at?: string;
-        };
-      };
-    };
-  };
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { cookies } from "next/headers";
+
+export async function createClient() {
+  const cookieStore = await cookies();
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value, ...options });
+          } catch (_error) {
+            // API 라우트에서는 쿠키를 설정할 수 없으므로 에러 무시
+          }
+        },
+        remove(name: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value: "", ...options });
+          } catch (_error) {
+            // API 라우트에서는 쿠키를 설정할 수 없으므로 에러 무시
+          }
+        },
+      },
+    }
+  );
 }
 
-// This client is for API routes that don't need user authentication
-export function createApiClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    console.error("Missing Supabase environment variables");
-    throw new Error(
-      "Missing required environment variables for Supabase connection",
-    );
-  }
-
-  return createSupabaseClient<Database>(supabaseUrl, supabaseKey, {
-    auth: {
-      persistSession: false,
-    },
-  });
-}
+// 기존 코드와의 호환성을 위해 createApiClient 별칭 추가
+export const createApiClient = createClient;

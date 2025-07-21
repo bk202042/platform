@@ -139,18 +139,19 @@ export const OptimizedPostList = memo(function OptimizedPostList({
   return (
     <div
       className="space-y-3 sm:space-y-4"
-      role="feed"
+      role="list"
       aria-label={`게시글 목록 (${posts.length}개)`}
     >
       {/* Immediately rendered posts */}
       {immediatePosts.map((post, index) => (
-        <PostCard
-          key={post.id}
-          post={post}
-          onClick={() => handlePostClick(post.id)}
-          aria-posinset={index + 1}
-          aria-setsize={posts.length}
-        />
+        <div role="listitem" key={post.id}>
+          <PostCard
+            post={post}
+            onClick={() => handlePostClick(post.id)}
+            aria-posinset={index + 1}
+            aria-setsize={posts.length}
+          />
+        </div>
       ))}
 
       {/* Lazy-loaded posts */}
@@ -165,13 +166,14 @@ export const OptimizedPostList = memo(function OptimizedPostList({
           }
         >
           {lazyPosts.map((post, index) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              onClick={() => handlePostClick(post.id)}
-              aria-posinset={immediatePosts.length + index + 1}
-              aria-setsize={posts.length}
-            />
+            <div role="listitem" key={post.id}>
+              <PostCard
+                post={post}
+                onClick={() => handlePostClick(post.id)}
+                aria-posinset={immediatePosts.length + index + 1}
+                aria-setsize={posts.length}
+              />
+            </div>
           ))}
         </LazyLoad>
       )}

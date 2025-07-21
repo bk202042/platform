@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { validateCommentDeletion } from "@/lib/validation/community";
 
-// DELETE: 댓글 삭제
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ postId: string; commentId: string }> },
-) {
+// POST: 댓글 삭제 (중첩 동적 라우트 대신 쿼리 파라미터 사용)
+export async function POST(req: NextRequest) {
   try {
+    // 요청 본문에서 postId와 commentId 추출
+    const body = await req.json();
+    const { postId, commentId } = body;
+
     // SSR 인증: 로그인 사용자만 허용
     const supabase = await createClient();
     const {
@@ -20,11 +21,9 @@ export async function DELETE(
           success: false,
           message: "로그인이 필요합니다.",
         },
-        { status: 401 },
+        { status: 401 }
       );
     }
-
-    const { postId, commentId } = await params;
 
     if (!postId || !commentId) {
       return NextResponse.json(
@@ -32,7 +31,7 @@ export async function DELETE(
           success: false,
           message: "게시글 또는 댓글 정보가 올바르지 않습니다.",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -50,14 +49,14 @@ export async function DELETE(
           success: false,
           message: "댓글을 찾을 수 없습니다.",
         },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
     // 댓글 삭제 권한 검증
     const { isValid, error: validationError } = validateCommentDeletion(
       comment,
-      user.id,
+      user.id
     );
     if (!isValid) {
       return NextResponse.json(
@@ -65,7 +64,7 @@ export async function DELETE(
           success: false,
           message: validationError,
         },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -82,7 +81,7 @@ export async function DELETE(
           success: false,
           message: "댓글 삭제에 실패했습니다.",
         },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -97,7 +96,7 @@ export async function DELETE(
         success: false,
         message: "댓글 삭제에 실패했습니다.",
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

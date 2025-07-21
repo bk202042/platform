@@ -98,19 +98,31 @@ export async function getPostByIdWithLikeStatus(
   };
 }
 
-// 게시글 목록 조회 (사용자 좋아요 상태 포함)
+// 게시글 목록 조회 (사용자 좋아요 상태 및 작성자 정보 포함)
 export async function getPostsWithLikeStatus(params: {
   city?: string;
   apartmentId?: string;
   category?: CommunityCategory;
   sort?: "popular" | "latest";
   userId?: string;
+  limit?: number;
+  offset?: number;
 }) {
   const supabase = await createClient();
   let query = supabase
     .from("community_posts")
-    .select(`*, apartments(city_id, name, slug, cities(name))`)
-    .eq("is_deleted", false);
+    .select(`
+      *,
+      apartments(city_id, name, slug, cities(name)),
+      profiles!community_posts_user_id_fkey (
+        id,
+        first_name,
+        last_name,
+        avatar_url
+      )
+    `)
+    .eq("is_deleted", false)
+    .eq("status", "published");
 
   if (params.apartmentId) {
     query = query.eq("apartment_id", params.apartmentId);
@@ -122,13 +134,22 @@ export async function getPostsWithLikeStatus(params: {
     query = query.eq("apartments.city_id", params.city);
   }
 
-  // 인기글: 7일 내 좋아요순 상단, 나머지 최신순
+  // 페이지네이션
+  if (params.limit) {
+    query = query.limit(params.limit);
+  }
+  if (params.offset) {
+    query = query.range(params.offset, params.offset + (params.limit || 10) - 1);
+  }
+
+  // 정렬
   if (params.sort === "popular") {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     query = query
       .gte("created_at", sevenDaysAgo.toISOString())
-      .order("likes_count", { ascending: false });
+      .order("likes_count", { ascending: false })
+      .order("created_at", { ascending: false });
   } else {
     query = query.order("created_at", { ascending: false });
   }
@@ -136,8 +157,11 @@ export async function getPostsWithLikeStatus(params: {
   const { data: posts, error } = await query;
   if (error) throw error;
 
+  if (!posts) return [];
+
   // Get user's like status for all posts if user is provided
-  if (params.userId && posts) {
+  let likedPostIds = new Set<string>();
+  if (params.userId && posts.length > 0) {
     const postIds = posts.map((post) => post.id);
     const { data: likes } = await supabase
       .from("community_likes")
@@ -145,15 +169,24 @@ export async function getPostsWithLikeStatus(params: {
       .eq("user_id", params.userId)
       .in("post_id", postIds);
 
-    const likedPostIds = new Set(likes?.map((like) => like.post_id) || []);
-
-    return posts.map((post) => ({
-      ...post,
-      isLiked: likedPostIds.has(post.id),
-    }));
+    likedPostIds = new Set(likes?.map((like) => like.post_id) || []);
   }
 
-  return posts?.map((post) => ({ ...post, isLiked: false })) || [];
+  return posts.map((post) => {
+    const profile = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
+    const displayName = profile
+      ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "익명"
+      : "익명";
+
+    return {
+      ...post,
+      isLiked: likedPostIds.has(post.id),
+      user: {
+        name: displayName,
+        avatar_url: profile?.avatar_url,
+      },
+    };
+  });
 }
 
 // 게시글 생성
@@ -184,22 +217,26 @@ export async function createPost(data: {
   return post;
 }
 
-// 댓글 목록 조회
+// 댓글 목록 조회 (개선된 버전)
 export async function getComments(postId: string) {
   const supabase = await createClient();
 
-  // First get comments with user IDs
+  // Get comments with user profile data in a single query
   const { data: commentsData, error } = await supabase
     .from("community_comments")
-    .select(
-      `
+    .select(`
       id,
       content,
       created_at,
       parent_id,
-      user_id
-    `,
-    )
+      user_id,
+      profiles!community_comments_user_id_fkey (
+        id,
+        first_name,
+        last_name,
+        avatar_url
+      )
+    `)
     .eq("post_id", postId)
     .eq("is_deleted", false)
     .order("created_at", { ascending: true });
@@ -213,39 +250,26 @@ export async function getComments(postId: string) {
     return [];
   }
 
-  // Get unique user IDs
-  const userIds = [...new Set(commentsData.map((comment) => comment.user_id))];
-
-  // Get user data from public.profiles
-  const { data: usersData, error: usersError } = await supabase
-    .from("profiles")
-    .select("id, first_name, last_name")
-    .in("id", userIds);
-
-  if (usersError) {
-    console.error("getComments users error:", usersError);
-  }
-
-  // Create user lookup map
-  const userMap = new Map();
-  usersData?.forEach((user) => {
-    const fullName =
-      `${user.first_name || ""} ${user.last_name || ""}`.trim() || "익명";
-    userMap.set(user.id, fullName);
-  });
-
   // Transform data to match Comment interface and build hierarchy
-  const comments = commentsData.map((comment) => ({
-    id: comment.id,
-    body: comment.content,
-    user: {
-      name: userMap.get(comment.user_id) || "익명",
-    },
-    created_at: comment.created_at,
-    parent_id: comment.parent_id,
-    user_id: comment.user_id, // Include user_id for ownership validation
-    children: [] as Comment[],
-  }));
+  const comments = commentsData.map((comment) => {
+    const profile = Array.isArray(comment.profiles) ? comment.profiles[0] : comment.profiles;
+    const displayName = profile
+      ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "익명"
+      : "익명";
+
+    return {
+      id: comment.id,
+      body: comment.content,
+      user: {
+        name: displayName,
+        avatar_url: profile?.avatar_url,
+      },
+      created_at: comment.created_at,
+      parent_id: comment.parent_id,
+      user_id: comment.user_id,
+      children: [] as Comment[],
+    };
+  });
 
   // Build comment hierarchy
   const commentMap = new Map<string, Comment>();

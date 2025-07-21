@@ -41,7 +41,7 @@ export interface PropertySearchResult {
 function processPropertyImages(
   property: PropertyListing,
   images: PropertyImage[], // Pass fetched images separately
-  supabase: SupabaseClient, // Pass Supabase client instance
+  supabase: SupabaseClient // Pass Supabase client instance
 ): ProcessedPropertyListing {
   const imagesWithPublicUrls = (images || []).map(
     (img): ProcessedPropertyImage => {
@@ -64,7 +64,7 @@ function processPropertyImages(
         ...img,
         publicUrl: publicUrlData?.publicUrl || null,
       };
-    },
+    }
   );
 
   const primaryImage =
@@ -83,7 +83,7 @@ function processPropertyImages(
 // Cache the property listings for 1 minute
 const getCachedPropertyListings = unstable_cache(
   async (params: PropertySearchParams = {}): Promise<PropertySearchResult> => {
-    const supabase = createAnonClient();
+    const supabaseClient = await createAnonClient();
     const {
       searchText,
       minPrice,
@@ -109,7 +109,7 @@ const getCachedPropertyListings = unstable_cache(
         data: rpcData,
         error: rpcError,
         count,
-      } = await supabase
+      } = await supabaseClient
         .rpc("search_properties", {
           search_text: searchText || null,
           min_price: minPrice || null,
@@ -129,12 +129,12 @@ const getCachedPropertyListings = unstable_cache(
       totalCount = count || 0;
     } else {
       // Regular Query - Fetch property data
-      let query = supabase.from("property_listings").select(`*`);
+      let query = supabaseClient.from("property_listings").select(`*`);
 
       // Apply filters
       if (searchText) {
         query = query.or(
-          `title.ilike.%${searchText}%,description.ilike.%${searchText}%`,
+          `title.ilike.%${searchText}%,description.ilike.%${searchText}%`
         );
       }
       if (minPrice !== undefined) {
@@ -163,13 +163,13 @@ const getCachedPropertyListings = unstable_cache(
 
       // Fetch count separately
       if (!fetchError) {
-        let countQuery = supabase
+        let countQuery = supabaseClient
           .from("property_listings")
           .select("*", { count: "exact", head: true });
         // Re-apply filters for accurate count
         if (searchText) {
           countQuery = countQuery.or(
-            `title.ilike.%${searchText}%,description.ilike.%${searchText}%`,
+            `title.ilike.%${searchText}%,description.ilike.%${searchText}%`
           );
         }
         if (minPrice !== undefined) {
@@ -207,7 +207,7 @@ const getCachedPropertyListings = unstable_cache(
       .filter((id) => id !== undefined) as string[];
     let allImages: PropertyImage[] = [];
     if (propertyIds.length > 0) {
-      const { data: imageData, error: imageError } = await supabase
+      const { data: imageData, error: imageError } = await supabaseClient
         .from("property_images")
         .select("*")
         .in("property_id", propertyIds)
@@ -223,9 +223,9 @@ const getCachedPropertyListings = unstable_cache(
     // --- Process and Combine Data ---
     const processedData = propertyData.map((property) => {
       const relatedImages = allImages.filter(
-        (img) => img.property_id === property.id,
+        (img) => img.property_id === property.id
       );
-      return processPropertyImages(property, relatedImages, supabase);
+      return processPropertyImages(property, relatedImages, supabaseClient);
     });
 
     return {
@@ -239,12 +239,12 @@ const getCachedPropertyListings = unstable_cache(
   {
     tags: ["property-listings"], // Static tag for general revalidation
     revalidate: 60,
-  },
+  }
 );
 
 // Public function that uses the cached version
 export async function getPropertyListings(
-  params: PropertySearchParams = {},
+  params: PropertySearchParams = {}
 ): Promise<PropertySearchResult> {
   return getCachedPropertyListings(params);
 }
@@ -252,10 +252,10 @@ export async function getPropertyListings(
 // Cache property details for 5 minutes
 const getCachedPropertyById = unstable_cache(
   async (id: string): Promise<ProcessedPropertyListing | null> => {
-    const supabase = createAnonClient();
+    const supabaseClient = await createAnonClient();
 
     // Fetch property data
-    const { data: propertyData, error: propertyError } = await supabase
+    const { data: propertyData, error: propertyError } = await supabaseClient
       .from("property_listings")
       .select(`*`) // Select only from property_listings
       .eq("id", id)
@@ -275,7 +275,7 @@ const getCachedPropertyById = unstable_cache(
     // console.log(`[getCachedPropertyById] Fetched property data for ID ${id}:`, JSON.stringify(propertyData, null, 2)); // Removed log
 
     // Fetch images separately
-    const { data: imageData, error: imageError } = await supabase
+    const { data: imageData, error: imageError } = await supabaseClient
       .from("property_images")
       .select("*")
       .eq("property_id", id)
@@ -290,7 +290,7 @@ const getCachedPropertyById = unstable_cache(
     const processedData = processPropertyImages(
       propertyData as PropertyListing,
       (imageData || []) as PropertyImage[],
-      supabase,
+      supabaseClient
     );
     // console.log(`[getCachedPropertyById] Processed data for ID ${id}:`, JSON.stringify(processedData, null, 2)); // Removed log
 
@@ -302,12 +302,12 @@ const getCachedPropertyById = unstable_cache(
     // Corrected tags: Static array of strings. Dynamic invalidation relies on args.
     tags: [`property-details`],
     revalidate: 300,
-  },
+  }
 );
 
 // Public function to get property by ID
 export async function getPropertyById(
-  id: string,
+  id: string
 ): Promise<ProcessedPropertyListing | null> {
   return getCachedPropertyById(id);
 }
@@ -315,11 +315,11 @@ export async function getPropertyById(
 // Get similar properties - simplified, returns basic data
 export async function getSimilarProperties(
   property: PropertyListing,
-  limit = 3,
+  limit = 3
 ): Promise<PropertyListing[]> {
-  const supabase = createAnonClient();
+  const supabaseClient = await createAnonClient();
 
-  let query = supabase
+  let query = supabaseClient
     .from("property_listings")
     .select("*") // Select basic fields
     .neq("id", property.id)
@@ -331,7 +331,7 @@ export async function getSimilarProperties(
 
   if (property.bedrooms) {
     query = query.or(
-      `bedrooms.eq.${property.bedrooms},bedrooms.eq.${property.bedrooms - 1},bedrooms.eq.${property.bedrooms + 1}`,
+      `bedrooms.eq.${property.bedrooms},bedrooms.eq.${property.bedrooms - 1},bedrooms.eq.${property.bedrooms + 1}`
     );
   }
   query = query.limit(limit);
@@ -346,7 +346,7 @@ export async function createProperty(
   property: Omit<
     PropertyListing,
     "id" | "created_at" | "property_images" | "primary_image"
-  >,
+  >
 ): Promise<PropertyListing> {
   const supabase = await createClient();
   const { data, error } = await supabase
@@ -360,7 +360,7 @@ export async function createProperty(
 
 export async function updateProperty(
   id: string,
-  updates: Partial<PropertyListing>,
+  updates: Partial<PropertyListing>
 ): Promise<PropertyListing> {
   const supabase = await createClient();
   // Exclude processed fields explicitly before update
@@ -390,10 +390,10 @@ export async function deleteProperty(id: string): Promise<boolean> {
 
 // Fetches and processes images for a specific property ID
 export async function getPropertyImages(
-  propertyId: string,
+  propertyId: string
 ): Promise<ProcessedPropertyImage[]> {
-  const supabase = createAnonClient();
-  const { data, error } = await supabase
+  const supabaseClient = await createAnonClient();
+  const { data, error } = await supabaseClient
     .from("property_images")
     .select("*")
     .eq("property_id", propertyId)
@@ -408,11 +408,11 @@ export async function getPropertyImages(
     (img: PropertyImage): ProcessedPropertyImage => {
       const imagePath = img.storage_path;
       if (!imagePath) return { ...img, publicUrl: null };
-      const { data: publicUrlData } = supabase.storage
+      const { data: publicUrlData } = supabaseClient.storage
         .from("platform")
         .getPublicUrl(imagePath);
       return { ...img, publicUrl: publicUrlData?.publicUrl || null };
-    },
+    }
   );
 
   return imagesWithPublicUrls;
@@ -424,7 +424,7 @@ export async function addPropertyImage(
   imageData: Omit<
     PropertyImage,
     "id" | "created_at" | "updated_at" | "url" | "publicUrl"
-  >,
+  >
 ): Promise<{ data: PropertyImage | null; error: PostgrestError | null }> {
   const supabase = await createClient();
   return await supabase
@@ -437,7 +437,7 @@ export async function addPropertyImage(
 // Update display order
 export async function updatePropertyImageOrder(
   imageId: string,
-  newOrder: number,
+  newOrder: number
 ): Promise<{ data: PropertyImage | null; error: PostgrestError | null }> {
   const supabase = await createClient();
   return await supabase
@@ -450,7 +450,7 @@ export async function updatePropertyImageOrder(
 
 // Delete image record
 export async function deletePropertyImage(
-  imageId: string,
+  imageId: string
 ): Promise<{ data: PropertyImage | null; error: PostgrestError | null }> {
   const supabase = await createClient();
   // TODO: Add logic to delete from storage bucket using img.storage_path before deleting DB record

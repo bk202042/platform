@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ApartmentSelect } from "@/components/community/ApartmentSelect";
 import { PostList } from "@/components/community/PostList";
 import { SortSelector, SortOption } from "@/components/community/SortSelector";
-import { LazyNewPostDialog } from "./NewPostDialog.lazy";
+import { lazy, Suspense } from "react";
 import { CategorySidebar } from "./CategorySidebar";
 import { CommunityBreadcrumb } from "@/components/community/CommunityBreadcrumb";
 import { MobileNavigation } from "@/components/community/MobileNavigation";
@@ -13,6 +13,11 @@ import {
   ErrorBoundary,
   AuthErrorBoundary,
 } from "@/components/community/ErrorBoundary";
+
+// 지연 로딩으로 성능 최적화
+const EnhancedNewPostDialog = lazy(() => import("./EnhancedNewPostDialog").then(
+  (mod) => ({ default: mod.EnhancedNewPostDialog })
+));
 import { Button } from "@/components/ui/button";
 import { CommunityCategory } from "@/lib/validation/community";
 import { Plus } from "lucide-react";
@@ -172,13 +177,15 @@ export function CommunityPageClient({
                 </div>
 
                 <AuthErrorBoundary>
-                  <LazyNewPostDialog
-                    open={isDialogOpen}
-                    onClose={handleDialogClose}
-                    cities={cities}
-                    apartments={apartments}
-                    onPostCreated={handlePostCreated}
-                  />
+                  <Suspense fallback={<div className="p-4 text-center">로딩 중...</div>}>
+                    <EnhancedNewPostDialog
+                      open={isDialogOpen}
+                      onClose={handleDialogClose}
+                      cities={cities}
+                      apartments={apartments}
+                      onPostCreated={handlePostCreated}
+                    />
+                  </Suspense>
                 </AuthErrorBoundary>
               </div>
 
