@@ -1,30 +1,17 @@
 import { NextResponse } from "next/server";
-import { getServerAuth } from "@/lib/auth/server";
+import { getSessionUser } from "@/lib/auth/server";
 
 export async function GET() {
   try {
-    const authResult = await getServerAuth();
-
-    if (authResult.error) {
-      return NextResponse.json(
-        {
-          authenticated: false,
-          error: authResult.error.message,
-          recoverable: authResult.error.recoverable,
-        },
-        { status: 401 },
-      );
-    }
+    const user = await getSessionUser();
 
     return NextResponse.json({
-      authenticated: !!authResult.user,
-      user: authResult.user
+      authenticated: !!user,
+      user: user
         ? {
-            id: authResult.user.id,
-            email: authResult.user.email,
-            name:
-              authResult.user.user_metadata?.full_name ||
-              authResult.user.user_metadata?.name,
+            id: user.id,
+            email: user.email,
+            name: user.user_metadata?.full_name || user.user_metadata?.name,
           }
         : null,
     });
@@ -35,7 +22,6 @@ export async function GET() {
       {
         authenticated: false,
         error: "Authentication check failed",
-        recoverable: true,
       },
       { status: 500 },
     );
