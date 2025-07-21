@@ -231,3 +231,11 @@ export async function getInitialUser(): Promise<User | null> {
     return null;
   }
 }
+
+export async function getSessionUser(): Promise<User | null> {
+  const supabase = await createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  return session?.user ?? null;
+}

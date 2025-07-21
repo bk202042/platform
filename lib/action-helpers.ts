@@ -5,7 +5,7 @@ import type { User } from '@supabase/supabase-js';
 export type ActionState = {
   error?: string;
   success?: string;
-  [key: string]: unknown;
+  data?: any;
 };
 
 export function validatedAction<S extends z.ZodType<unknown, z.ZodTypeDef>, R extends ActionState>(
