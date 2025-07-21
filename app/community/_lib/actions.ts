@@ -1,6 +1,5 @@
 "use server";
 
-import { z } from "zod";
 import { validatedActionWithUser } from "@/lib/action-helpers";
 import { createPostSchema } from "@/lib/validation/community";
 import { createPost } from "@/lib/data/community";
@@ -13,7 +12,7 @@ export const createCommunityPost = validatedActionWithUser(
       const post = await createPost({ ...data, user_id: user.id });
       revalidatePath("/community");
       return { success: "Post created successfully.", data: post };
-    } catch (error) {
+    } catch (_error) {
       return { error: "Failed to create post." };
     }
   },
