@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { validateCommentDeletion } from "@/lib/validation/community";
 
 // DELETE: 댓글 삭제
 export async function DELETE(
@@ -35,7 +36,7 @@ export async function DELETE(
       );
     }
 
-    // 댓글 존재 여부 및 소유권 확인
+    // 댓글 존재 여부 확인
     const { data: comment, error: selectError } = await supabase
       .from("community_comments")
       .select("id, user_id, post_id")
@@ -53,12 +54,16 @@ export async function DELETE(
       );
     }
 
-    // 댓글 소유자인지 확인
-    if (comment.user_id !== user.id) {
+    // 댓글 삭제 권한 검증
+    const { isValid, error: validationError } = validateCommentDeletion(
+      comment,
+      user.id,
+    );
+    if (!isValid) {
       return NextResponse.json(
         {
           success: false,
-          message: "댓글을 삭제할 권한이 없습니다.",
+          message: validationError,
         },
         { status: 403 },
       );

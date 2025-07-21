@@ -216,10 +216,10 @@ export async function getComments(postId: string) {
   // Get unique user IDs
   const userIds = [...new Set(commentsData.map((comment) => comment.user_id))];
 
-  // Get user data from auth.users
+  // Get user data from public.profiles
   const { data: usersData, error: usersError } = await supabase
-    .from("auth.users")
-    .select("id, raw_user_meta_data")
+    .from("profiles")
+    .select("id, first_name, last_name")
     .in("id", userIds);
 
   if (usersError) {
@@ -230,9 +230,7 @@ export async function getComments(postId: string) {
   const userMap = new Map();
   usersData?.forEach((user) => {
     const fullName =
-      user.raw_user_meta_data?.full_name ||
-      user.raw_user_meta_data?.name ||
-      "익명";
+      `${user.first_name || ""} ${user.last_name || ""}`.trim() || "익명";
     userMap.set(user.id, fullName);
   });
 

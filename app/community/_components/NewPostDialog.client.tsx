@@ -1,8 +1,10 @@
 "use client";
+"use client";
 import { useState } from "react";
 import { NewPostDialog as DialogUI } from "./NewPostDialog";
 import type { z } from "zod";
 import { createPostSchema } from "@/lib/validation/community";
+import { toast } from "sonner";
 
 interface City {
   id: string;
@@ -43,14 +45,20 @@ export function NewPostDialogClient({
       });
       if (!res.ok) {
         const data = await res.json();
-        setError(data.message || "글 작성에 실패했습니다.");
+        const errorMessage = data.message || "글 작성에 실패했습니다.";
+        setError(errorMessage);
+        toast.error(errorMessage);
         setLoading(false);
         return;
       }
+      toast.success("글이 성공적으로 등록되었습니다.");
       onClose();
       onPostCreated?.();
-    } catch {
-      setError("네트워크 오류가 발생했습니다.");
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "네트워크 오류가 발생했습니다.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
