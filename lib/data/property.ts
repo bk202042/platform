@@ -1,5 +1,5 @@
 import "server-only";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAnonClient } from "@/lib/supabase/server";
 import {
   PropertyListing,
   PropertyType,
@@ -83,7 +83,7 @@ function processPropertyImages(
 // Cache the property listings for 1 minute
 const getCachedPropertyListings = unstable_cache(
   async (params: PropertySearchParams = {}): Promise<PropertySearchResult> => {
-    const supabase = await createClient();
+    const supabase = createAnonClient();
     const {
       searchText,
       minPrice,
@@ -252,7 +252,7 @@ export async function getPropertyListings(
 // Cache property details for 5 minutes
 const getCachedPropertyById = unstable_cache(
   async (id: string): Promise<ProcessedPropertyListing | null> => {
-    const supabase = await createClient();
+    const supabase = createAnonClient();
 
     // Fetch property data
     const { data: propertyData, error: propertyError } = await supabase
@@ -317,7 +317,7 @@ export async function getSimilarProperties(
   property: PropertyListing,
   limit = 3,
 ): Promise<PropertyListing[]> {
-  const supabase = await createClient();
+  const supabase = createAnonClient();
 
   let query = supabase
     .from("property_listings")
@@ -392,7 +392,7 @@ export async function deleteProperty(id: string): Promise<boolean> {
 export async function getPropertyImages(
   propertyId: string,
 ): Promise<ProcessedPropertyImage[]> {
-  const supabase = await createClient();
+  const supabase = createAnonClient();
   const { data, error } = await supabase
     .from("property_images")
     .select("*")
