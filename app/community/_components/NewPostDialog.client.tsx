@@ -1,6 +1,8 @@
 "use client";
-import { useActionState, useEffect } from "react";
+import { useState } from "react";
 import { NewPostDialog as DialogUI } from "./NewPostDialog";
+import type { z } from "zod";
+import { createPostSchema } from "@/lib/validation/community";
 import { toast } from "sonner";
 import { createCommunityPost } from "../_lib/actions";
 import { ActionState } from "@/lib/action-helpers";
@@ -30,31 +32,48 @@ export function NewPostDialogClient({
   apartments,
   onPostCreated,
 }: NewPostDialogClientProps) {
-  const [state, formAction, pending] = useActionState<ActionState, FormData>(
-    createCommunityPost,
-    { error: undefined, success: undefined },
-  );
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | undefined>();
 
-  useEffect(() => {
-    if (state.success) {
-      toast.success(state.success);
+  async function handleSubmit(values: z.infer<typeof createPostSchema>) {
+    setLoading(true);
+    setError(undefined);
+
+    const formData = new FormData();
+    for (const key in values) {
+      const value = values[key as keyof typeof values];
+      if (value !== undefined && value !== null) {
+        if (Array.isArray(value)) {
+          value.forEach((item) => formData.append(key, item));
+        } else {
+          formData.append(key, String(value));
+        }
+      }
+    }
+
+    const result = await createCommunityPost({} as ActionState, formData);
+
+    setLoading(false);
+    if (result.success) {
+      toast.success(result.success);
       onClose();
       onPostCreated?.();
     }
-    if (state.error) {
-      toast.error(state.error);
+    if (result.error) {
+      toast.error(result.error);
+      setError(result.error);
     }
-  }, [state, onClose, onPostCreated]);
+  }
 
   return (
     <DialogUI
       open={open}
       onClose={onClose}
-      onSubmit={formAction}
+      onSubmit={handleSubmit}
       cities={cities}
       apartments={apartments}
-      loading={pending}
-      error={state.error}
+      loading={loading}
+      error={error}
     />
   );
 }
