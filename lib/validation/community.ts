@@ -13,7 +13,7 @@ export type CommunityCategory = (typeof COMMUNITY_CATEGORIES)[number];
 export const createPostSchema = z.object({
   apartment_id: z
     .string()
-    .uuid({ message: "아파트 정보가 올바르지 않습니다." }),
+    .min(1, { message: "아파트를 선택해주세요." }),
   category: z.enum(COMMUNITY_CATEGORIES, {
     message: "카테고리를 선택해 주세요.",
   }),
