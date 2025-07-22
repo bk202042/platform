@@ -9,12 +9,16 @@ import { createPostSchema } from "@/lib/validation/community";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { Post } from "./CommunityPageClient";
+
 interface EnhancedNewPostDialogProps {
   open: boolean;
   onClose: () => void;
   cities: { id: string; name: string }[];
   apartments: { id: string; name: string; city_id: string }[];
-  onPostCreated: () => void;
+  onPostCreated: (
+    newPost: Omit<Post, "id" | "created_at" | "likes_count" | "comments_count">,
+  ) => void;
   defaultValues?: Partial<z.infer<typeof createPostSchema>>;
 }
 
@@ -45,9 +49,9 @@ export function EnhancedNewPostDialog({
         if (result.error) {
           setError(result.error);
           toast.error(result.error);
-        } else if (result.success) {
+        } else if (result.success && result.data) {
           toast.success(result.success);
-          onPostCreated();
+          onPostCreated(result.data);
         }
       } catch (_err) {
         const errorMessage = "게시글 작성 중 오류가 발생했습니다";

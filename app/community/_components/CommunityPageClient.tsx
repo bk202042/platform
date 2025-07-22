@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useOptimistic } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ApartmentSelect } from "@/components/community/ApartmentSelect";
 import { PostList } from "@/components/community/PostList";
@@ -34,12 +34,12 @@ interface Apartment {
   cities: { name: string } | null;
 }
 
-interface Post {
+export interface Post {
   id: string;
   title?: string;
   body: string;
   images?: string[];
-  user?: { name?: string };
+  user?: { id?: string; name?: string; avatar_url?: string };
   created_at: string;
   likes_count: number;
   comments_count: number;
@@ -48,6 +48,7 @@ interface Post {
     name: string;
     cities?: { name: string } | null;
   };
+  isOptimistic?: boolean;
 }
 interface CommunityPageClientProps {
   posts: Post[];
@@ -72,6 +73,10 @@ export function CommunityPageClient({
   const searchParams = useSearchParams();
   const [apartmentId, setApartmentId] = useState(initialApartmentId);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [optimisticPosts, addOptimisticPost] = useOptimistic(
+    posts,
+    (state: Post[], newPost: Post) => [newPost, ...state],
+  );
 
   // Get current sort from URL params
   const currentSort = (searchParams.get("sort") as SortOption) || "latest";
@@ -113,10 +118,25 @@ export function CommunityPageClient({
     setIsDialogOpen(false);
   }, []);
 
-  const handlePostCreated = useCallback(() => {
-    setIsDialogOpen(false);
-    router.refresh();
-  }, [router]);
+  const handlePostCreated = useCallback(
+    (
+      newPost: Omit<Post, "id" | "created_at" | "likes_count" | "comments_count">,
+    ) => {
+      const optimisticPost: Post = {
+        ...newPost,
+        id: crypto.randomUUID(),
+        created_at: new Date().toISOString(),
+        likes_count: 0,
+        comments_count: 0,
+        user: { name: "You" }, // Placeholder user
+        isOptimistic: true,
+      };
+      addOptimisticPost(optimisticPost);
+      setIsDialogOpen(false);
+      // No router.refresh() needed for optimistic update
+    },
+    [addOptimisticPost],
+  );
 
   const handleRetry = useCallback(() => {
     router.refresh();
@@ -189,9 +209,9 @@ export function CommunityPageClient({
                 </AuthErrorBoundary>
               </div>
 
-              {posts && posts.length > 0 ? (
+              {optimisticPosts && optimisticPosts.length > 0 ? (
                 <PostList
-                  posts={posts}
+                  posts={optimisticPosts}
                   onPostClick={handlePostClick}
                   onCreatePost={handleCreatePost}
                   onRetry={handleRetry}

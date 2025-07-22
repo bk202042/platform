@@ -2,7 +2,7 @@
   "status": "commited",
   "type": "frontend",
   "scope": "codebase",
-  "localEndpoint": "http://localhost:3000",
+  "localEndpoint": "http://localhost:5173",
   "loginUser": "BYUNGUI",
   "loginPassword": "bktest2239"
 }

@@ -6,6 +6,7 @@ import { createPostSchema } from "@/lib/validation/community";
 import { toast } from "sonner";
 import { createCommunityPost } from "../_lib/actions";
 import { ActionState } from "@/lib/action-helpers";
+import { Post } from "./CommunityPageClient";
 
 interface City {
   id: string;
@@ -22,7 +23,9 @@ interface NewPostDialogClientProps {
   onClose: () => void;
   cities: City[];
   apartments: Apartment[];
-  onPostCreated?: () => void;
+  onPostCreated?: (
+    newPost: Omit<Post, "id" | "created_at" | "likes_count" | "comments_count">,
+  ) => void;
 }
 
 export function NewPostDialogClient({
@@ -40,27 +43,27 @@ export function NewPostDialogClient({
     setError(undefined);
 
     const formData = new FormData();
-    for (const key in values) {
-      const value = values[key as keyof typeof values];
-      if (value !== undefined && value !== null) {
+    Object.entries(values).forEach(([key, value]) => {
+      if (value) {
         if (Array.isArray(value)) {
           value.forEach((item) => formData.append(key, item));
         } else {
           formData.append(key, String(value));
         }
       }
-    }
+    });
 
+    // Call the server action
     const result = await createCommunityPost({} as ActionState, formData);
 
     setLoading(false);
-    if (result.success) {
-      toast.success(result.success);
+
+    if (result.success && result.data) {
+      toast.success("Post created successfully!");
+      onPostCreated?.(result.data);
       onClose();
-      onPostCreated?.();
-    }
-    if (result.error) {
-      toast.error(result.error);
+    } else {
+      toast.error(result.error || "An unknown error occurred.");
       setError(result.error);
     }
   }

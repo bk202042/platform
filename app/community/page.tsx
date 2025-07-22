@@ -6,7 +6,7 @@ import {
 } from "@/lib/data/community";
 import { CommunityPageClient } from "./_components/CommunityPageClient";
 import { COMMUNITY_CATEGORIES } from "@/lib/validation/community";
-import { createClient } from "@/lib/supabase/server";
+import { getSessionUser } from "@/lib/auth/server";
 
 function isCommunityCategory(
   value: string,
@@ -47,10 +47,7 @@ export default async function CommunityPage({
     sortParam === "popular" || sortParam === "latest" ? sortParam : "latest";
 
   // Get current user for like status
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getSessionUser();
 
   const cities = (await getCities()) || [];
   const apartmentsData = (await getApartments()) || [];

@@ -1,169 +1,98 @@
 {
   "tech_stack": [
     "TypeScript",
-    "Next.js 15 (App Router)",
-    "React 19",
-    "Supabase (PostgreSQL)",
+    "Next.js",
+    "React",
+    "Supabase",
+    "PostgreSQL",
     "Tailwind CSS",
     "shadcn/ui",
-    "Zod",
-    "React Hook Form",
-    "Radix UI",
-    "Lucide React",
-    "Sonner (toast notifications)",
-    "Resend (email)",
-    "React Dropzone"
+    "Zod"
   ],
   "features": [
     {
-      "name": "Authentication System",
-      "description": "Supabase-based authentication with centralized user management, server-side auth utilities, and protected routes",
+      "name": "Authentication",
+      "description": "User authentication system using Supabase Auth with Google OAuth",
       "files": [
-        "lib/auth.ts",
-        "lib/action-helpers.ts",
-        "lib/auth/server.ts",
         "components/providers/AuthProvider.tsx",
-        "components/auth/AuthErrorBoundary.tsx",
+        "components/auth/AuthGuard.tsx",
         "components/auth/ProtectedRoute.tsx",
-        "app/auth/sign-in/page.tsx",
-        "app/auth/sign-up/page.tsx",
-        "app/auth/callback/route.ts"
-      ]
-    },
-    {
-      "name": "Community Board",
-      "description": "Regionally segmented community feature similar to '당근마켓 동네생활' with apartment-based posts, categories, likes, and comments",
-      "files": [
-        "app/community/page.tsx",
-        "app/community/[postId]/page.tsx",
-        "components/community/CommunityPageClient.tsx",
-        "components/community/PostCard.tsx",
-        "components/community/PostDetail.tsx",
-        "components/community/CommentList.tsx",
-        "components/community/CommentForm.tsx",
-        "components/community/LikeButton.tsx",
-        "components/community/NewPostDialog.tsx",
-        "components/community/ApartmentSelect.tsx",
-        "app/api/community/posts/route.ts",
-        "app/api/community/posts/[id]/route.ts",
-        "app/api/community/posts/[id]/like/route.ts",
-        "app/api/community/posts/[id]/comments/route.ts"
-      ]
-    },
-    {
-      "name": "Property Management",
-      "description": "Real estate property listings, search, and management system for Vietnam properties",
-      "files": [
-        "app/(main)/properties/page.tsx",
-        "app/(main)/properties/[id]/page.tsx",
-        "components/property/PropertyCard.tsx",
-        "components/property/PropertyListings.tsx",
-        "components/property/PropertyDetail.tsx",
-        "app/api/properties/route.ts",
-        "app/api/properties/search/route.ts",
-        "app/api/properties/[id]/route.ts"
-      ]
-    },
-    {
-      "name": "Agent Registration",
-      "description": "Agent registration system for real estate agents with form validation and email notifications",
-      "files": [
-        "app/join-as-agent/page.tsx",
-        "app/join-as-agent/_components/AgentRegistrationForm.tsx",
-        "app/api/agents/register/route.ts",
-        "app/emails/AgentRegistrationEmail.tsx"
-      ]
-    },
-    {
-      "name": "Admin Dashboard",
-      "description": "Administrative interface for managing users, properties, and community content",
-      "files": [
-        "app/admin/layout.tsx",
-        "app/admin/page.tsx",
-        "app/admin/users/page.tsx",
-        "app/admin/properties/page.tsx",
-        "app/admin/profile/page.tsx",
-        "components/admin/AdminSidebar.tsx"
-      ]
-    },
-    {
-      "name": "Data Validation",
-      "description": "Zod-based validation schemas and server action helpers for type-safe form handling",
-      "files": [
-        "lib/schemas.ts",
-        "lib/action-helpers.ts",
-        "lib/validation/property.ts",
-        "lib/validation/agent-registration.ts",
-        "lib/validation/community.ts"
-      ]
-    },
-    {
-      "name": "Supabase Integration",
-      "description": "Database and storage integration with Supabase, including client and server utilities",
-      "files": [
-        "lib/supabase/client.ts",
-        "lib/supabase/server.ts",
-        "lib/supabase/authenticated.ts",
-        "lib/supabase/middleware.ts",
-        "lib/data/property.ts",
-        "lib/data/community.ts",
-        "lib/data/agent.ts"
-      ]
-    },
-    {
-      "name": "UI Components",
-      "description": "Reusable UI components built with shadcn/ui and Tailwind CSS",
-      "files": [
-        "components/ui/button.tsx",
-        "components/ui/card.tsx",
-        "components/ui/dialog.tsx",
-        "components/ui/form.tsx",
-        "components/ui/input.tsx",
-        "components/ui/select.tsx",
-        "components/ui/dropdown-menu.tsx",
-        "components/ui/alert.tsx",
-        "components/ui/toast.tsx"
-      ]
-    },
-    {
-      "name": "Layout and Navigation",
-      "description": "Main layout components including header, footer, and navigation",
-      "files": [
-        "app/layout.tsx",
-        "components/layout/Header.tsx",
-        "components/layout/Footer.tsx",
-        "components/layout/Container.tsx",
+        "lib/auth.ts",
         "middleware.ts"
       ]
     },
     {
+      "name": "Community Posts",
+      "description": "Community forum functionality for creating and viewing posts",
+      "files": [
+        "app/community/page.tsx",
+        "app/community/[postId]/page.tsx",
+        "app/community/_components/NewPostDialog.tsx",
+        "app/community/_components/EnhancedNewPostDialog.tsx",
+        "app/community/_lib/actions.ts",
+        "app/community/_lib/client-actions.ts",
+        "components/community/PostList.tsx",
+        "components/community/PostCard.tsx",
+        "components/community/PostDetail.tsx",
+        "lib/data/community.ts",
+        "lib/validation/community.ts",
+        "app/api/community/posts/route.ts"
+      ]
+    },
+    {
+      "name": "Comments",
+      "description": "Comment functionality for community posts",
+      "files": [
+        "components/community/CommentSection.tsx",
+        "components/community/CommentActions.tsx",
+        "app/api/community/comments/delete/route.ts"
+      ]
+    },
+    {
+      "name": "Image Upload",
+      "description": "Image upload functionality for community posts",
+      "files": [
+        "components/community/ImageUpload.tsx",
+        "lib/hooks/useSupabaseUpload.ts"
+      ]
+    },
+    {
+      "name": "Data Fetching",
+      "description": "Data fetching utilities and hooks",
+      "files": [
+        "lib/hooks/useCommunityData.ts",
+        "lib/hooks/useApiCache.ts",
+        "lib/hooks/useOptimisticUpdate.ts",
+        "lib/hooks/usePostActions.ts",
+        "lib/hooks/usePostInteractions.ts"
+      ]
+    },
+    {
+      "name": "UI Components",
+      "description": "Reusable UI components",
+      "files": [
+        "components/ui/avatar.tsx",
+        "components/community/LikeButton.tsx",
+        "components/community/SortSelector.tsx",
+        "components/community/CategorySidebar.tsx",
+        "components/community/ToastProvider.tsx"
+      ]
+    },
+    {
       "name": "Error Handling",
-      "description": "Comprehensive error handling with error boundaries and user-friendly error messages",
+      "description": "Error handling components and utilities",
       "files": [
-        "components/error/ErrorBoundary.tsx",
         "components/community/ErrorBoundary.tsx",
-        "app/error.tsx",
-        "app/not-found.tsx"
+        "components/community/NetworkError.tsx",
+        "components/community/EmptyState.tsx",
+        "components/auth/AuthErrorBoundary.tsx"
       ]
     },
     {
-      "name": "Email System",
-      "description": "Email templates and sending functionality using Resend",
+      "name": "Database Schema",
+      "description": "Supabase database tables and relationships",
       "files": [
-        "app/emails/AgentRegistrationEmail.tsx",
-        "app/emails/RequestInfoEmail.tsx",
-        "app/api/auth/on-sign-up/route.ts"
-      ]
-    },
-    {
-      "name": "Search and Filtering",
-      "description": "Property search functionality with filters and location-based search",
-      "files": [
-        "app/(main)/search/page.tsx",
-        "app/(main)/search/_components/SearchForm.tsx",
-        "app/(main)/search/_components/SearchResults.tsx",
-        "app/api/properties/search/route.ts",
-        "app/api/properties/nearby/route.ts"
+        "supabase/migrations"
       ]
     }
   ]
