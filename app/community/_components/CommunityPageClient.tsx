@@ -9,10 +9,7 @@ import { lazy, Suspense } from "react";
 import { CategorySidebar } from "./CategorySidebar";
 import { CommunityBreadcrumb } from "@/components/community/CommunityBreadcrumb";
 import { MobileNavigation } from "@/components/community/MobileNavigation";
-import {
-  ErrorBoundary,
-  AuthErrorBoundary,
-} from "@/components/community/ErrorBoundary";
+import { ErrorBoundary } from "@/components/community/ErrorBoundary";
 
 // 지연 로딩으로 성능 최적화
 const EnhancedNewPostDialog = lazy(() => import("./EnhancedNewPostDialog").then(
@@ -145,16 +142,14 @@ export function CommunityPageClient({
     <ErrorBoundary>
       {/* Mobile Navigation */}
       <MobileNavigation showBackButton={false} showMenu={true}>
-        <AuthErrorBoundary>
-          <Button
-            size="sm"
-            onClick={handleCreatePost}
-            className="flex items-center gap-1 px-3 py-2 min-h-[36px]"
-          >
-            <Plus size={16} />
-            <span className="hidden xs:inline">글쓰기</span>
-          </Button>
-        </AuthErrorBoundary>
+        <Button
+          size="sm"
+          onClick={handleCreatePost}
+          className="flex items-center gap-1 px-3 py-2 min-h-[36px]"
+        >
+          <Plus size={16} />
+          <span className="hidden xs:inline">글쓰기</span>
+        </Button>
       </MobileNavigation>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
