@@ -109,11 +109,13 @@ export async function POST(request: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
+      console.error('Auth error in create post API:', authError);
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
       );
     }
+    console.log(`User ${user.id} is attempting to create a post.`);
 
     // 게시글 생성
     const { data: post, error: insertError } = await supabase
@@ -132,7 +134,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError) {
-      console.error("Post creation error:", insertError);
+      console.error("Supabase post creation error:", insertError);
       return NextResponse.json(
         { error: "Failed to create post" },
         { status: 500 }

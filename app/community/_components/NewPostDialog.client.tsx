@@ -42,29 +42,37 @@ export function NewPostDialogClient({
     setLoading(true);
     setError(undefined);
 
-    const formData = new FormData();
-    Object.entries(values).forEach(([key, value]) => {
-      if (value) {
-        if (Array.isArray(value)) {
-          value.forEach((item) => formData.append(key, item));
-        } else {
-          formData.append(key, String(value));
+    try {
+      const formData = new FormData();
+      Object.entries(values).forEach(([key, value]) => {
+        if (value) {
+          if (Array.isArray(value)) {
+            value.forEach((item) => formData.append(key, item));
+          } else {
+            formData.append(key, String(value));
+          }
         }
+      });
+
+      // Call the server action
+      const result = await createCommunityPost({} as ActionState, formData);
+
+      if (result.success && result.data) {
+        toast.success("Post created successfully!");
+        onPostCreated?.(result.data);
+        onClose();
+      } else {
+        const errorMessage = result.error || "An unknown error occurred.";
+        toast.error(errorMessage);
+        setError(errorMessage);
       }
-    });
-
-    // Call the server action
-    const result = await createCommunityPost({} as ActionState, formData);
-
-    setLoading(false);
-
-    if (result.success && result.data) {
-      toast.success("Post created successfully!");
-      onPostCreated?.(result.data);
-      onClose();
-    } else {
-      toast.error(result.error || "An unknown error occurred.");
-      setError(result.error);
+    } catch (err) {
+      console.error("Failed to submit post:", err);
+      const errorMessage = "A critical error occurred. Please try again.";
+      toast.error(errorMessage);
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
   }
 
