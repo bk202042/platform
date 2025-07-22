@@ -133,7 +133,6 @@ export function CommunityPageClient({
       };
       addOptimisticPost(optimisticPost);
       setIsDialogOpen(false);
-      // No router.refresh() needed for optimistic update
     },
     [addOptimisticPost],
   );

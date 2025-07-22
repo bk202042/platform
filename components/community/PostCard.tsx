@@ -1,5 +1,7 @@
 import React, { memo, useMemo } from "react";
-import { MessageCircle, Clock, User } from "lucide-react";
+import { MessageCircle, User } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { ko } from "date-fns/locale";
 import { CommunityCategory } from "@/lib/validation/community";
 import { LikeButton } from "./LikeButton";
 
@@ -49,26 +51,17 @@ export const PostCard = memo(function PostCard({
     [post.category],
   );
 
-  // Format date for better readability - memoized to avoid recalculation
-  const formattedDate = useMemo(() => {
-    const date = new Date(post.created_at);
-    const now = new Date();
-    const diffInHours = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60 * 60),
-    );
-
-    if (diffInHours < 1) {
-      return "방금 전";
-    } else if (diffInHours < 24) {
-      return `${diffInHours}시간 전`;
-    } else if (diffInHours < 48) {
-      return "어제";
-    } else {
-      return date.toLocaleDateString("ko-KR", {
-        month: "short",
-        day: "numeric",
-        ...(date.getFullYear() !== now.getFullYear() && { year: "numeric" }),
+  // Format date using date-fns for better relative time formatting
+  const timeAgo = useMemo(() => {
+    if (!post.created_at) return "";
+    try {
+      return formatDistanceToNow(new Date(post.created_at), {
+        addSuffix: true,
+        locale: ko,
       });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "시간 정보 없음";
     }
   }, [post.created_at]);
 
@@ -145,25 +138,20 @@ export const PostCard = memo(function PostCard({
         </div>
 
         {/* Footer with author, date, and engagement metrics */}
-        <div className="flex items-center justify-between mt-3 xs:mt-4 sm:mt-5 pt-2 xs:pt-3 sm:pt-4 border-t border-gray-100">
-          <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3 text-xs text-gray-500 min-w-0 flex-1">
-            <div className="flex items-center gap-0.5 xs:gap-1 min-w-0">
-              <User
-                size={10}
-                className="text-gray-400 flex-shrink-0 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5"
-              />
-              <span className="truncate text-xs xs:text-sm font-medium">
+        <div className="flex items-end justify-between mt-3 xs:mt-4 sm:mt-5 pt-2 xs:pt-3 sm:pt-4 border-t border-gray-100">
+          <div className="text-xs text-gray-500 min-w-0">
+            <div className="flex items-center gap-1.5">
+              <User size={12} className="text-gray-400 flex-shrink-0" />
+              <span className="font-medium truncate">
                 {post.user?.name || "익명"}
               </span>
-            </div>
-            <div className="flex items-center gap-0.5 xs:gap-1 flex-shrink-0">
-              <Clock
-                size={10}
-                className="text-gray-400 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5"
-              />
-              <span className="whitespace-nowrap text-xs xs:text-sm">
-                {formattedDate}
+              <span className="text-gray-400">·</span>
+              <span className="truncate">
+                {post.apartments?.cities?.name} {post.apartments?.name}
               </span>
+            </div>
+            <div className="mt-1">
+              <span className="text-gray-400">{timeAgo}</span>
             </div>
           </div>
 
