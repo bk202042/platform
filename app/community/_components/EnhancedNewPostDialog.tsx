@@ -2,12 +2,12 @@
 
 import React, { useState, useTransition } from "react";
 import { useAuth } from "@/components/providers/AuthProvider";
-import { AuthGuard } from "@/components/auth/AuthGuard";
 import { NewPostDialog } from "./NewPostDialog";
 import { createCommunityPost } from "../_lib/client-actions";
 import { createPostSchema } from "@/lib/validation/community";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useRouter } from "next/navigation"; // Add this import
 
 import { Post } from "./CommunityPageClient";
 
@@ -34,9 +34,16 @@ export function EnhancedNewPostDialog({
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string>("");
 
+  const router = useRouter(); // Import useRouter from next/navigation
+
   const handleSubmit = async (values: z.infer<typeof createPostSchema>) => {
     if (!user) {
-      toast.error("로그인이 필요합니다");
+      toast.error("로그인이 필요합니다.", {
+        action: {
+          label: "로그인",
+          onClick: () => router.push("/auth/sign-in"),
+        },
+      });
       return;
     }
 
@@ -62,29 +69,15 @@ export function EnhancedNewPostDialog({
   };
 
   return (
-    <AuthGuard
-      fallback={
-        <NewPostDialog
-          open={open}
-          onClose={onClose}
-          onSubmit={() => {}}
-          cities={cities}
-          apartments={apartments}
-          loading={false}
-          error="로그인이 필요합니다"
-        />
-      }
-    >
-      <NewPostDialog
-        open={open}
-        onClose={onClose}
-        onSubmit={handleSubmit}
-        cities={cities}
-        apartments={apartments}
-        defaultValues={defaultValues}
-        loading={isPending}
-        error={error}
-      />
-    </AuthGuard>
+    <NewPostDialog
+      open={open}
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      cities={cities}
+      apartments={apartments}
+      defaultValues={defaultValues}
+      loading={isPending}
+      error={error}
+    />
   );
 }
