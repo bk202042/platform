@@ -58,7 +58,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
     });
 
     return () => subscription.unsubscribe();
-  }, [supabase.auth, initialUser]);
+  }, [initialUser]);
 
   const signOut = async () => {
     await supabase.auth.signOut();

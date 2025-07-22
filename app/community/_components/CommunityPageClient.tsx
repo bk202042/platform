@@ -185,9 +185,7 @@ export function CommunityPageClient({
                     value={apartmentId}
                     onChange={handleApartmentChange}
                   />
-                  <AuthErrorBoundary>
-                    <Button onClick={handleCreatePost}>Write a Post</Button>
-                  </AuthErrorBoundary>
+                  <Button onClick={handleCreatePost}>Write a Post</Button>
                 </div>
 
                 {/* Second row: Sort selector */}
@@ -195,17 +193,15 @@ export function CommunityPageClient({
                   <SortSelector value={currentSort} />
                 </div>
 
-                <AuthErrorBoundary>
-                  <Suspense fallback={<div className="p-4 text-center">로딩 중...</div>}>
-                    <EnhancedNewPostDialog
-                      open={isDialogOpen}
-                      onClose={handleDialogClose}
-                      cities={cities}
-                      apartments={apartments}
-                      onPostCreated={handlePostCreated}
-                    />
-                  </Suspense>
-                </AuthErrorBoundary>
+                <Suspense fallback={<div className="p-4 text-center">로딩 중...</div>}>
+                  <EnhancedNewPostDialog
+                    open={isDialogOpen}
+                    onClose={handleDialogClose}
+                    cities={cities}
+                    apartments={apartments}
+                    onPostCreated={handlePostCreated}
+                  />
+                </Suspense>
               </div>
 
               {optimisticPosts && optimisticPosts.length > 0 ? (
