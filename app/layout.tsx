@@ -8,6 +8,7 @@ import StagewiseToolbarLoader from "@/components/stagewise/StagewiseToolbarLoade
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { getInitialUser } from "@/lib/auth/server";
 import { ToastProvider } from "@/components/community/ToastProvider";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const notoSansKR = Noto_Sans_KR({
   // @ts-expect-error // Allow 'korean' subset, expect a type error here which we are overriding.
@@ -49,6 +50,7 @@ export default async function RootLayout({
               <main className="flex-1">{children}</main>
               <Toaster />
               <Footer /> {/* Add the Footer component */}
+              <SpeedInsights />
             </div>
           </ToastProvider>
         </AuthProvider>
