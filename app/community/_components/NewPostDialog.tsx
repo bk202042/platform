@@ -10,13 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ApartmentAutocomplete } from "@/components/community/ApartmentAutocomplete";
 import {
   createPostSchema,
   COMMUNITY_CATEGORIES,
@@ -26,6 +20,17 @@ import { useToast } from "@/components/community/ToastProvider";
 import { AlertCircle, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
+import { useAutoSave } from "@/lib/hooks/useAutoSave";
+
+interface City {
+  id: string;
+  name: string;
+}
+interface Apartment {
+  id: string;
+  name: string;
+  city_id: string;
+}
 
 // Category descriptions for better UX
 const CATEGORY_INFO = {
@@ -55,11 +60,11 @@ interface NewPostDialogProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (values: z.infer<typeof createPostSchema>) => void;
-  cities: { id: string; name: string }[];
-  apartments: { id: string; name: string; city_id: string }[];
   defaultValues?: Partial<z.infer<typeof createPostSchema>>;
   loading?: boolean;
   error?: string;
+  cities: City[];
+  apartments: Apartment[];
 }
 
 interface FieldError {
@@ -71,11 +76,11 @@ export function NewPostDialog({
   open,
   onClose,
   onSubmit,
-  cities,
-  apartments,
   defaultValues,
   loading = false,
   error,
+  cities,
+  apartments,
 }: NewPostDialogProps) {
   const [form, setForm] = React.useState<z.infer<typeof createPostSchema>>({
     apartment_id: defaultValues?.apartment_id || "",
@@ -84,14 +89,11 @@ export function NewPostDialog({
     body: defaultValues?.body || "",
     images: defaultValues?.images || [],
   });
-  const [selectedCity, setSelectedCity] = React.useState<string>("");
   const [fieldErrors, setFieldErrors] = React.useState<FieldError[]>([]);
-  const [touched, setTouched] = React.useState<Record<string, boolean>>({});
+  const [touched, setTouched] = React.useState<Partial<Record<keyof z.infer<typeof createPostSchema>, boolean>>>({});
   const { showValidationError } = useToast();
 
-  const filteredApartments = selectedCity
-    ? apartments.filter((apt) => apt.city_id === selectedCity)
-    : [];
+  useAutoSave(form, `new-post-draft-${defaultValues?.apartment_id || ""}`);
 
   // Clear field errors when form values change
   React.useEffect(() => {
@@ -113,15 +115,35 @@ export function NewPostDialog({
     }
   }, [open, defaultValues]);
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (
+    field: keyof z.infer<typeof createPostSchema>,
+    value: string | string[],
+  ) => {
     setForm((prev) => ({ ...prev, [field]: value }));
-    setTouched((prev) => ({ ...prev, [field]: true }));
+    if (touched[field]) {
+      validateField(field, value);
+    }
   };
 
-  const handleCityChange = (cityId: string) => {
-    setSelectedCity(cityId);
-    setForm((prev) => ({ ...prev, apartment_id: "" }));
-    setTouched((prev) => ({ ...prev, apartment_id: false }));
+  const handleBlur = (field: keyof z.infer<typeof createPostSchema>) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    validateField(field, form[field]);
+  };
+
+  const validateField = (
+    field: keyof z.infer<typeof createPostSchema>,
+    value: unknown,
+  ) => {
+    const fieldSchema = createPostSchema.pick({ [field]: true } as { [K in typeof field]: true });
+    const result = fieldSchema.safeParse({ [field]: value });
+    if (!result.success) {
+      setFieldErrors((prev) => [
+        ...prev.filter((e) => e.field !== field),
+        { field, message: result.error.errors[0].message },
+      ]);
+    } else {
+      setFieldErrors((prev) => prev.filter((e) => e.field !== field));
+    }
   };
 
   const getFieldError = (field: string) => {
@@ -134,15 +156,6 @@ export function NewPostDialog({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
-    // Mark all fields as touched
-    setTouched({
-      apartment_id: true,
-      category: true,
-      title: true,
-      body: true,
-      images: true,
-    });
 
     const result = createPostSchema.safeParse(form);
     if (!result.success) {
@@ -190,68 +203,27 @@ export function NewPostDialog({
 
         <form onSubmit={handleSubmit} className="space-y-6 mt-6">
           {/* Location Selection */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="city" className="text-sm font-medium">
-                도시 <span className="text-red-500">*</span>
-              </Label>
-              <Select value={selectedCity} onValueChange={handleCityChange}>
-                <SelectTrigger
-                  className={cn(
-                    "w-full",
-                    hasFieldError("apartment_id") &&
-                      touched.apartment_id &&
-                      "border-red-500",
-                  )}
-                >
-                  <SelectValue placeholder="도시를 선택하세요" />
-                </SelectTrigger>
-                <SelectContent>
-                  {cities.map((city) => (
-                    <SelectItem key={city.id} value={city.id}>
-                      {city.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="apartment_id" className="text-sm font-medium">
-                아파트 <span className="text-red-500">*</span>
-              </Label>
-              <Select
-                value={form.apartment_id}
-                onValueChange={(value) =>
-                  handleInputChange("apartment_id", value)
-                }
-                disabled={!selectedCity}
-              >
-                <SelectTrigger
-                  className={cn(
-                    "w-full",
-                    hasFieldError("apartment_id") &&
-                      touched.apartment_id &&
-                      "border-red-500",
-                  )}
-                >
-                  <SelectValue placeholder="아파트를 선택하세요" />
-                </SelectTrigger>
-                <SelectContent>
-                  {filteredApartments.map((apt) => (
-                    <SelectItem key={apt.id} value={apt.id}>
-                      {apt.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {hasFieldError("apartment_id") && touched.apartment_id && (
-                <div className="flex items-center gap-1 text-sm text-red-600">
-                  <AlertCircle className="h-4 w-4" />
-                  {getFieldError("apartment_id")}
-                </div>
+          <div className="space-y-2">
+            <Label htmlFor="apartment_id" className="text-sm font-medium">
+              아파트 <span className="text-red-500">*</span>
+            </Label>
+            <ApartmentAutocomplete
+              cities={cities}
+              apartments={apartments}
+              value={form.apartment_id}
+              onApartmentSelect={(id) => handleInputChange("apartment_id", id)}
+              className={cn(
+                hasFieldError("apartment_id") &&
+                  touched.apartment_id &&
+                  "border-red-500",
               )}
-            </div>
+            />
+            {hasFieldError("apartment_id") && touched.apartment_id && (
+              <div className="flex items-center gap-1 text-sm text-red-600">
+                <AlertCircle className="h-4 w-4" />
+                {getFieldError("apartment_id")}
+              </div>
+            )}
           </div>
 
           {/* Category Selection */}
@@ -305,7 +277,7 @@ export function NewPostDialog({
               id="title"
               value={form.title}
               onChange={(e) => handleInputChange("title", e.target.value)}
-              onBlur={() => setTouched((prev) => ({ ...prev, title: true }))}
+              onBlur={() => handleBlur("title")}
               maxLength={100}
               placeholder="제목을 입력하세요"
               className={cn(
@@ -334,7 +306,7 @@ export function NewPostDialog({
               id="body"
               value={form.body}
               onChange={(e) => handleInputChange("body", e.target.value)}
-              onBlur={() => setTouched((prev) => ({ ...prev, body: true }))}
+              onBlur={() => handleBlur("body")}
               maxLength={2000}
               placeholder="내용을 입력하세요"
               className={cn(
@@ -360,7 +332,7 @@ export function NewPostDialog({
             <Label className="text-sm font-medium">이미지 (최대 5개)</Label>
             <ImageUpload
               onImagesChange={(urls) =>
-                setForm((prev) => ({ ...prev, images: urls }))
+                handleInputChange("images", urls)
               }
               maxFiles={5}
               initialImages={form.images || []}

@@ -1,35 +1,72 @@
 "use client";
 import { useState } from "react";
+import { useOptimisticComment } from "@/lib/hooks/useOptimisticUpdate";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { toast } from "sonner";
+import { Comment } from "./CommentSection";
 
 interface CommentFormProps {
   postId: string;
-  onCommentAdded: (comment: {
-    body: string;
-    user: { name: string };
-    created_at: string;
-  }) => void;
+  onCommentAdded: (comment: Comment) => void;
+  onCommentRemoved: (comment: Comment) => void;
 }
 
-export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
+export function CommentForm({
+  postId,
+  onCommentAdded,
+  onCommentRemoved,
+}: CommentFormProps) {
   const [body, setBody] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { addComment, isLoading } = useOptimisticComment();
+  const { user } = useAuth();
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    onCommentAdded({
+    if (!body.trim() || isLoading) return;
+
+    if (!user) {
+      toast.error("로그인이 필요합니다.");
+      return;
+    }
+
+    const tempId = Date.now().toString();
+    const tempComment = {
+      id: tempId,
       body,
-      user: { name: "나" },
+      user: { name: user.user_metadata.name || "나" },
       created_at: new Date().toISOString(),
-    });
+      isOptimistic: true,
+    };
+
     setBody("");
-    await fetch(`/api/community/posts/${postId}/comments`, {
-      method: "POST",
-      body: JSON.stringify({ body }),
-      headers: { "Content-Type": "application/json" },
-    });
-    setLoading(false);
-  }
+
+    await addComment(
+      tempComment,
+      onCommentAdded,
+      () => onCommentRemoved(tempComment),
+      async () => {
+        const response = await fetch(
+          `/api/community/posts/${postId}/comments`,
+          {
+            method: "POST",
+            body: JSON.stringify({ body }),
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "댓글 작성에 실패했습니다.");
+        }
+
+        const result = await response.json();
+        // Replace temp comment with real one from server
+        onCommentRemoved(tempComment);
+        onCommentAdded(result.data);
+        return result.data;
+      },
+    );
+  };
 
   return (
     <form
@@ -46,15 +83,15 @@ export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
         maxLength={1000}
         required
         aria-label="댓글 입력"
-        disabled={loading}
+        disabled={isLoading}
       />
       <div className="flex justify-end">
         <button
           type="submit"
           className="bg-primary-600 text-white font-semibold px-4 py-1.5 rounded-lg hover:bg-primary-700 transition-colors text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-          disabled={loading || !body.trim()}
+          disabled={isLoading || !body.trim()}
         >
-          등록
+          {isLoading ? "등록 중..." : "등록"}
         </button>
       </div>
     </form>

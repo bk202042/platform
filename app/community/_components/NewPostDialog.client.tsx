@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { createCommunityPost } from "../_lib/actions";
 import { ActionState } from "@/lib/action-helpers";
 import { Post } from "./CommunityPageClient";
+import { useOptimisticUpdate } from "@/lib/hooks/useOptimisticUpdate";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 interface City {
   id: string;
@@ -23,9 +25,8 @@ interface NewPostDialogClientProps {
   onClose: () => void;
   cities: City[];
   apartments: Apartment[];
-  onPostCreated?: (
-    newPost: Omit<Post, "id" | "created_at" | "likes_count" | "comments_count">,
-  ) => void;
+  onPostCreated: (post: Post) => void;
+  onPostRemoved: (postId: string) => void;
 }
 
 export function NewPostDialogClient({
@@ -34,47 +35,60 @@ export function NewPostDialogClient({
   cities,
   apartments,
   onPostCreated,
+  onPostRemoved,
 }: NewPostDialogClientProps) {
-  const [loading, setLoading] = useState(false);
+  const { executeOptimistic, isLoading } = useOptimisticUpdate();
   const [error, setError] = useState<string | undefined>();
+  const { user } = useAuth();
 
-  async function handleSubmit(values: z.infer<typeof createPostSchema>) {
-    setLoading(true);
-    setError(undefined);
-
-    try {
-      const formData = new FormData();
-      Object.entries(values).forEach(([key, value]) => {
-        if (value) {
-          if (Array.isArray(value)) {
-            value.forEach((item) => formData.append(key, item));
-          } else {
-            formData.append(key, String(value));
-          }
-        }
-      });
-
-      // Call the server action
-      const result = await createCommunityPost({} as ActionState, formData);
-
-      if (result.success && result.data) {
-        toast.success("Post created successfully!");
-        onPostCreated?.(result.data);
-        onClose();
-      } else {
-        const errorMessage = result.error || "An unknown error occurred.";
-        toast.error(errorMessage);
-        setError(errorMessage);
-      }
-    } catch (err) {
-      console.error("Failed to submit post:", err);
-      const errorMessage = "A critical error occurred. Please try again.";
-      toast.error(errorMessage);
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
+  const handleSubmit = async (values: z.infer<typeof createPostSchema>) => {
+    if (!user) {
+      toast.error("로그인이 필요합니다.");
+      return;
     }
-  }
+
+    const tempId = Date.now().toString();
+    const optimisticPost: Post = {
+      ...values,
+      id: tempId,
+      created_at: new Date().toISOString(),
+      likes_count: 0,
+      comments_count: 0,
+      user: { name: user.user_metadata.name || "나" },
+      isOptimistic: true,
+    };
+
+    executeOptimistic(
+      () => onPostCreated(optimisticPost),
+      async () => {
+        const formData = new FormData();
+        Object.entries(values).forEach(([key, value]) => {
+          if (value) {
+            if (Array.isArray(value)) {
+              value.forEach((item) => formData.append(key, item));
+            } else {
+              formData.append(key, String(value));
+            }
+          }
+        });
+        const result = await createCommunityPost({} as ActionState, formData);
+        if (result.error) throw new Error(result.error);
+        return result.data;
+      },
+      () => onPostRemoved(tempId),
+      {
+        onSuccess: (newPost) => {
+          onPostRemoved(tempId);
+          onPostCreated(newPost as Post);
+          toast.success("게시글이 작성되었습니다.");
+          onClose();
+        },
+        onError: (err) => {
+          setError(err.message);
+        },
+      },
+    );
+  };
 
   return (
     <DialogUI
@@ -83,7 +97,7 @@ export function NewPostDialogClient({
       onSubmit={handleSubmit}
       cities={cities}
       apartments={apartments}
-      loading={loading}
+      loading={isLoading}
       error={error}
     />
   );

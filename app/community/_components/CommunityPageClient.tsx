@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo, useOptimistic } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ApartmentSelect } from "@/components/community/ApartmentSelect";
+import { ApartmentAutocomplete } from "@/components/community/ApartmentAutocomplete";
 import { PostList } from "@/components/community/PostList";
 import { SortSelector, SortOption } from "@/components/community/SortSelector";
 import { lazy, Suspense } from "react";
@@ -12,8 +12,8 @@ import { MobileNavigation } from "@/components/community/MobileNavigation";
 import { ErrorBoundary } from "@/components/community/ErrorBoundary";
 
 // 지연 로딩으로 성능 최적화
-const EnhancedNewPostDialog = lazy(() => import("./EnhancedNewPostDialog").then(
-  (mod) => ({ default: mod.EnhancedNewPostDialog })
+const NewPostDialog = lazy(() => import("./NewPostDialog").then(
+  (mod) => ({ default: mod.NewPostDialog })
 ));
 import { Button } from "@/components/ui/button";
 import { CommunityCategory } from "@/lib/validation/community";
@@ -176,9 +176,11 @@ export function CommunityPageClient({
               <div className="flex flex-col gap-4 mb-6">
                 {/* Top row: Apartment filter and Write Post button */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <ApartmentSelect
+                  <ApartmentAutocomplete
                     value={apartmentId}
-                    onChange={handleApartmentChange}
+                    onApartmentSelect={handleApartmentChange}
+                    cities={cities || []}
+                    apartments={apartments || []}
                   />
                   <Button onClick={handleCreatePost}>Write a Post</Button>
                 </div>
@@ -189,12 +191,12 @@ export function CommunityPageClient({
                 </div>
 
                 <Suspense fallback={<div className="p-4 text-center">로딩 중...</div>}>
-                  <EnhancedNewPostDialog
+                  <NewPostDialog
                     open={isDialogOpen}
                     onClose={handleDialogClose}
-                    cities={cities}
-                    apartments={apartments}
-                    onPostCreated={handlePostCreated}
+                    onSubmit={handlePostCreated}
+                    cities={cities || []}
+                    apartments={apartments || []}
                   />
                 </Suspense>
               </div>

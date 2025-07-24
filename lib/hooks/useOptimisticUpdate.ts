@@ -1,78 +1,115 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { toast } from "sonner";
+
+type OptimisticUpdateStatus = "idle" | "pending" | "error" | "success";
 
 interface OptimisticUpdateOptions<T> {
   onSuccess?: (result: T) => void;
   onError?: (error: Error) => void;
   successMessage?: string;
   errorMessage?: string;
-  revertOnError?: boolean;
+}
+
+interface QueuedOperation<T> {
+  optimisticUpdate: () => void;
+  asyncOperation: () => Promise<T>;
+  revertUpdate: () => void;
+  options: OptimisticUpdateOptions<T>;
+  id: number;
 }
 
 export function useOptimisticUpdate() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState<OptimisticUpdateStatus>("idle");
+  const operationQueue = useRef<QueuedOperation<unknown>[]>([]);
+  const isProcessing = useRef(false);
+  const operationCounter = useRef(0);
+
+  const processQueue = useCallback(async () => {
+    if (isProcessing.current || operationQueue.current.length === 0) {
+      return;
+    }
+
+    isProcessing.current = true;
+    setStatus("pending");
+
+    const operation = operationQueue.current.shift();
+    if (!operation) {
+      isProcessing.current = false;
+      setStatus("idle");
+      return;
+    }
+
+    try {
+      operation.optimisticUpdate();
+      const result = await operation.asyncOperation();
+
+      if (operation.options.successMessage) {
+        toast.success(operation.options.successMessage);
+      }
+      // The type of `result` is `unknown` here, so we need to cast it
+      // to the appropriate type before passing it to the callback.
+      (operation.options.onSuccess as (result: unknown) => void)?.(result);
+      setStatus("success");
+    } catch (error) {
+      operation.revertUpdate();
+      const errorObj =
+        error instanceof Error
+          ? error
+          : new Error("알 수 없는 오류가 발생했습니다");
+      const displayMessage =
+        operation.options.errorMessage ||
+        errorObj.message ||
+        "작업을 완료할 수 없습니다";
+      toast.error(displayMessage);
+      operation.options.onError?.(errorObj);
+      setStatus("error");
+
+      // Clear queue on error to prevent inconsistent state
+      operationQueue.current = [];
+    } finally {
+      isProcessing.current = false;
+      // Process next item in the queue
+      if (operationQueue.current.length > 0) {
+        processQueue();
+      } else {
+        setStatus("idle");
+      }
+    }
+  }, []);
 
   const executeOptimistic = useCallback(
-    async <TData = unknown>(
+    <TData = unknown>(
       optimisticUpdate: () => void,
       asyncOperation: () => Promise<TData>,
       revertUpdate: () => void,
       options: OptimisticUpdateOptions<TData> = {},
     ) => {
-      const {
-        onSuccess,
-        onError,
-        successMessage,
-        errorMessage,
-        revertOnError = true,
-      } = options;
-
-      setIsLoading(true);
-
-      try {
-        // Apply optimistic update immediately
-        optimisticUpdate();
-
-        // Execute the async operation
-        const result = await asyncOperation();
-
-        // Handle success
-        if (successMessage) {
-          toast.success(successMessage);
-        }
-        onSuccess?.(result);
-
-        return result;
-      } catch (error) {
-        // Revert the optimistic update on error
-        if (revertOnError) {
-          revertUpdate();
-        }
-
-        const errorObj =
-          error instanceof Error
-            ? error
-            : new Error("알 수 없는 오류가 발생했습니다");
-
-        // Handle error
-        const displayMessage =
-          errorMessage || errorObj.message || "작업을 완료할 수 없습니다";
-        toast.error(displayMessage);
-
-        onError?.(errorObj);
-        throw errorObj;
-      } finally {
-        setIsLoading(false);
-      }
+      const newOperation: QueuedOperation<TData> = {
+        optimisticUpdate,
+        asyncOperation,
+        revertUpdate,
+        options,
+        id: operationCounter.current++,
+      };
+      operationQueue.current.push(newOperation as QueuedOperation<unknown>);
+      processQueue();
     },
-    [],
+    [processQueue],
   );
+
+  useEffect(() => {
+    return () => {
+      // Cleanup on unmount
+      operationQueue.current = [];
+    };
+  }, []);
 
   return {
     executeOptimistic,
-    isLoading,
+    isLoading: status === "pending",
+    status,
   };
 }
 

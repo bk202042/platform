@@ -1,8 +1,8 @@
 import React from "react";
-import Image from "next/image";
 import { MessageCircle, Clock, User, MapPin } from "lucide-react";
 import { CommunityCategory } from "@/lib/validation/community";
 import { LikeButton } from "./LikeButton";
+import { ImageGallery } from "./ImageGallery";
 
 export interface PostDetailProps {
   post: {
@@ -119,32 +119,18 @@ export function PostDetail({ post }: PostDetailProps) {
           </div>
         </div>
 
-        {/* Images */}
+        {/* Image Gallery */}
         {post.images && post.images.length > 0 && (
           <div className="mb-4 xs:mb-5 sm:mb-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 xs:gap-3 sm:gap-4">
-              {post.images.slice(0, 4).map((image, index) => (
-                <div
-                  key={index}
-                  className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden"
-                >
-                  <Image
-                    src={image}
-                    alt={`게시글 이미지 ${index + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  />
-                  {index === 3 && post.images!.length > 4 && (
-                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-                      <span className="text-white font-semibold text-xs xs:text-sm sm:text-lg">
-                        +{post.images!.length - 4}개 더
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            <ImageGallery
+              images={post.images.map((src, index) => ({
+                id: `${post.id}-image-${index}`,
+                src: src,
+                alt: `게시글 이미지 ${index + 1}`,
+              }))}
+              layout="grid"
+              className="w-full"
+            />
           </div>
         )}
 

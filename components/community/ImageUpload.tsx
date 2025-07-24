@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useSupabaseUpload } from "@/lib/hooks/useSupabaseUpload";
+import { useSupabaseUpload } from "@/hooks/use-supabase-upload";
 import { Button } from "@/components/ui/button";
 import { Upload, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -28,16 +28,17 @@ export function ImageUpload({
     loading,
     errors,
     isDragActive,
-    removeFile,
     removeUploadedFile,
     uploadFiles,
     clearAll,
+    cancelUpload,
     getRootProps,
     getInputProps,
   } = useSupabaseUpload({
+    bucketName: "community_post_images",
     maxFiles,
     maxFileSize,
-    allowedTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
+    allowedMimeTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
   });
 
   // Initialize with existing images
@@ -110,15 +111,25 @@ export function ImageUpload({
               <div key={index} className="relative group">
                 <div className="aspect-square rounded-lg border overflow-hidden bg-gray-50">
                   <Image
-                    src={URL.createObjectURL(file)}
-                    alt={file.name}
+                    src={file.preview || ""}
+                    alt={file.file.name}
                     fill
                     className="object-cover"
                   />
+                  {file.progress !== undefined && file.progress < 100 && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                        <div
+                          className="bg-blue-600 h-2.5 rounded-full"
+                          style={{ width: `${file.progress}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <button
                   type="button"
-                  onClick={() => removeFile(index)}
+                  onClick={() => cancelUpload(file)}
                   className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                   aria-label="파일 제거"
                 >
@@ -126,9 +137,9 @@ export function ImageUpload({
                 </button>
                 <p
                   className="text-xs text-gray-600 mt-1 truncate"
-                  title={file.name}
+                  title={file.file.name}
                 >
-                  {file.name}
+                  {file.file.name}
                 </p>
               </div>
             ))}

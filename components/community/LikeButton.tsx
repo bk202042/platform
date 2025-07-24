@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useEffect } from "react";
 import { Heart, Loader2 } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useToast } from "@/components/community/ToastProvider";
+import { useOptimisticLike } from "@/lib/hooks/useOptimisticUpdate";
 
 export interface LikeButtonProps {
   postId: string;
@@ -22,12 +23,54 @@ export function LikeButton({
   showCount = true,
   disabled = false,
 }: LikeButtonProps) {
-  const [liked, setLiked] = useState<boolean>(initialLiked);
-  const [count, setCount] = useState<number>(initialCount);
-  const [isPending, startTransition] = useTransition();
+  const [liked, setLiked] = useState(initialLiked);
+  const [count, setCount] = useState(initialCount);
   const [isAnimating, setIsAnimating] = useState(false);
+  const { toggleLike, isLoading } = useOptimisticLike();
+  const { user } = useAuth();
+  const { showAuthError } = useToast();
 
-  // Size configurations with mobile-optimized touch targets
+  useEffect(() => {
+    setLiked(initialLiked);
+    setCount(initialCount);
+  }, [initialLiked, initialCount]);
+
+  const handleToggle = async () => {
+    if (disabled || isLoading) return;
+
+    if (!user) {
+      showAuthError();
+      return;
+    }
+
+    setIsAnimating(true);
+    setTimeout(() => setIsAnimating(false), 300);
+
+    await toggleLike(
+      postId,
+      liked,
+      count,
+      (newLiked, newCount) => {
+        setLiked(newLiked);
+        setCount(newCount);
+      },
+      async () => {
+        const response = await fetch(`/api/community/posts/${postId}/like`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "좋아요 처리에 실패했습니다.");
+        }
+        const result = await response.json();
+        // The server returns the new state, which we can use to sync if needed,
+        // but the optimistic hook handles the immediate UI update.
+        return result.data;
+      },
+    );
+  };
+
   const sizeConfig = {
     sm: { icon: 14, padding: "px-3 py-2 min-h-[44px]", text: "text-xs" },
     md: { icon: 18, padding: "px-4 py-2.5 min-h-[48px]", text: "text-sm" },
@@ -35,66 +78,6 @@ export function LikeButton({
   };
 
   const config = sizeConfig[size];
-
-  const { user } = useAuth();
-  const { showAuthError, showLiked, showUnliked, showError } = useToast();
-
-  const handleToggle = async () => {
-    if (disabled || isPending) return;
-
-    // Check authentication first
-    if (!user) {
-      showAuthError();
-      return;
-    }
-
-    // Store original values for rollback
-    const originalLiked = liked;
-    const originalCount = count;
-
-    // Optimistic update
-    setLiked(!liked);
-    setCount(liked ? count - 1 : count + 1);
-    setIsAnimating(true);
-
-    // Reset animation after a short delay
-    setTimeout(() => setIsAnimating(false), 300);
-
-    startTransition(async () => {
-      try {
-        const response = await fetch(`/api/community/posts/${postId}/like`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(result.message || "좋아요 처리에 실패했습니다.");
-        }
-
-        // Show success feedback
-        if (result.data.liked) {
-          showLiked();
-        } else {
-          showUnliked();
-        }
-      } catch (error) {
-        // Rollback optimistic update
-        setLiked(originalLiked);
-        setCount(originalCount);
-
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "좋아요 처리에 실패했습니다.";
-
-        showError("좋아요 처리 실패", errorMessage);
-      }
-    });
-  };
 
   return (
     <button
@@ -109,15 +92,14 @@ export function LikeButton({
             : "text-gray-600 bg-gray-50 hover:bg-pink-50 hover:text-pink-600 border border-gray-200 hover:border-pink-200"
         }
         ${isAnimating ? "scale-110" : "scale-100"}
-        ${isPending ? "cursor-wait" : "cursor-pointer"}
+        ${isLoading ? "cursor-wait" : "cursor-pointer"}
       `}
-      aria-pressed={liked ? "true" : "false"}
       aria-label={liked ? "좋아요 취소하기" : "좋아요 누르기"}
       aria-describedby={showCount ? `like-count-${postId}` : undefined}
       onClick={handleToggle}
-      disabled={disabled || isPending}
+      disabled={disabled || isLoading}
     >
-      {isPending ? (
+      {isLoading ? (
         <Loader2
           size={config.icon}
           className="animate-spin text-pink-500"

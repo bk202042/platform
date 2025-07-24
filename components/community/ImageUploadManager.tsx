@@ -104,8 +104,6 @@ export function ImageUploadManager({
     allowedMimeTypes: dropzoneConfig.acceptedTypes,
     maxFileSize: dropzoneConfig.maxFileSize,
     maxFiles: dropzoneConfig.maxFiles - savedImages.length, // Adjust for existing images
-    cacheControl: 3600,
-    upsert: false,
     onUploadComplete: handleUploadComplete,
     onUploadError: handleUploadError,
   });
@@ -297,7 +295,7 @@ export function ImageUploadManager({
         <div className="space-y-1">
           {supabaseUpload.errors.map((error, index) => (
             <p key={index} className="text-sm text-red-600">
-              {error.name}: {error.message}
+              {error}
             </p>
           ))}
         </div>
