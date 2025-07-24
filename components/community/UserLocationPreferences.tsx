@@ -52,14 +52,17 @@ export function UserLocationPreferences() {
         setIsAddDialogOpen(false);
         setSelectedLocation(null);
       }
-    } catch (err) {
+    } catch (_err) {
       toast.error("관심 지역 추가에 실패했습니다.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleSetPrimary = async (location: any) => {
+  const handleSetPrimary = async (location: {
+    city_id: string;
+    apartment_id?: string;
+  }) => {
     try {
       const success = await setPrimaryLocation(
         location.city_id,
@@ -69,7 +72,7 @@ export function UserLocationPreferences() {
       if (success) {
         toast.success("주요 지역이 설정되었습니다.");
       }
-    } catch (err) {
+    } catch (_err) {
       toast.error("주요 지역 설정에 실패했습니다.");
     }
   };
@@ -81,7 +84,7 @@ export function UserLocationPreferences() {
       if (success) {
         toast.success("관심 지역이 제거되었습니다.");
       }
-    } catch (err) {
+    } catch (_err) {
       toast.error("관심 지역 제거에 실패했습니다.");
     }
   };

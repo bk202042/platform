@@ -8,7 +8,7 @@ import {
 } from "@/lib/data/vietnamese-locations";
 
 // GET /api/community/user-locations - Get user's preferred locations
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const {

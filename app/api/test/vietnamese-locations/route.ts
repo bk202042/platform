@@ -16,13 +16,11 @@ export async function GET() {
     console.log(`Found ${cities.length} Vietnamese cities`);
     console.log(
       "Sample cities:",
-      cities
-        .slice(0, 3)
-        .map((c) => ({
-          name: c.name,
-          name_ko: c.name_ko,
-          is_major: c.is_major_city,
-        }))
+      cities.slice(0, 3).map((c) => ({
+        name: c.name,
+        name_ko: c.name_ko,
+        is_major: c.is_major_city,
+      }))
     );
 
     // Test 2: Search locations
