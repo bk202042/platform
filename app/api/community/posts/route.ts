@@ -77,8 +77,9 @@ export async function GET(request: NextRequest) {
     }
 
     // 좋아요 상태 없이 반환
-    return NextResponse.json(posts?.map((post) => ({ ...post, isLiked: false })) || []);
-
+    return NextResponse.json(
+      posts?.map((post) => ({ ...post, isLiked: false })) || []
+    );
   } catch (error) {
     console.error("Unexpected error:", error);
     return NextResponse.json(
@@ -106,10 +107,13 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient();
 
     // 현재 인증된 사용자 확인
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      console.error('Auth error in create post API:', authError);
+      console.error("Auth error in create post API:", authError);
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
@@ -128,6 +132,7 @@ export async function POST(request: NextRequest) {
           body: result.data.body,
           images: result.data.images ?? [],
           user_id: user.id,
+          status: "published", // Add the missing status field
         },
       ])
       .select()
@@ -141,11 +146,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      data: post
-    }, { status: 201 });
-
+    return NextResponse.json(
+      {
+        success: true,
+        data: post,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Unexpected error:", error);
     return NextResponse.json(

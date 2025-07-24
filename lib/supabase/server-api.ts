@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 export async function createClient() {
   const cookieStore = await cookies();
 
-  return createServerClient(
+  const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -29,6 +29,11 @@ export async function createClient() {
       },
     }
   );
+
+  // Ensure authentication context is properly set
+  await supabase.auth.getUser();
+
+  return supabase;
 }
 
 // 기존 코드와의 호환성을 위해 createApiClient 별칭 추가

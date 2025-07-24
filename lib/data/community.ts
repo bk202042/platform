@@ -62,7 +62,7 @@ export async function getPostById(postId: string) {
 // 게시글 상세 조회 (사용자 좋아요 상태 포함)
 export async function getPostByIdWithLikeStatus(
   postId: string,
-  userId?: string,
+  userId?: string
 ) {
   const supabase = await createClient();
 
@@ -111,7 +111,8 @@ export async function getPostsWithLikeStatus(params: {
   const supabase = await createClient();
   let query = supabase
     .from("community_posts")
-    .select(`
+    .select(
+      `
       *,
       apartments(city_id, name, slug, cities(name)),
       profiles!community_posts_user_id_fkey (
@@ -120,7 +121,8 @@ export async function getPostsWithLikeStatus(params: {
         last_name,
         avatar_url
       )
-    `)
+    `
+    )
     .eq("is_deleted", false)
     .eq("status", "published");
 
@@ -139,7 +141,10 @@ export async function getPostsWithLikeStatus(params: {
     query = query.limit(params.limit);
   }
   if (params.offset) {
-    query = query.range(params.offset, params.offset + (params.limit || 10) - 1);
+    query = query.range(
+      params.offset,
+      params.offset + (params.limit || 10) - 1
+    );
   }
 
   // 정렬
@@ -173,9 +178,12 @@ export async function getPostsWithLikeStatus(params: {
   }
 
   return posts.map((post) => {
-    const profile = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
+    const profile = Array.isArray(post.profiles)
+      ? post.profiles[0]
+      : post.profiles;
     const displayName = profile
-      ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "익명"
+      ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() ||
+        "익명"
       : "익명";
 
     return {
@@ -209,6 +217,7 @@ export async function createPost(data: {
         body: data.body,
         images: data.images ?? [],
         user_id: data.user_id,
+        status: "published", // Add the missing status field
       },
     ])
     .select()
@@ -224,7 +233,8 @@ export async function getComments(postId: string) {
   // Get comments with user profile data in a single query
   const { data: commentsData, error } = await supabase
     .from("community_comments")
-    .select(`
+    .select(
+      `
       id,
       content,
       created_at,
@@ -236,7 +246,8 @@ export async function getComments(postId: string) {
         last_name,
         avatar_url
       )
-    `)
+    `
+    )
     .eq("post_id", postId)
     .eq("is_deleted", false)
     .order("created_at", { ascending: true });
@@ -252,9 +263,12 @@ export async function getComments(postId: string) {
 
   // Transform data to match Comment interface and build hierarchy
   const comments = commentsData.map((comment) => {
-    const profile = Array.isArray(comment.profiles) ? comment.profiles[0] : comment.profiles;
+    const profile = Array.isArray(comment.profiles)
+      ? comment.profiles[0]
+      : comment.profiles;
     const displayName = profile
-      ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "익명"
+      ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() ||
+        "익명"
       : "익명";
 
     return {

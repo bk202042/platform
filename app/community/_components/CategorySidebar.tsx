@@ -67,6 +67,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
         <div className="md:hidden flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-foreground">카테고리</h2>
           <button
+            type="button"
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="p-2 hover:bg-accent rounded-md transition-colors"
             aria-label={isCollapsed ? "카테고리 펼치기" : "카테고리 접기"}
@@ -83,7 +84,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
         <div
           className={cn(
             "md:hidden transition-all duration-300 ease-in-out overflow-hidden",
-            isCollapsed ? "max-h-0 opacity-0" : "max-h-96 opacity-100 pb-4",
+            isCollapsed ? "max-h-0 opacity-0" : "max-h-96 opacity-100 pb-4"
           )}
         >
           <div
@@ -97,7 +98,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                 "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
                 !currentCategory
                   ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground",
+                  : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
               aria-current={!currentCategory ? "page" : undefined}
             >
@@ -108,7 +109,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                     "text-xs px-2 py-0.5 rounded-full",
                     !currentCategory
                       ? "bg-primary-foreground/20 text-primary-foreground"
-                      : "bg-background text-muted-foreground",
+                      : "bg-background text-muted-foreground"
                   )}
                 >
                   {postCounts.total}
@@ -125,7 +126,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                     "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
                     currentCategory === cat
                       ? "bg-primary text-primary-foreground shadow-sm"
-                      : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground",
+                      : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                   aria-current={currentCategory === cat ? "page" : undefined}
                 >
@@ -136,7 +137,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                         "text-xs px-2 py-0.5 rounded-full",
                         currentCategory === cat
                           ? "bg-primary-foreground/20 text-primary-foreground"
-                          : "bg-background text-muted-foreground",
+                          : "bg-background text-muted-foreground"
                       )}
                     >
                       {count}
@@ -158,7 +159,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                   "w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
                   !currentCategory
                     ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-foreground hover:bg-accent/60 hover:text-accent-foreground",
+                    : "text-foreground hover:bg-accent/60 hover:text-accent-foreground"
                 )}
                 aria-current={!currentCategory ? "page" : undefined}
               >
@@ -169,7 +170,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                       "text-xs px-2.5 py-1 rounded-full font-medium transition-colors",
                       !currentCategory
                         ? "bg-primary-foreground/20 text-primary-foreground"
-                        : "bg-muted text-muted-foreground group-hover:bg-accent-foreground/10 group-hover:text-accent-foreground",
+                        : "bg-muted text-muted-foreground group-hover:bg-accent-foreground/10 group-hover:text-accent-foreground"
                     )}
                   >
                     {postCounts.total}
@@ -188,7 +189,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                       "w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
                       isActive
                         ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-foreground hover:bg-accent/60 hover:text-accent-foreground",
+                        : "text-foreground hover:bg-accent/60 hover:text-accent-foreground"
                     )}
                     aria-current={isActive ? "page" : undefined}
                   >
@@ -199,7 +200,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                           "text-xs px-2.5 py-1 rounded-full font-medium transition-colors",
                           isActive
                             ? "bg-primary-foreground/20 text-primary-foreground"
-                            : "bg-muted text-muted-foreground group-hover:bg-accent-foreground/10 group-hover:text-accent-foreground",
+                            : "bg-muted text-muted-foreground group-hover:bg-accent-foreground/10 group-hover:text-accent-foreground"
                         )}
                       >
                         {count}
