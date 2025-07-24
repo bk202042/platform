@@ -1,25 +1,31 @@
 # Implementation Plan
 
-- [ ] 1. Create enhanced database schema with image management
+- [x] 1. Create enhanced database schema with Vietnamese location system
   - Create migration file for `community_post_images` table with proper indexes and RLS policies
   - Add new columns to `community_posts` table (status, search_vector, view_count, last_activity_at)
+  - Enhance existing `cities` and `apartments` tables for Vietnamese locations (Ho Chi Minh City, Hanoi, Da Nang)
+  - Add `user_locations` table to store user's preferred Vietnamese cities/apartments with auth integration
   - Create search suggestions and user activity tracking tables
   - Implement data migration script to move existing images from array to separate table
   - _Requirements: 1.1, 1.2, 1.4_
 
-- [ ] 2. Implement cursor-based pagination data layer
-  - Create `getPostsWithCursor` function in `lib/data/community.ts` for infinite scroll support
-  - Implement `PaginatedResponse` interface and cursor logic for efficient pagination
-  - Add database indexes optimized for cursor-based queries
-  - Create helper functions for cursor generation and validation
-  - _Requirements: 2.1, 2.2, 6.1_
+- [x] 2. Create Vietnamese location database schema and data layer
+  - Add `user_locations` table for storing user's preferred Vietnamese locations with auth.users FK
+  - Implement location search functions for Vietnamese cities and apartment complexes
+  - Create location queries for "Ho Chi Minh City, District 1, Vinhomes Central Park" format
+  - Add location-based RLS policies for community posts
+  - Build location autocomplete data functions with fuzzy search for Vietnamese addresses
+  - Create user location preference management functions
+  - _Requirements: 7.3, 8.1, 9.4_
 
 - [ ] 3. Build enhanced image management system
   - Create `PostImage` interface and related types in `lib/types/community.ts`
   - Implement `uploadPostImages` and `savePostImages` functions in `lib/data/community.ts`
-  - Create `ImageUploadManager` component with drag-and-drop reordering functionality
-  - Add image metadata extraction and validation logic
-  - Implement image deletion and order management functions
+  - Create `ImageUploadManager` component using Supabase Dropzone (https://supabase.com/ui/docs/nextjs/dropzone)
+  - Integrate Supabase Dropzone with drag-and-drop reordering functionality for uploaded images
+  - Add image metadata extraction and validation logic compatible with Dropzone
+  - Implement image deletion and order management functions with Dropzone integration
+  - Configure Dropzone for community image uploads with proper file type and size validation
   - _Requirements: 1.1, 1.3, 1.4, 1.5_
 
 - [ ] 4. Create ImageGallery component with progressive loading
@@ -70,23 +76,17 @@
   - Implement cache size management and cleanup policies
   - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
 
-- [ ] 10. Implement advanced search and filtering
-  - Create `SearchBar` component with real-time suggestions and autocomplete
-  - Build `FilterPanel` component with multiple filter combinations
-  - Implement search result highlighting and relevance sorting
-  - Add location-based filtering with city and apartment support
-  - Create search history and suggestion management system
+- [ ] 10. Implement Daangn-style location selector for Vietnamese locations
+  - Create `LocationSelectorModal` component matching Daangn's "지역 변경" modal design
+  - ✅ Build location search for Vietnamese cities and apartment complexes (implemented in `lib/data/vietnamese-locations.ts`)
+  - ✅ Implement location autocomplete with real-time search for "Ho Chi Minh City, Vinhomes Central Park" format (implemented with `searchVietnameseLocations` and `getLocationAutocompleteSuggestions`)
+  - ✅ Add "관심 지역 위치 사용하기" functionality with user's preferred Vietnamese locations (implemented with user location preference functions)
+  - ✅ Create location-based post filtering with apartment-level granularity (implemented with `getPostsByUserLocations`)
+  - Build `SearchBar` component with Daangn-style search interface
+  - ✅ Add search history and popular Vietnamese locations functionality (implemented with `getPopularVietnameseLocations`)
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 11. Enhance Korean localization system
-  - Create centralized `i18n` system with Korean translations for all new features
-  - Implement Korean date/time formatting with proper locale conventions
-  - Add Korean number and currency formatting utilities
-  - Create Korean-specific error messages with contextual help
-  - Implement Korean voice input and accessibility support
-  - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
-
-- [ ] 12. Build real-time notification system
+- [ ] 11. Build real-time notification system
   - Create notification state management with real-time updates
   - Implement notification indicators for post interactions
   - Add subtle update notifications for new content availability
@@ -94,7 +94,7 @@
   - Build notification preferences and management interface
   - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5_
 
-- [ ] 13. Implement comprehensive error handling
+- [ ] 12. Implement comprehensive error handling
   - Create `AppError` class hierarchy with Korean error messages
   - Build `RetryManager` with exponential backoff and smart retry logic
   - Implement error boundary components with recovery options
@@ -102,15 +102,7 @@
   - Create user-friendly error reporting and feedback system
   - _Requirements: 3.4, 6.3, 6.5_
 
-- [ ] 14. Create analytics and moderation tools
-  - Build engagement metrics tracking and trend analysis
-  - Implement content moderation tools with efficient review workflows
-  - Create report handling system with investigation and resolution features
-  - Add user behavior analytics with community health insights
-  - Build automated content filtering with manual review capabilities
-  - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5_
-
-- [ ] 15. Optimize performance and bundle size
+- [ ] 13. Optimize performance and bundle size
   - Implement code splitting for non-critical components and features
   - Add lazy loading for images and heavy components
   - Optimize database queries with proper indexing and query planning
@@ -118,15 +110,7 @@
   - Implement service worker for offline functionality and caching
   - _Requirements: 6.1, 6.2, 6.3_
 
-- [ ] 16. Build comprehensive testing suite
-  - Create unit tests for all new data functions and utility functions
-  - Add integration tests for API endpoints and user interaction flows
-  - Implement performance tests with benchmarks for critical operations
-  - Create accessibility tests with Korean language support validation
-  - Add end-to-end tests for complete user journeys and edge cases
-  - _Requirements: All requirements validation_
-
-- [ ] 17. Implement API rate limiting and security
+- [ ] 14. Implement API rate limiting and security
   - Add rate limiting middleware for API endpoints to prevent abuse
   - Implement request validation and sanitization for all inputs
   - Create audit logging for sensitive operations and user actions
@@ -134,7 +118,47 @@
   - Implement proper error handling without information leakage
   - _Requirements: 3.5, 10.2, 10.3_
 
-- [ ] 18. Create monitoring and observability
+- [ ] 15. Implement Daangn-style community layout for Vietnamese locations
+  - Create main community page layout matching Daangn's "동네생활" design
+  - Build location selector button with current Vietnamese location display (e.g., "Vinhomes Central Park")
+  - Implement category sidebar with Korean labels and post counts
+  - Create post card layout with Daangn-style visual hierarchy and spacing
+  - Add floating "글 다운로드" (write post) button with proper positioning
+  - Build breadcrumb navigation showing "홈 > 커뮤니티" path
+  - Implement responsive design for mobile and desktop views
+  - _Requirements: 2.1, 2.4, 8.1_
+
+- [ ] 16. Build Daangn-style authentication and user location system
+  - Integrate location selection with user authentication flow
+  - Create user onboarding flow for location setup during registration
+  - Implement location permission handling with fallback options
+  - Build user location preferences management in user profile
+  - Add location-based content personalization logic
+  - Create location verification system for community posts
+  - Implement location-based user matching and recommendations
+  - _Requirements: 8.1, 9.1, 10.1_
+
+- [ ] 17. Create Daangn-style post interaction and engagement system
+  - Build post card hover effects and interaction states
+  - Implement post engagement metrics display (views, likes, comments)
+  - Create post time formatting in Korean style ("방금 전", "5분 전")
+  - Add post category badges with Daangn-style visual design
+  - Implement post author information display with location
+  - Create post thumbnail image handling for different aspect ratios
+  - Add post interaction animations and micro-interactions
+  - _Requirements: 3.1, 3.2, 8.2_
+
+- [ ] 18. Implement Daangn-style mobile experience and gestures
+  - Create mobile-first responsive design matching Daangn mobile app
+  - Implement pull-to-refresh with Daangn-style loading animation
+  - Add swipe gestures for post navigation and interactions
+  - Create mobile bottom navigation bar with community access
+  - Implement mobile location selector with touch-friendly interface
+  - Add haptic feedback for mobile interactions where supported
+  - Create mobile-optimized post creation flow
+  - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
+
+- [ ] 19. Create monitoring and observability
   - Implement application performance monitoring with key metrics
   - Add error tracking and alerting for production issues
   - Create user analytics dashboard for community engagement insights

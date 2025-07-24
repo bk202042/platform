@@ -421,3 +421,173 @@ export async function getPostCountsByCategory(params?: {
     byCategory: counts,
   };
 }
+
+// Location-based post queries
+export async function getPostsByUserLocations(params: {
+  userId: string;
+  category?: CommunityCategory;
+  sort?: "popular" | "latest";
+  limit?: number;
+  offset?: number;
+}) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.rpc("get_posts_by_user_locations", {
+    user_uuid: params.userId,
+    category_filter: params.category || null,
+    sort_option: params.sort || "latest",
+    limit_count: params.limit || 20,
+    offset_count: params.offset || 0,
+  });
+
+  if (error) {
+    console.error("Error fetching posts by user locations:", error);
+    throw error;
+  }
+
+  return data || [];
+}
+
+// Enhanced location-aware post creation
+export async function createPostWithLocation(data: {
+  apartment_id: string;
+  category: CommunityCategory;
+  title?: string;
+  body: string;
+  images?: string[];
+  user_id: string;
+}) {
+  const supabase = await createClient();
+
+  // Verify the apartment exists and get location info
+  const { data: apartment, error: apartmentError } = await supabase
+    .from("apartments")
+    .select("id, name, city_id, cities(name, name_ko)")
+    .eq("id", data.apartment_id)
+    .single();
+
+  if (apartmentError || !apartment) {
+    throw new Error("Invalid apartment ID");
+  }
+
+  // Create the post
+  const { data: post, error } = await supabase
+    .from("community_posts")
+    .insert([
+      {
+        apartment_id: data.apartment_id,
+        category: data.category,
+        title: data.title,
+        body: data.body,
+        images: data.images ?? [],
+        user_id: data.user_id,
+        status: "published",
+      },
+    ])
+    .select(
+      `
+      *,
+      apartments(
+        id, name, name_ko, district, district_ko,
+        cities(name, name_ko)
+      )
+    `
+    )
+    .single();
+
+  if (error) throw error;
+  return post;
+}
+
+// Search posts with location context
+export async function searchPostsWithLocation(params: {
+  query: string;
+  userId?: string;
+  cityId?: string;
+  apartmentId?: string;
+  category?: CommunityCategory;
+  limit?: number;
+  offset?: number;
+}) {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("community_posts")
+    .select(
+      `
+      *,
+      apartments(
+        id, name, name_ko, district, district_ko,
+        cities(name, name_ko)
+      ),
+      profiles!community_posts_user_id_fkey (
+        id, first_name, last_name, avatar_url
+      )
+    `
+    )
+    .eq("is_deleted", false)
+    .eq("status", "published")
+    .textSearch("search_vector", params.query);
+
+  // Apply location filters
+  if (params.apartmentId) {
+    query = query.eq("apartment_id", params.apartmentId);
+  } else if (params.cityId) {
+    query = query.eq("apartments.city_id", params.cityId);
+  }
+
+  if (params.category) {
+    query = query.eq("category", params.category);
+  }
+
+  // Apply pagination
+  if (params.limit) {
+    query = query.limit(params.limit);
+  }
+  if (params.offset) {
+    query = query.range(
+      params.offset,
+      params.offset + (params.limit || 10) - 1
+    );
+  }
+
+  // Order by relevance and recency
+  query = query.order("created_at", { ascending: false });
+
+  const { data: posts, error } = await query;
+  if (error) throw error;
+
+  if (!posts) return [];
+
+  // Get user's like status if user is provided
+  let likedPostIds = new Set<string>();
+  if (params.userId && posts.length > 0) {
+    const postIds = posts.map((post) => post.id);
+    const { data: likes } = await supabase
+      .from("community_likes")
+      .select("post_id")
+      .eq("user_id", params.userId)
+      .in("post_id", postIds);
+
+    likedPostIds = new Set(likes?.map((like) => like.post_id) || []);
+  }
+
+  return posts.map((post) => {
+    const profile = Array.isArray(post.profiles)
+      ? post.profiles[0]
+      : post.profiles;
+    const displayName = profile
+      ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() ||
+        "익명"
+      : "익명";
+
+    return {
+      ...post,
+      isLiked: likedPostIds.has(post.id),
+      user: {
+        name: displayName,
+        avatar_url: profile?.avatar_url,
+      },
+    };
+  });
+}
