@@ -93,6 +93,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
             aria-label="카테고리 목록"
           >
             <button
+              type="button"
               onClick={() => handleCategoryClick("")}
               className={cn(
                 "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
@@ -121,6 +122,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
               return (
                 <button
                   key={cat}
+                  type="button"
                   onClick={() => handleCategoryClick(cat)}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
@@ -154,6 +156,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
           <ul className="space-y-1">
             <li>
               <button
+                type="button"
                 onClick={() => handleCategoryClick("")}
                 className={cn(
                   "w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
@@ -184,6 +187,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
               return (
                 <li key={cat}>
                   <button
+                    type="button"
                     onClick={() => handleCategoryClick(cat)}
                     className={cn(
                       "w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
