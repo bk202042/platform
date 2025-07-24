@@ -1,6 +1,13 @@
 import { CommunityCategory } from "../validation/community";
 import { createClient } from "../supabase/server";
 import { Comment } from "@/components/community/CommentSection";
+import {
+  PostImage,
+  CreatePostImageData,
+  ImageUploadResult,
+  ImageReorderData,
+  ImageValidationResult,
+} from "../types/community";
 
 // 게시글 목록 조회
 export async function getPosts(params: {
@@ -590,4 +597,343 @@ export async function searchPostsWithLocation(params: {
       },
     };
   });
+}
+
+// ============================================================================
+// ENHANCED IMAGE MANAGEMENT SYSTEM
+// ============================================================================
+
+/**
+ * Upload multiple images to Supabase storage for community posts
+ * Handles file validation, metadata extraction, and storage path generation
+ */
+export async function uploadPostImages(
+  files: File[],
+  postId?: string
+): Promise<ImageUploadResult[]> {
+  const supabase = await createClient();
+
+  const uploadPromises = files.map(async (file) => {
+    // Validate file
+    const validation = await validateImageFile(file);
+    if (!validation.isValid) {
+      throw new Error(`File ${file.name}: ${validation.errors.join(", ")}`);
+    }
+
+    // Generate unique file name
+    const fileExt = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const timestamp = Date.now();
+    const randomId = Math.random().toString(36).substring(2, 15);
+    const fileName = `${postId || "temp"}_${timestamp}_${randomId}.${fileExt}`;
+    const filePath = `community-images/${fileName}`;
+
+    // Upload to Supabase storage
+    const { data, error } = await supabase.storage
+      .from("community-images")
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (error) {
+      console.error("Upload error:", error);
+      throw new Error(`Failed to upload ${file.name}: ${error.message}`);
+    }
+
+    // Get public URL
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("community-images").getPublicUrl(data.path);
+
+    return {
+      storage_path: data.path,
+      public_url: publicUrl,
+      metadata: {
+        width: validation.metadata?.width,
+        height: validation.metadata?.height,
+        size: file.size,
+        format: file.type,
+        original_name: file.name,
+      },
+    };
+  });
+
+  return Promise.all(uploadPromises);
+}
+
+/**
+ * Save uploaded images to the community_post_images table
+ */
+export async function savePostImages(
+  postId: string,
+  images: CreatePostImageData[]
+): Promise<PostImage[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("community_post_images")
+    .insert(
+      images.map((img) => ({
+        post_id: postId,
+        storage_path: img.storage_path,
+        display_order: img.display_order,
+        alt_text: img.alt_text,
+        metadata: img.metadata || {},
+      }))
+    )
+    .select();
+
+  if (error) {
+    console.error("Save images error:", error);
+    throw new Error(`Failed to save images: ${error.message}`);
+  }
+
+  return data as PostImage[];
+}
+
+/**
+ * Get images for a specific post
+ */
+export async function getPostImages(postId: string): Promise<PostImage[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("community_post_images")
+    .select("*")
+    .eq("post_id", postId)
+    .order("display_order", { ascending: true });
+
+  if (error) {
+    console.error("Get post images error:", error);
+    throw new Error(`Failed to get images: ${error.message}`);
+  }
+
+  return data as PostImage[];
+}
+
+/**
+ * Delete an image from both storage and database
+ */
+export async function deletePostImage(imageId: string): Promise<void> {
+  const supabase = await createClient();
+
+  // First get the image to get storage path
+  const { data: image, error: getError } = await supabase
+    .from("community_post_images")
+    .select("storage_path")
+    .eq("id", imageId)
+    .single();
+
+  if (getError) {
+    console.error("Get image error:", getError);
+    throw new Error(`Failed to get image: ${getError.message}`);
+  }
+
+  // Delete from storage
+  const { error: storageError } = await supabase.storage
+    .from("community-images")
+    .remove([image.storage_path]);
+
+  if (storageError) {
+    console.error("Storage delete error:", storageError);
+    // Continue with database deletion even if storage fails
+  }
+
+  // Delete from database
+  const { error: dbError } = await supabase
+    .from("community_post_images")
+    .delete()
+    .eq("id", imageId);
+
+  if (dbError) {
+    console.error("Database delete error:", dbError);
+    throw new Error(`Failed to delete image from database: ${dbError.message}`);
+  }
+}
+
+/**
+ * Reorder images by updating their display_order
+ */
+export async function reorderPostImages(
+  reorderData: ImageReorderData[]
+): Promise<void> {
+  const supabase = await createClient();
+
+  const updatePromises = reorderData.map(({ id, display_order }) =>
+    supabase
+      .from("community_post_images")
+      .update({ display_order })
+      .eq("id", id)
+  );
+
+  const results = await Promise.all(updatePromises);
+
+  // Check for errors
+  const errors = results.filter((result) => result.error);
+  if (errors.length > 0) {
+    console.error("Reorder errors:", errors);
+    throw new Error("Failed to reorder some images");
+  }
+}
+
+/**
+ * Validate image file before upload
+ */
+export async function validateImageFile(
+  file: File
+): Promise<ImageValidationResult> {
+  const errors: string[] = [];
+
+  // Check file type
+  const allowedTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+  ];
+  if (!allowedTypes.includes(file.type)) {
+    errors.push(
+      "지원되지 않는 파일 형식입니다. JPG, PNG, WEBP, GIF만 허용됩니다."
+    );
+  }
+
+  // Check file size (5MB limit)
+  const maxSize = 5 * 1024 * 1024;
+  if (file.size > maxSize) {
+    errors.push("파일 크기가 5MB를 초과합니다.");
+  }
+
+  // Check file name
+  if (file.name.length > 255) {
+    errors.push("파일명이 너무 깁니다.");
+  }
+
+  let metadata:
+    | { width: number; height: number; size: number; format: string }
+    | undefined;
+
+  // Extract image metadata
+  if (errors.length === 0 && file.type.startsWith("image/")) {
+    try {
+      metadata = await extractImageMetadata(file);
+
+      // Check image dimensions (optional limits)
+      if (metadata.width > 4000 || metadata.height > 4000) {
+        errors.push(
+          "이미지 크기가 너무 큽니다. 최대 4000x4000 픽셀까지 허용됩니다."
+        );
+      }
+
+      if (metadata.width < 50 || metadata.height < 50) {
+        errors.push(
+          "이미지 크기가 너무 작습니다. 최소 50x50 픽셀 이상이어야 합니다."
+        );
+      }
+    } catch (_error) {
+      errors.push("이미지 메타데이터를 읽을 수 없습니다.");
+    }
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    metadata,
+  };
+}
+
+/**
+ * Extract metadata from image file
+ */
+async function extractImageMetadata(file: File): Promise<{
+  width: number;
+  height: number;
+  size: number;
+  format: string;
+}> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve({
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+        size: file.size,
+        format: file.type,
+      });
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Failed to load image"));
+    };
+
+    img.src = url;
+  });
+}
+
+/**
+ * Create post with enhanced image management
+ */
+export async function createPostWithImages(data: {
+  apartment_id: string;
+  category: CommunityCategory;
+  title?: string;
+  body: string;
+  user_id: string;
+  imageFiles?: File[];
+}): Promise<{ post: unknown; images: PostImage[] }> {
+  const supabase = await createClient();
+
+  // Create the post first
+  const { data: post, error: postError } = await supabase
+    .from("community_posts")
+    .insert([
+      {
+        apartment_id: data.apartment_id,
+        category: data.category,
+        title: data.title,
+        body: data.body,
+        user_id: data.user_id,
+        status: "published",
+      },
+    ])
+    .select()
+    .single();
+
+  if (postError) {
+    console.error("Create post error:", postError);
+    throw new Error(`Failed to create post: ${postError.message}`);
+  }
+
+  let images: PostImage[] = [];
+
+  // Upload and save images if provided
+  if (data.imageFiles && data.imageFiles.length > 0) {
+    try {
+      // Upload images to storage
+      const uploadResults = await uploadPostImages(data.imageFiles, post.id);
+
+      // Prepare image data for database
+      const imageData: CreatePostImageData[] = uploadResults.map(
+        (result, index) => ({
+          storage_path: result.storage_path,
+          display_order: index,
+          alt_text: result.metadata.original_name,
+          metadata: result.metadata,
+        })
+      );
+
+      // Save to database
+      images = await savePostImages(post.id, imageData);
+    } catch (error) {
+      // If image upload fails, we should clean up the post
+      await supabase.from("community_posts").delete().eq("id", post.id);
+      throw error;
+    }
+  }
+
+  return { post, images };
 }

@@ -4,18 +4,18 @@ import { cn } from "@/lib/utils";
 import { type UseSupabaseUploadReturn } from "@/hooks/use-supabase-upload";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, File, Loader2, Upload, X } from "lucide-react";
+import Image from "next/image";
 import {
   createContext,
   type PropsWithChildren,
   useCallback,
   useContext,
 } from "react";
-import Image from "next/image";
 
 export const formatBytes = (
   bytes: number,
   decimals = 2,
-  size?: "bytes" | "KB" | "MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB",
+  size?: "bytes" | "KB" | "MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB"
 ) => {
   const k = 1000;
   const dm = decimals < 0 ? 0 : decimals;
@@ -36,7 +36,7 @@ type DropzoneContextType = Omit<
 >;
 
 const DropzoneContext = createContext<DropzoneContextType | undefined>(
-  undefined,
+  undefined
 );
 
 type DropzoneProps = UseSupabaseUploadReturn & {
@@ -60,15 +60,14 @@ const Dropzone = ({
   return (
     <DropzoneContext.Provider value={{ ...restProps }}>
       <div
-        {...getRootProps({
-          className: cn(
-            "border-2 border-gray-300 rounded-lg p-6 text-center bg-card transition-colors duration-300 text-foreground",
-            className,
-            isSuccess ? "border-solid" : "border-dashed",
-            isActive && "border-primary bg-primary/10",
-            isInvalid && "border-destructive bg-destructive/10",
-          ),
-        })}
+        {...getRootProps()}
+        className={cn(
+          "border-2 border-gray-300 rounded-lg p-6 text-center bg-card transition-colors duration-300 text-foreground",
+          className,
+          isSuccess ? "border-solid" : "border-dashed",
+          isActive && "border-primary bg-primary/10",
+          isInvalid && "border-destructive bg-destructive/10"
+        )}
       >
         <input {...getInputProps()} />
         {children}
@@ -76,6 +75,7 @@ const Dropzone = ({
     </DropzoneContext.Provider>
   );
 };
+
 const DropzoneContent = ({ className }: { className?: string }) => {
   const {
     files,
@@ -95,7 +95,7 @@ const DropzoneContent = ({ className }: { className?: string }) => {
     (fileName: string) => {
       setFiles(files.filter((file) => file.name !== fileName));
     },
-    [files, setFiles],
+    [files, setFiles]
   );
 
   if (isSuccess) {
@@ -103,7 +103,7 @@ const DropzoneContent = ({ className }: { className?: string }) => {
       <div
         className={cn(
           "flex flex-row items-center gap-x-2 justify-center",
-          className,
+          className
         )}
       >
         <CheckCircle size={16} className="text-primary" />
@@ -125,14 +125,13 @@ const DropzoneContent = ({ className }: { className?: string }) => {
             key={`${file.name}-${idx}`}
             className="flex items-center gap-x-4 border-b py-2 first:mt-4 last:mb-4 "
           >
-            {file.type.startsWith("image/") ? (
-              <div className="h-10 w-10 rounded border overflow-hidden shrink-0 bg-muted flex items-center justify-center">
+            {file.type.startsWith("image/") && file.preview ? (
+              <div className="h-10 w-10 rounded border overflow-hidden shrink-0 bg-muted flex items-center justify-center relative">
                 <Image
-                  src={file.preview || ""}
+                  src={file.preview}
                   alt={file.name}
-                  width={40}
-                  height={40}
-                  className="object-cover w-10 h-10"
+                  fill
+                  className="object-cover"
                 />
               </div>
             ) : (
@@ -151,7 +150,7 @@ const DropzoneContent = ({ className }: { className?: string }) => {
                     .map((e) =>
                       e.message.startsWith("File is larger than")
                         ? `File is larger than ${formatBytes(maxFileSize, 2)} (Size: ${formatBytes(file.size, 2)})`
-                        : e.message,
+                        : e.message
                     )
                     .join(", ")}
                 </p>

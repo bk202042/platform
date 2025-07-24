@@ -138,7 +138,8 @@ Thumbs.db
 .superdesign/
 .clinerules/
 .cursor/
-.github/prompts/
+.github/prompts
+.github/
 
 testsprite_tests
 
