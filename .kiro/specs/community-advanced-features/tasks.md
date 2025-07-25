@@ -76,7 +76,7 @@
   - Implement cache size management and cleanup policies
   - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
 
-- [ ] 10. Implement Daangn-style location selector for Vietnamese locations
+- [x] 10. Implement Daangn-style location selector for Vietnamese locations
   - Create `LocationSelectorModal` component matching Daangn's "지역 변경" modal design
   - ✅ Build location search for Vietnamese cities and apartment complexes (implemented in `lib/data/vietnamese-locations.ts`)
   - ✅ Implement location autocomplete with real-time search for "Ho Chi Minh City, Vinhomes Central Park" format (implemented with `searchVietnameseLocations` and `getLocationAutocompleteSuggestions`)
@@ -102,7 +102,7 @@
   - Create user-friendly error reporting and feedback system
   - _Requirements: 3.4, 6.3, 6.5_
 
-- [ ] 13. Optimize performance and bundle size
+- [x] 13. Optimize performance and bundle size
   - Implement code splitting for non-critical components and features
   - Add lazy loading for images and heavy components
   - Optimize database queries with proper indexing and query planning

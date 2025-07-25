@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from "react";
+import React, { memo, useMemo, useCallback } from "react";
 import { MessageCircle, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
@@ -48,7 +48,7 @@ export const PostCard = memo(function PostCard({
 }: PostCardProps) {
   const categoryConfig = useMemo(
     () => (post.category ? CATEGORY_CONFIG[post.category] : null),
-    [post.category],
+    [post.category]
   );
 
   // Format date using date-fns for better relative time formatting
@@ -70,22 +70,32 @@ export const PostCard = memo(function PostCard({
       post.title
         ? `게시글: ${post.title}`
         : `게시글: ${post.body.slice(0, 50)}...`,
-    [post.title, post.body],
+    [post.title, post.body]
+  );
+
+  // Use stable callbacks to prevent unnecessary re-renders
+  const handleClick = useCallback(() => {
+    onClick?.();
+  }, [onClick]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onClick?.();
+      }
+    },
+    [onClick]
   );
 
   return (
     <article
       className="group relative bg-white rounded-lg sm:rounded-xl lg:rounded-2xl border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200 cursor-pointer overflow-hidden touch-manipulation active:scale-[0.98] sm:active:scale-100"
-      onClick={onClick}
+      onClick={handleClick}
       tabIndex={0}
       role="button"
       aria-label={ariaLabel}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onClick?.();
-        }
-      }}
+      onKeyDown={handleKeyDown}
     >
       {/* Hover effect overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-50/0 to-blue-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />

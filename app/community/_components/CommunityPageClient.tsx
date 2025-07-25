@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useMemo, useOptimistic } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ApartmentAutocomplete } from "@/components/community/ApartmentAutocomplete";
 import { PostList } from "@/components/community/PostList";
 import { SortSelector, SortOption } from "@/components/community/SortSelector";
 import { lazy, Suspense } from "react";
@@ -10,11 +9,17 @@ import { CategorySidebar } from "./CategorySidebar";
 import { CommunityBreadcrumb } from "@/components/community/CommunityBreadcrumb";
 import { MobileNavigation } from "@/components/community/MobileNavigation";
 import { ErrorBoundary } from "@/components/community/ErrorBoundary";
+import {
+  LocationSelectorModal,
+  LocationSelectorButton,
+} from "@/components/community/LocationSelectorModal";
+import { SearchBar } from "@/components/community/SearchBar";
+import { LocationSearchResult } from "@/lib/data/vietnamese-locations";
 
 // 지연 로딩으로 성능 최적화
-const NewPostDialog = lazy(() => import("./NewPostDialog").then(
-  (mod) => ({ default: mod.NewPostDialog })
-));
+const NewPostDialog = lazy(() =>
+  import("./NewPostDialog").then((mod) => ({ default: mod.NewPostDialog }))
+);
 import { Button } from "@/components/ui/button";
 import { CommunityCategory } from "@/lib/validation/community";
 import { Plus } from "lucide-react";
@@ -70,15 +75,18 @@ export function CommunityPageClient({
   const searchParams = useSearchParams();
   const [apartmentId, setApartmentId] = useState(initialApartmentId);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] =
+    useState<LocationSearchResult | null>(null);
   const [optimisticPosts, addOptimisticPost] = useOptimistic(
     posts,
-    (state: Post[], newPost: Post) => [newPost, ...state],
+    (state: Post[], newPost: Post) => [newPost, ...state]
   );
 
   // Get current sort from URL params
   const currentSort = (searchParams.get("sort") as SortOption) || "latest";
 
-  const handleApartmentChange = useCallback(
+  const _handleApartmentChange = useCallback(
     (newApartmentId: string) => {
       setApartmentId(newApartmentId);
       const params = new URLSearchParams(searchParams.toString());
@@ -89,7 +97,46 @@ export function CommunityPageClient({
       }
       router.push(`/community?${params.toString()}`);
     },
-    [searchParams, router],
+    [searchParams, router]
+  );
+
+  const handleLocationSelect = useCallback(
+    (location: LocationSearchResult | null) => {
+      setSelectedLocation(location);
+      const params = new URLSearchParams(searchParams.toString());
+
+      if (location) {
+        if (location.type === "apartment") {
+          params.set("apartmentId", location.id);
+          setApartmentId(location.id);
+        } else {
+          // For city selection, clear apartment filter
+          params.delete("apartmentId");
+          setApartmentId("");
+          // Could add city filter here if needed
+        }
+      } else {
+        // Clear all location filters
+        params.delete("apartmentId");
+        setApartmentId("");
+      }
+
+      router.push(`/community?${params.toString()}`);
+    },
+    [searchParams, router]
+  );
+
+  const handleSearch = useCallback(
+    (query: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (query.trim()) {
+        params.set("search", query);
+      } else {
+        params.delete("search");
+      }
+      router.push(`/community?${params.toString()}`);
+    },
+    [searchParams, router]
   );
 
   const currentCategory = searchParams.get("category");
@@ -97,14 +144,14 @@ export function CommunityPageClient({
   // Memoize expensive computations
   const currentApartment = useMemo(
     () => apartments.find((apt) => apt.id === apartmentId),
-    [apartments, apartmentId],
+    [apartments, apartmentId]
   );
 
   const handlePostClick = useCallback(
     (postId: string) => {
       router.push(`/community/${postId}`);
     },
-    [router],
+    [router]
   );
 
   const handleCreatePost = useCallback(() => {
@@ -117,7 +164,10 @@ export function CommunityPageClient({
 
   const handlePostCreated = useCallback(
     (
-      newPost: Omit<Post, "id" | "created_at" | "likes_count" | "comments_count">,
+      newPost: Omit<
+        Post,
+        "id" | "created_at" | "likes_count" | "comments_count"
+      >
     ) => {
       const optimisticPost: Post = {
         ...newPost,
@@ -131,7 +181,7 @@ export function CommunityPageClient({
       addOptimisticPost(optimisticPost);
       setIsDialogOpen(false);
     },
-    [addOptimisticPost],
+    [addOptimisticPost]
   );
 
   const handleRetry = useCallback(() => {
@@ -174,23 +224,42 @@ export function CommunityPageClient({
           <main className="flex-1 min-w-0">
             <ErrorBoundary>
               <div className="flex flex-col gap-4 mb-6">
-                {/* Top row: Apartment filter and Write Post button */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <ApartmentAutocomplete
-                    value={apartmentId}
-                    onApartmentSelect={handleApartmentChange}
-                    cities={cities || []}
-                    apartments={apartments || []}
+                {/* Search Bar */}
+                <div className="w-full">
+                  <SearchBar
+                    onSearch={handleSearch}
+                    onLocationSelect={handleLocationSelect}
+                    placeholder="베트남 지역이나 아파트를 검색하세요..."
+                    className="w-full"
                   />
-                  <Button onClick={handleCreatePost}>Write a Post</Button>
                 </div>
 
-                {/* Second row: Sort selector */}
+                {/* Location selector and Write Post button */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex-1 max-w-md">
+                    <LocationSelectorButton
+                      selectedLocation={selectedLocation}
+                      onOpenModal={() => setIsLocationModalOpen(true)}
+                      placeholder="지역을 선택하세요"
+                      className="w-full"
+                    />
+                  </div>
+                  <Button
+                    onClick={handleCreatePost}
+                    className="sm:w-auto w-full"
+                  >
+                    글쓰기
+                  </Button>
+                </div>
+
+                {/* Sort selector */}
                 <div className="flex justify-end">
                   <SortSelector value={currentSort} />
                 </div>
 
-                <Suspense fallback={<div className="p-4 text-center">로딩 중...</div>}>
+                <Suspense
+                  fallback={<div className="p-4 text-center">로딩 중...</div>}
+                >
                   <NewPostDialog
                     open={isDialogOpen}
                     onClose={handleDialogClose}
@@ -223,6 +292,15 @@ export function CommunityPageClient({
           </main>
         </div>
       </div>
+
+      {/* Location Selector Modal */}
+      <LocationSelectorModal
+        open={isLocationModalOpen}
+        onOpenChange={setIsLocationModalOpen}
+        onLocationSelect={handleLocationSelect}
+        selectedLocation={selectedLocation}
+        title="지역 변경"
+      />
     </ErrorBoundary>
   );
 }

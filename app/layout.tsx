@@ -9,6 +9,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { getInitialUser } from "@/lib/auth/server";
 import { ToastProvider } from "@/components/community/ToastProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { ServiceWorkerProvider } from "@/components/providers/ServiceWorkerProvider";
 
 const notoSansKR = Noto_Sans_KR({
   // @ts-expect-error // Allow 'korean' subset, expect a type error here which we are overriding.
@@ -43,16 +44,18 @@ export default async function RootLayout({
         className="bg-background text-foreground" // Use theme variables. Font is now on HTML tag.
       >
         <AuthProvider initialUser={initialUser}>
-          <ToastProvider>
-            <div className="relative flex min-h-screen flex-col bg-background">
-              <StagewiseToolbarLoader />
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Toaster />
-              <Footer /> {/* Add the Footer component */}
-              <SpeedInsights />
-            </div>
-          </ToastProvider>
+          <ServiceWorkerProvider>
+            <ToastProvider>
+              <div className="relative flex min-h-screen flex-col bg-background">
+                <StagewiseToolbarLoader />
+                <Header />
+                <main className="flex-1">{children}</main>
+                <Toaster />
+                <Footer /> {/* Add the Footer component */}
+                <SpeedInsights />
+              </div>
+            </ToastProvider>
+          </ServiceWorkerProvider>
         </AuthProvider>
       </body>
     </html>

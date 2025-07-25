@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
+    "analyze": "node scripts/analyze-bundle.js",
+
     "start": "next start",
     "lint": "next lint",
     "load-data": "tsx scripts/load-property-data.ts"
@@ -45,6 +48,7 @@
     "zod": "^3.24.4"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.3.1",
     "@tailwindcss/cli": "^4.1.4",
     "@tailwindcss/postcss": "^4.1.4",
     "@types/node": "^20",
