@@ -15,6 +15,8 @@ import {
 } from "@/components/community/LocationSelectorModal";
 import { SearchBar } from "@/components/community/SearchBar";
 import { LocationSearchResult } from "@/lib/data/vietnamese-locations";
+import { PullToRefresh } from "@/components/community/PullToRefresh";
+import { MobileBottomNavigation } from "@/components/community/MobileBottomNavigation";
 
 // 지연 로딩으로 성능 최적화
 const NewPostDialog = lazy(() =>
@@ -188,6 +190,12 @@ export function CommunityPageClient({
     router.refresh();
   }, [router]);
 
+  const handleRefresh = useCallback(async () => {
+    // Add a small delay to make the refresh feel natural
+    await new Promise(resolve => setTimeout(resolve, 500));
+    router.refresh();
+  }, [router]);
+
   return (
     <ErrorBoundary>
       {/* Mobile Navigation */}
@@ -237,7 +245,11 @@ export function CommunityPageClient({
 
             {/* Main Feed */}
             <main className="flex-1 min-w-0">
-              <div className="px-4 sm:px-6 lg:px-8 py-6">
+              <PullToRefresh
+                onRefresh={handleRefresh}
+                className="h-screen md:h-auto"
+              >
+                <div className="px-4 sm:px-6 lg:px-8 py-6">
                 <ErrorBoundary>
                   {/* Controls Section */}
                   <div className="mb-6 space-y-4">
@@ -305,7 +317,8 @@ export function CommunityPageClient({
                     )}
                   </div>
                 </ErrorBoundary>
-              </div>
+                </div>
+              </PullToRefresh>
             </main>
           </div>
         </div>
@@ -340,6 +353,9 @@ export function CommunityPageClient({
           apartments={apartments || []}
         />
       </Suspense>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNavigation onCreatePost={handleCreatePost} />
     </ErrorBoundary>
   );
 }

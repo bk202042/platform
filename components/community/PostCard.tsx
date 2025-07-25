@@ -1,8 +1,10 @@
-import React, { memo, useMemo, useCallback } from "react";
-import { MessageCircle, User, Eye } from "lucide-react";
+import React, { memo, useMemo, useCallback, useState } from "react";
+import { MessageCircle, User, Eye, Heart, Share2 } from "lucide-react";
 import { CommunityCategory } from "@/lib/validation/community";
 import { LikeButton } from "./LikeButton";
 import { formatKoreanTime, getTimeTooltip } from "@/lib/utils/time";
+import { useMobileGestures } from "@/lib/hooks/useMobileGestures";
+import { cn } from "@/lib/utils";
 
 export interface PostCardProps {
   post: {
@@ -53,6 +55,7 @@ export const PostCard = memo(function PostCard({
   post,
   onClick,
 }: PostCardProps) {
+  const [swipeAction, setSwipeAction] = useState<'like' | 'share' | null>(null);
   const categoryConfig = useMemo(
     () => (post.category ? CATEGORY_CONFIG[post.category] : null),
     [post.category]
@@ -92,14 +95,40 @@ export const PostCard = memo(function PostCard({
     [onClick]
   );
 
+  // Handle swipe gestures for mobile interactions
+  const handleSwipeRight = useCallback(() => {
+    setSwipeAction('like');
+    // Trigger like action here
+    setTimeout(() => setSwipeAction(null), 300);
+  }, []);
+
+  const handleSwipeLeft = useCallback(() => {
+    setSwipeAction('share');
+    // Trigger share action here
+    setTimeout(() => setSwipeAction(null), 300);
+  }, []);
+
+  const { gestureHandlers, gestureState } = useMobileGestures({
+    onSwipeRight: handleSwipeRight,
+    onSwipeLeft: handleSwipeLeft,
+    minDistance: 80,
+    maxVerticalDistance: 100,
+    enableHaptic: true,
+  });
+
   return (
     <article
-      className="group relative bg-white border-b border-zinc-200 hover:bg-zinc-50 transition-all duration-200 cursor-pointer overflow-hidden touch-manipulation active:bg-zinc-100"
+      className={cn(
+        "group relative bg-white border-b border-zinc-200 hover:bg-zinc-50 transition-all duration-200 cursor-pointer overflow-hidden touch-manipulation active:bg-zinc-100",
+        gestureState.isActive && gestureState.direction === 'right' && "bg-red-50",
+        gestureState.isActive && gestureState.direction === 'left' && "bg-blue-50"
+      )}
       onClick={handleClick}
       tabIndex={0}
       role="button"
       aria-label={ariaLabel}
       onKeyDown={handleKeyDown}
+      {...gestureHandlers}
     >
       <div className="p-4 sm:p-5">
         {/* Header with category and location - enhanced Daangn style */}
@@ -194,6 +223,42 @@ export const PostCard = memo(function PostCard({
           </div>
         </div>
       </div>
+
+      {/* Swipe Action Indicators */}
+      {gestureState.isActive && (
+        <>
+          {gestureState.direction === 'right' && (
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-red-500 text-white rounded-full p-2 shadow-lg animate-pulse">
+              <Heart size={16} fill="currentColor" />
+            </div>
+          )}
+          {gestureState.direction === 'left' && (
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white rounded-full p-2 shadow-lg animate-pulse">
+              <Share2 size={16} />
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Swipe Action Feedback */}
+      {swipeAction && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 z-10">
+          <div className={cn(
+            "flex flex-col items-center gap-2 text-white animate-bounce",
+            swipeAction === 'like' && "text-red-500",
+            swipeAction === 'share' && "text-blue-500"
+          )}>
+            {swipeAction === 'like' ? (
+              <Heart size={32} fill="currentColor" />
+            ) : (
+              <Share2 size={32} />
+            )}
+            <span className="text-sm font-medium">
+              {swipeAction === 'like' ? '좋아요!' : '공유!'}
+            </span>
+          </div>
+        </div>
+      )}
     </article>
   );
 });
