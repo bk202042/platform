@@ -99,13 +99,13 @@ export function FeaturedPropertiesClient({
               className="w-full"
             >
               <CarouselContent>
-                {properties.map((property: PropertyListing) => (
+                {properties.map((property: PropertyListing, index: number) => (
                   <CarouselItem
                     key={property.id}
                     className="md:basis-1/2 lg:basis-1/3"
                   >
                     <div className="p-1 h-full">
-                      <PropertyCard property={property} />
+                      <PropertyCard property={property} priority={index < 3} />
                     </div>
                   </CarouselItem>
                 ))}

@@ -12,12 +12,12 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ServiceWorkerProvider } from "@/components/providers/ServiceWorkerProvider";
 
 const notoSansKR = Noto_Sans_KR({
-  // @ts-expect-error // Allow 'korean' subset, expect a type error here which we are overriding.
-  subsets: ["korean"],
-  weight: ["400", "700"],
+  subsets: ["latin"],
+  weight: ["400", "500", "700"], // Add medium weight for better performance
   display: "swap",
   variable: "--font-noto-sans-kr",
-  preload: false, // Good practice for CJK fonts
+  preload: true, // Enable preload for critical fonts
+  fallback: ["system-ui", "-apple-system", "sans-serif"],
 });
 
 export const metadata: Metadata = {
@@ -38,6 +38,12 @@ export default async function RootLayout({
     <html lang="ko" className={`${notoSansKR.variable} antialiased`}>
       <head>
         <link rel="icon" href="/favicon.png" type="image/png" />
+        {/* Performance optimization resource hints */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://khtcoztdkxhhrudwhhjv.supabase.co" />
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://vercel.com" />
       </head>
       <body
         suppressHydrationWarning

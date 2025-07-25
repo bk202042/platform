@@ -161,11 +161,11 @@ const getCachedPropertyListings = unstable_cache(
       fetchError = dataError;
       propertyData = (data || []) as PropertyListing[];
 
-      // Fetch count separately
+      // Fetch count separately - optimized to only select id for better performance
       if (!fetchError) {
         let countQuery = supabaseClient
           .from("property_listings")
-          .select("*", { count: "exact", head: true });
+          .select("id", { count: "exact", head: true });
         // Re-apply filters for accurate count
         if (searchText) {
           countQuery = countQuery.or(

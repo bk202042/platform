@@ -18,6 +18,7 @@ interface PropertyCardProps {
   property: PropertyListing;
   showDistance?: boolean;
   distanceMeters?: number;
+  priority?: boolean;
 }
 
 // Format price based on property type
@@ -45,6 +46,7 @@ function PropertyCardComponent({
   property,
   showDistance = false,
   distanceMeters,
+  priority = false,
 }: PropertyCardProps) {
   return (
     <Card className="h-full flex flex-col transition-shadow hover:shadow-lg border border-gray-200 rounded-xl shadow-md">
@@ -65,7 +67,8 @@ function PropertyCardComponent({
             className="w-full h-48 object-cover rounded-lg mb-3"
             width={384}
             height={192}
-            priority={false}
+            priority={priority}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
           // fallback image
@@ -75,7 +78,8 @@ function PropertyCardComponent({
             className="w-full h-48 object-cover rounded-lg mb-3"
             width={384}
             height={192}
-            priority={false}
+            priority={priority}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         )}
         <CardTitle className="text-lg font-semibold line-clamp-2">

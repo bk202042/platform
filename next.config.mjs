@@ -2,6 +2,8 @@
 const nextConfig = {
   // Performance optimizations
   experimental: {
+    // PPR requires Next.js canary - disabled for stable version
+    // ppr: true,
     optimizePackageImports: [
       'lucide-react',
       'date-fns',

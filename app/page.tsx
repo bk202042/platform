@@ -1,9 +1,17 @@
 import { getPropertyListings } from "@/lib/data/property";
 import { KoreanExpatriatesSection } from "@/components/sections/KoreanExpatriatesSection";
 import { HeroSection } from "@/components/sections/HeroSection";
-import { FeatureHighlightsSection } from "@/components/sections/FeatureHighlightsSection";
 import { ExploreSection } from "@/components/sections/ExploreSection";
 import { FeaturedPropertiesClient } from "@/components/featured/FeaturedPropertiesClient";
+import dynamic from "next/dynamic";
+
+// Dynamic import for heavy components
+const FeatureHighlightsSection = dynamic(
+  () => import("@/components/sections/FeatureHighlightsSection").then(mod => ({ default: mod.FeatureHighlightsSection })),
+  {
+    loading: () => <div className="h-32 animate-pulse bg-gray-100 rounded-lg" />,
+  }
+);
 
 // Direct implementation at root level to avoid route group client reference issues
 export default async function Home() {
