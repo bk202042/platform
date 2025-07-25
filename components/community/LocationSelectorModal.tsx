@@ -412,24 +412,32 @@ export function LocationSelectorButton({
       variant="outline"
       onClick={onOpenModal}
       className={cn(
-        "w-full justify-between text-left font-normal",
-        !selectedLocation && "text-muted-foreground",
+        "w-full justify-between text-left font-normal h-10 px-4 py-2 rounded-lg border border-zinc-300 hover:border-orange-400 hover:bg-orange-50 transition-colors",
+        selectedLocation 
+          ? "text-zinc-900 bg-white border-orange-300" 
+          : "text-zinc-500 bg-white",
         className
       )}
     >
       <div className="flex items-center space-x-2">
         {selectedLocation ? (
           selectedLocation.type === "city" ? (
-            <MapPin className="h-4 w-4 text-blue-500" />
+            <MapPin className="h-4 w-4 text-orange-500" />
           ) : (
-            <Building2 className="h-4 w-4 text-green-500" />
+            <Building2 className="h-4 w-4 text-orange-500" />
           )
         ) : (
-          <MapPin className="h-4 w-4 text-gray-400" />
+          <MapPin className="h-4 w-4 text-zinc-400" />
         )}
-        <span className="truncate">{displayText}</span>
+        <span className="truncate font-medium">
+          {selectedLocation ? (
+            <span className="text-zinc-900">{displayText}</span>
+          ) : (
+            <span className="text-zinc-500">{displayText}</span>
+          )}
+        </span>
       </div>
-      <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
+      <ChevronRight className="h-4 w-4 text-zinc-400 flex-shrink-0" />
     </Button>
   );
 }

@@ -25,6 +25,15 @@
         "FIRECRAWL_API_KEY": "fc-08a607f577ef432bbcefe1df51c8d24f"
       }
     },
+    "Ref": {
+      "command": "npx",
+      "args": [
+        "ref-tools-mcp@latest"
+      ],
+      "env": {
+        "REF_API_KEY": "ref-5466323c4dfc49d586ed"
+      }
+    },
     "TestSprite": {
       "command": "npx",
       "args": [

@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { COMMUNITY_CATEGORIES } from "@/lib/validation/community";
 import { cn } from "@/lib/utils";
-import { ChevronDown, ChevronUp } from "lucide-react";
 
 // Korean translations for categories
 const CATEGORY_TRANSLATIONS = {
@@ -26,7 +24,6 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentCategory = searchParams.get("category");
-  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleCategoryClick = (category: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -53,127 +50,41 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
 
   return (
     <aside
-      className="w-full md:w-64 md:flex-shrink-0"
+      className="w-full lg:w-64 lg:flex-shrink-0"
       role="navigation"
       aria-label="카테고리 내비게이션"
     >
-      <div className="px-4 md:px-0">
-        {/* Desktop Header */}
-        <div className="hidden md:flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-foreground">카테고리</h2>
+      <div className="p-6">
+        {/* Desktop Header - Daangn style */}
+        <div className="hidden lg:block mb-6">
+          <h2 className="text-lg font-bold text-zinc-900 border-b border-zinc-200 pb-3">
+            카테고리
+          </h2>
         </div>
 
-        {/* Mobile Header with Collapse Toggle */}
-        <div className="md:hidden flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-foreground">카테고리</h2>
-          <button
-            type="button"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 hover:bg-accent rounded-md transition-colors"
-            aria-label={isCollapsed ? "카테고리 펼치기" : "카테고리 접기"}
-          >
-            {isCollapsed ? (
-              <ChevronDown className="h-4 w-4" />
-            ) : (
-              <ChevronUp className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-
-        {/* Mobile: Horizontal scroll (when not collapsed) */}
-        <div
-          className={cn(
-            "md:hidden transition-all duration-300 ease-in-out overflow-hidden",
-            isCollapsed ? "max-h-0 opacity-0" : "max-h-96 opacity-100 pb-4"
-          )}
-        >
-          <div
-            className="flex space-x-3 overflow-x-auto pb-2 scrollbar-hide"
-            tabIndex={0}
-            aria-label="카테고리 목록"
-          >
-            <button
-              type="button"
-              onClick={() => handleCategoryClick("")}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
-                !currentCategory
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-              aria-current={!currentCategory ? "page" : undefined}
-            >
-              <span>전체</span>
-              {postCounts && (
-                <span
-                  className={cn(
-                    "text-xs px-2 py-0.5 rounded-full",
-                    !currentCategory
-                      ? "bg-primary-foreground/20 text-primary-foreground"
-                      : "bg-background text-muted-foreground"
-                  )}
-                >
-                  {postCounts.total}
-                </span>
-              )}
-            </button>
-            {COMMUNITY_CATEGORIES.map((cat) => {
-              const count = getCategoryCount(cat);
-              return (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => handleCategoryClick(cat)}
-                  className={cn(
-                    "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
-                    currentCategory === cat
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                  aria-current={currentCategory === cat ? "page" : undefined}
-                >
-                  <span>{getCategoryDisplayName(cat)}</span>
-                  {count !== null && (
-                    <span
-                      className={cn(
-                        "text-xs px-2 py-0.5 rounded-full",
-                        currentCategory === cat
-                          ? "bg-primary-foreground/20 text-primary-foreground"
-                          : "bg-background text-muted-foreground"
-                      )}
-                    >
-                      {count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Desktop: Vertical list */}
-        <nav className="hidden md:block" aria-label="카테고리 목록">
-          <ul className="space-y-1">
+        {/* Desktop: Vertical list - Daangn style */}
+        <nav className="hidden lg:block" aria-label="카테고리 목록">
+          <ul className="space-y-2">
             <li>
               <button
                 type="button"
                 onClick={() => handleCategoryClick("")}
                 className={cn(
-                  "w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+                  "w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500",
                   !currentCategory
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-foreground hover:bg-accent/60 hover:text-accent-foreground"
+                    ? "bg-orange-50 text-orange-700 border border-orange-200"
+                    : "text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900"
                 )}
                 aria-current={!currentCategory ? "page" : undefined}
               >
-                <span>전체 게시글</span>
+                <span>전체</span>
                 {postCounts && (
                   <span
                     className={cn(
-                      "text-xs px-2.5 py-1 rounded-full font-medium transition-colors",
+                      "text-xs px-2 py-0.5 rounded-full font-medium transition-colors min-w-[24px] text-center",
                       !currentCategory
-                        ? "bg-primary-foreground/20 text-primary-foreground"
-                        : "bg-muted text-muted-foreground group-hover:bg-accent-foreground/10 group-hover:text-accent-foreground"
+                        ? "bg-orange-100 text-orange-700"
+                        : "bg-zinc-200 text-zinc-600 group-hover:bg-zinc-300"
                     )}
                   >
                     {postCounts.total}
@@ -190,10 +101,10 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                     type="button"
                     onClick={() => handleCategoryClick(cat)}
                     className={cn(
-                      "w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+                      "w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500",
                       isActive
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-foreground hover:bg-accent/60 hover:text-accent-foreground"
+                        ? "bg-orange-50 text-orange-700 border border-orange-200"
+                        : "text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900"
                     )}
                     aria-current={isActive ? "page" : undefined}
                   >
@@ -201,10 +112,10 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                     {count !== null && (
                       <span
                         className={cn(
-                          "text-xs px-2.5 py-1 rounded-full font-medium transition-colors",
+                          "text-xs px-2 py-0.5 rounded-full font-medium transition-colors min-w-[24px] text-center",
                           isActive
-                            ? "bg-primary-foreground/20 text-primary-foreground"
-                            : "bg-muted text-muted-foreground group-hover:bg-accent-foreground/10 group-hover:text-accent-foreground"
+                            ? "bg-orange-100 text-orange-700"
+                            : "bg-zinc-200 text-zinc-600 group-hover:bg-zinc-300"
                         )}
                       >
                         {count}
@@ -216,6 +127,11 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
             })}
           </ul>
         </nav>
+
+        {/* Mobile: Hidden - categories shown in modal */}
+        <div className="lg:hidden">
+          {/* Mobile categories are handled by the mobile category button in the main layout */}
+        </div>
       </div>
     </aside>
   );

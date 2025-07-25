@@ -195,101 +195,129 @@ export function CommunityPageClient({
         <Button
           size="sm"
           onClick={handleCreatePost}
-          className="flex items-center gap-1 px-3 py-2 min-h-[36px]"
+          className="flex items-center gap-1 px-3 py-2 min-h-[36px] bg-orange-500 hover:bg-orange-600 text-white"
         >
           <Plus size={16} />
           <span className="hidden xs:inline">글쓰기</span>
         </Button>
       </MobileNavigation>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Header */}
-        <div className="mb-6">
-          <CommunityBreadcrumb
-            category={currentCategory as CommunityCategory}
-            apartmentName={currentApartment?.name}
-            cityName={currentApartment?.cities?.name}
-          />
-          <h1 className="text-3xl font-bold mt-4 hidden md:block">커뮤니티</h1>
+      {/* Daangn-style layout with proper spacing */}
+      <div className="min-h-screen bg-zinc-50">
+        <div className="max-w-7xl mx-auto">
+          {/* Header Section - Daangn style */}
+          <div className="bg-white border-b border-zinc-200 sticky top-0 z-40">
+            <div className="px-4 sm:px-6 lg:px-8 py-4">
+              <CommunityBreadcrumb
+                category={currentCategory as CommunityCategory}
+                apartmentName={currentApartment?.name}
+                cityName={currentApartment?.cities?.name}
+              />
+              <div className="flex items-center justify-between mt-3">
+                <h1 className="text-2xl font-bold text-zinc-900">동네생활</h1>
+                <Button
+                  onClick={handleCreatePost}
+                  className="hidden sm:flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium"
+                >
+                  <Plus size={18} />
+                  글쓰기
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content Area */}
+          <div className="flex">
+            {/* Left Sidebar - Desktop only */}
+            <aside className="hidden lg:block w-64 bg-white border-r border-zinc-200 min-h-screen sticky top-[73px]">
+              <ErrorBoundary>
+                <CategorySidebar postCounts={postCounts} />
+              </ErrorBoundary>
+            </aside>
+
+            {/* Main Feed */}
+            <main className="flex-1 min-w-0">
+              <div className="px-4 sm:px-6 lg:px-8 py-6">
+                <ErrorBoundary>
+                  {/* Controls Section */}
+                  <div className="mb-6 space-y-4">
+                    {/* Search Bar */}
+                    <SearchBar
+                      onSearch={handleSearch}
+                      onLocationSelect={handleLocationSelect}
+                      placeholder="베트남 지역이나 아파트를 검색하세요..."
+                      className="w-full max-w-2xl"
+                    />
+
+                    {/* Location and Sort Controls */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <LocationSelectorButton
+                          selectedLocation={selectedLocation}
+                          onOpenModal={() => setIsLocationModalOpen(true)}
+                          placeholder="지역을 선택하세요"
+                          className="bg-white border border-zinc-300 hover:border-zinc-400 text-zinc-700"
+                        />
+                        {/* Mobile Category Filter */}
+                        <div className="lg:hidden">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-zinc-300 text-zinc-700"
+                          >
+                            카테고리
+                          </Button>
+                        </div>
+                      </div>
+                      <SortSelector value={currentSort} />
+                    </div>
+                  </div>
+
+                  {/* Posts Feed */}
+                  <div className="bg-white rounded-lg border border-zinc-200 overflow-hidden">
+                    {optimisticPosts && optimisticPosts.length > 0 ? (
+                      <PostList
+                        posts={optimisticPosts}
+                        onPostClick={handlePostClick}
+                        onCreatePost={handleCreatePost}
+                        onRetry={handleRetry}
+                      />
+                    ) : (
+                      <div className="text-center py-16 px-4">
+                        <div className="max-w-sm mx-auto">
+                          <div className="w-16 h-16 bg-zinc-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <Plus className="w-8 h-8 text-zinc-400" />
+                          </div>
+                          <h3 className="text-lg font-semibold text-zinc-900 mb-2">
+                            아직 게시글이 없어요
+                          </h3>
+                          <p className="text-sm text-zinc-500 mb-6">
+                            우리 동네의 첫 번째 이야기를 들려주세요!
+                          </p>
+                          <Button
+                            onClick={handleCreatePost}
+                            className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2"
+                          >
+                            첫 글 쓰기
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </ErrorBoundary>
+              </div>
+            </main>
+          </div>
         </div>
 
-        {/* Two-column layout */}
-        <div className="flex flex-col md:flex-row md:gap-6">
-          {/* Left Sidebar */}
-          <ErrorBoundary>
-            <CategorySidebar postCounts={postCounts} />
-          </ErrorBoundary>
-
-          {/* Main Feed */}
-          <main className="flex-1 min-w-0">
-            <ErrorBoundary>
-              <div className="flex flex-col gap-4 mb-6">
-                {/* Search Bar */}
-                <div className="w-full">
-                  <SearchBar
-                    onSearch={handleSearch}
-                    onLocationSelect={handleLocationSelect}
-                    placeholder="베트남 지역이나 아파트를 검색하세요..."
-                    className="w-full"
-                  />
-                </div>
-
-                {/* Location selector and Write Post button */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div className="flex-1 max-w-md">
-                    <LocationSelectorButton
-                      selectedLocation={selectedLocation}
-                      onOpenModal={() => setIsLocationModalOpen(true)}
-                      placeholder="지역을 선택하세요"
-                      className="w-full"
-                    />
-                  </div>
-                  <Button
-                    onClick={handleCreatePost}
-                    className="sm:w-auto w-full"
-                  >
-                    글쓰기
-                  </Button>
-                </div>
-
-                {/* Sort selector */}
-                <div className="flex justify-end">
-                  <SortSelector value={currentSort} />
-                </div>
-
-                <Suspense
-                  fallback={<div className="p-4 text-center">로딩 중...</div>}
-                >
-                  <NewPostDialog
-                    open={isDialogOpen}
-                    onClose={handleDialogClose}
-                    onSubmit={handlePostCreated}
-                    cities={cities || []}
-                    apartments={apartments || []}
-                  />
-                </Suspense>
-              </div>
-
-              {optimisticPosts && optimisticPosts.length > 0 ? (
-                <PostList
-                  posts={optimisticPosts}
-                  onPostClick={handlePostClick}
-                  onCreatePost={handleCreatePost}
-                  onRetry={handleRetry}
-                />
-              ) : (
-                <div className="text-center py-12">
-                  <h3 className="text-lg font-semibold">No posts found</h3>
-                  <p className="text-sm text-gray-500">
-                    Be the first to post in this community!
-                  </p>
-                  <Button onClick={handleCreatePost} className="mt-4">
-                    Create Post
-                  </Button>
-                </div>
-              )}
-            </ErrorBoundary>
-          </main>
+        {/* Floating Action Button - Mobile */}
+        <div className="fixed bottom-6 right-6 sm:hidden z-50">
+          <Button
+            onClick={handleCreatePost}
+            className="w-14 h-14 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+          >
+            <Plus size={24} />
+          </Button>
         </div>
       </div>
 
@@ -301,6 +329,17 @@ export function CommunityPageClient({
         selectedLocation={selectedLocation}
         title="지역 변경"
       />
+
+      {/* New Post Dialog */}
+      <Suspense fallback={null}>
+        <NewPostDialog
+          open={isDialogOpen}
+          onClose={handleDialogClose}
+          onSubmit={handlePostCreated}
+          cities={cities || []}
+          apartments={apartments || []}
+        />
+      </Suspense>
     </ErrorBoundary>
   );
 }
