@@ -208,7 +208,8 @@ export const renderOptimization = {
     calculation: () => T,
     dependencies: React.DependencyList
   ): T => {
-    return useMemo(calculation, dependencies);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return useMemo(() => calculation(), [calculation, ...dependencies]);
   },
 
   // Stable callback reference
@@ -350,6 +351,7 @@ export const memoryOptimization = {
     useEffect(() => {
       const cleanup = effect();
       return cleanup;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [effect, ...deps]);
   },
 

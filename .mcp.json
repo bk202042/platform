@@ -1,8 +1,89 @@
 {
   "mcpServers": {
+    "fetch": {
+      "autoApprove": [
+        "fetch"
+      ],
+      "timeout": 60,
+      "command": "uvx",
+      "args": [
+        "mcp-server-fetch"
+      ],
+      "transportType": "stdio"
+    },
     "byterover-mcp": {
       "type": "http",
       "url": "https://mcp.byterover.dev/mcp?machineId=1f062b86-ff2e-6820-91a7-7a758ed7fddc"
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "firecrawl-mcp"
+      ],
+      "env": {
+        "FIRECRAWL_API_KEY": "fc-08a607f577ef432bbcefe1df51c8d24f"
+      }
+    },
+    "TestSprite": {
+      "command": "npx",
+      "args": [
+        "@testsprite/testsprite-mcp@latest"
+      ],
+      "env": {
+        "API_KEY": "sk-user-maPWxgelFU8X1REJf2kFEr_g_p2uxGp-GSaB5GMjWh856uiH8wQtS4gt8erceyAD59OmBwnhzfq7ArLm57cYWHaTg8mcfQNCNUptQ8UxSL1VwAj3MqHie5UK6mtRofl9QLo"
+      }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ]
+    },
+    "context7": {
+      "autoApprove": [
+        "resolve-library-id",
+        "get-library-docs"
+      ],
+      "timeout": 60,
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "transportType": "stdio"
+    },
+    "server-sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@smithery/cli@latest",
+        "run",
+        "@smithery-ai/server-sequential-thinking",
+        "--key",
+        "59c3eec7-1b38-45c4-9fcd-e7c716497b4f"
+      ]
+    },
+    "perplexity-ask": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "server-perplexity-ask"
+      ],
+      "env": {
+        "PERPLEXITY_API_KEY": "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"
+      }
+    },
+    "supabase": {
+      "timeout": 60,
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "sbp_13996c143d08978a28f83a8190b01f9206a58fb7"
+      ],
+      "transportType": "stdio"
     }
   }
 }
