@@ -1,9 +1,8 @@
 import React, { memo, useMemo, useCallback } from "react";
-import { MessageCircle, User } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { ko } from "date-fns/locale";
+import { MessageCircle, User, Eye } from "lucide-react";
 import { CommunityCategory } from "@/lib/validation/community";
 import { LikeButton } from "./LikeButton";
+import { formatKoreanTime, getTimeTooltip } from "@/lib/utils/time";
 
 export interface PostCardProps {
   post: {
@@ -15,6 +14,7 @@ export interface PostCardProps {
     created_at: string;
     likes_count: number;
     comments_count: number;
+    views_count?: number;
     category?: CommunityCategory;
     isLiked?: boolean;
     apartments?: {
@@ -25,20 +25,27 @@ export interface PostCardProps {
   onClick?: () => void;
 }
 
-// Category badge configuration with Korean labels and colors
+// Category badge configuration with Korean labels and Daangn-style colors
 const CATEGORY_CONFIG = {
-  QNA: { label: "Q&A", color: "bg-blue-100 text-blue-800 border-blue-200" },
+  QNA: { 
+    label: "Q&A", 
+    color: "bg-blue-50 text-blue-600 border border-blue-200",
+    icon: "💬"
+  },
   RECOMMEND: {
     label: "추천",
-    color: "bg-green-100 text-green-800 border-green-200",
+    color: "bg-green-50 text-green-600 border border-green-200",
+    icon: "👍"
   },
   SECONDHAND: {
     label: "중고거래",
-    color: "bg-orange-100 text-orange-800 border-orange-200",
+    color: "bg-orange-50 text-orange-600 border border-orange-200", 
+    icon: "🛍️"
   },
   FREE: {
     label: "나눔",
-    color: "bg-purple-100 text-purple-800 border-purple-200",
+    color: "bg-purple-50 text-purple-600 border border-purple-200",
+    icon: "🎁"
   },
 } as const;
 
@@ -51,18 +58,15 @@ export const PostCard = memo(function PostCard({
     [post.category]
   );
 
-  // Format date using date-fns for better relative time formatting
+  // Format date using Korean Daangn-style formatting
   const timeAgo = useMemo(() => {
     if (!post.created_at) return "";
-    try {
-      return formatDistanceToNow(new Date(post.created_at), {
-        addSuffix: true,
-        locale: ko,
-      });
-    } catch (error) {
-      console.error("Error formatting date:", error);
-      return "시간 정보 없음";
-    }
+    return formatKoreanTime(post.created_at);
+  }, [post.created_at]);
+
+  const timeTooltip = useMemo(() => {
+    if (!post.created_at) return "";
+    return getTimeTooltip(post.created_at);
   }, [post.created_at]);
 
   const ariaLabel = useMemo(
@@ -90,7 +94,7 @@ export const PostCard = memo(function PostCard({
 
   return (
     <article
-      className="group relative bg-white border-b border-zinc-200 hover:bg-zinc-50 transition-all duration-200 cursor-pointer overflow-hidden touch-manipulation"
+      className="group relative bg-white border-b border-zinc-200 hover:bg-zinc-50 transition-all duration-200 cursor-pointer overflow-hidden touch-manipulation active:bg-zinc-100"
       onClick={handleClick}
       tabIndex={0}
       role="button"
@@ -98,13 +102,14 @@ export const PostCard = memo(function PostCard({
       onKeyDown={handleKeyDown}
     >
       <div className="p-4 sm:p-5">
-        {/* Header with category and location - compact Daangn style */}
+        {/* Header with category and location - enhanced Daangn style */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2 flex-wrap">
             {categoryConfig && (
               <span
-                className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${categoryConfig.color}`}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium ${categoryConfig.color} group-hover:scale-105 transition-transform duration-200`}
               >
+                <span className="text-xs">{categoryConfig.icon}</span>
                 {categoryConfig.label}
               </span>
             )}
@@ -117,53 +122,72 @@ export const PostCard = memo(function PostCard({
               </span>
             )}
           </div>
-          <span className="text-xs text-zinc-400 flex-shrink-0">{timeAgo}</span>
+          <span 
+            className="text-xs text-zinc-400 flex-shrink-0 group-hover:text-zinc-600 transition-colors duration-200" 
+            title={timeTooltip}
+          >
+            {timeAgo}
+          </span>
         </div>
 
-        {/* Content - Daangn-style compact layout */}
+        {/* Content - enhanced Daangn-style layout */}
         <div className="space-y-2">
           {post.title && (
-            <h3 className="text-base font-semibold text-zinc-900 line-clamp-1 group-hover:text-orange-600 transition-colors duration-200">
+            <h3 className="text-base font-semibold text-zinc-900 line-clamp-1 group-hover:text-orange-600 transition-colors duration-200 group-active:text-orange-700">
               {post.title}
             </h3>
           )}
 
-          <p className="text-sm text-zinc-600 leading-normal line-clamp-2">
+          <p className="text-sm text-zinc-600 leading-normal line-clamp-2 group-hover:text-zinc-700 transition-colors duration-200">
             {post.body}
           </p>
 
-          {/* Image thumbnail preview - Daangn style */}
+          {/* Image thumbnail preview with aspect ratio - enhanced Daangn style */}
           {post.images && post.images.length > 0 && (
             <div className="flex items-center gap-1.5 mt-2">
-              <div className="w-4 h-4 bg-zinc-200 rounded-sm flex items-center justify-center">
-                <div className="w-2 h-2 bg-zinc-400 rounded-sm" />
+              <div className="w-4 h-3 bg-zinc-200 rounded-sm flex items-center justify-center group-hover:bg-zinc-300 transition-colors duration-200">
+                <div className="w-2 h-1.5 bg-zinc-400 rounded-sm group-hover:bg-zinc-500 transition-colors duration-200" />
               </div>
-              <span className="text-xs text-zinc-500">
-                사진 {post.images.length}
+              <span className="text-xs text-zinc-500 group-hover:text-zinc-600 transition-colors duration-200">
+                사진 {post.images.length}장
               </span>
             </div>
           )}
         </div>
 
-        {/* Footer - simplified Daangn style */}
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-zinc-100">
+        {/* Footer - enhanced engagement metrics */}
+        <div className="flex items-center justify-between mt-4 pt-3 border-t border-zinc-100 group-hover:border-zinc-200 transition-colors duration-200">
           <div className="flex items-center gap-1 text-xs text-zinc-500">
             <User size={12} className="text-zinc-400" />
-            <span className="font-medium">
+            <span className="font-medium group-hover:text-zinc-600 transition-colors duration-200">
               {post.user?.name || "익명"}
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            {/* Views count */}
+            {post.views_count !== undefined && post.views_count > 0 && (
+              <div className="flex items-center gap-1 text-zinc-500">
+                <Eye size={12} className="text-zinc-400" aria-label="조회수" />
+                <span className="text-xs font-medium">
+                  {post.views_count > 999 ? `${Math.floor(post.views_count / 1000)}k` : post.views_count}
+                </span>
+              </div>
+            )}
+            
+            {/* Like button with enhanced styling */}
             <LikeButton
               postId={post.id}
               initialLiked={post.isLiked || false}
               initialCount={post.likes_count}
               size="sm"
+              showCount={true}
             />
-            <div className="flex items-center gap-1 text-zinc-500">
-              <MessageCircle size={14} className="text-zinc-400" aria-label="댓글" />
-              <span className="text-sm font-medium">
+            
+            {/* Comments with enhanced styling */}
+            <div className="flex items-center gap-1 text-zinc-500 group-hover:text-orange-500 transition-colors duration-200">
+              <MessageCircle size={12} className="text-zinc-400 group-hover:text-orange-400 transition-colors duration-200" aria-label="댓글" />
+              <span className="text-xs font-medium">
                 {post.comments_count}
               </span>
             </div>

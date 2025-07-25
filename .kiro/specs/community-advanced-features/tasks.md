@@ -118,7 +118,7 @@
   - Implement proper error handling without information leakage
   - _Requirements: 3.5, 10.2, 10.3_
 
-- [ ] 15. Implement Daangn-style community layout for Vietnamese locations
+- [x] 15. Implement Daangn-style community layout for Vietnamese locations
   - Create main community page layout matching Daangn's "동네생활" design
   - Build location selector button with current Vietnamese location display (e.g., "Vinhomes Central Park")
   - Implement category sidebar with Korean labels and post counts
@@ -138,7 +138,7 @@
   - Implement location-based user matching and recommendations
   - _Requirements: 8.1, 9.1, 10.1_
 
-- [ ] 17. Create Daangn-style post interaction and engagement system
+- [x] 17. Create Daangn-style post interaction and engagement system
   - Build post card hover effects and interaction states
   - Implement post engagement metrics display (views, likes, comments)
   - Create post time formatting in Korean style ("방금 전", "5분 전")
