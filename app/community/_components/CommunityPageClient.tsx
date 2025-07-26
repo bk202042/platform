@@ -164,6 +164,10 @@ export function CommunityPageClient({
     // Note: Dialog closing is handled by onClose callback to prevent duplicate state updates
   }, []);
 
+  const handlePostRemoved = useCallback((postId: string) => {
+    setOptimisticPosts((prevPosts) => prevPosts.filter(post => post.id !== postId));
+  }, []);
+
   const handleRetry = useCallback(() => {
     router.refresh();
   }, [router]);
