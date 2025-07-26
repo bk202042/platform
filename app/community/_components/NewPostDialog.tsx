@@ -112,7 +112,7 @@ export function NewPostDialog({
     }
   }, [open, defaultValues?.apartment_id, defaultValues?.category, defaultValues?.title, defaultValues?.body, defaultValues?.images]);
 
-  const handleInputChange = (
+  const handleInputChange = React.useCallback((
     field: keyof z.infer<typeof createPostSchema>,
     value: string | string[],
   ) => {
@@ -120,12 +120,16 @@ export function NewPostDialog({
     if (touched[field]) {
       validateField(field, value);
     }
-  };
+  }, [touched]);
 
   const handleBlur = (field: keyof z.infer<typeof createPostSchema>) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
     validateField(field, form[field]);
   };
+
+  const handleImagesChange = React.useCallback((urls: string[]) => {
+    handleInputChange("images", urls);
+  }, [handleInputChange]);
 
   const validateField = (
     field: keyof z.infer<typeof createPostSchema>,
@@ -328,9 +332,7 @@ export function NewPostDialog({
           <div className="space-y-2">
             <Label className="text-sm font-medium">이미지 (최대 5개)</Label>
             <ImageUpload
-              onImagesChange={(urls) =>
-                handleInputChange("images", urls)
-              }
+              onImagesChange={handleImagesChange}
               maxFiles={5}
               initialImages={form.images || []}
               className="border rounded-lg p-4"
