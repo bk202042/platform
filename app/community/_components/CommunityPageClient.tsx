@@ -161,7 +161,11 @@ export function CommunityPageClient({
 
   const handlePostCreated = useCallback((newPost: Post) => {
     setOptimisticPosts((prevPosts) => [newPost, ...prevPosts]);
-    setIsDialogOpen(false);
+    // Note: Dialog closing is handled by onClose callback to prevent duplicate state updates
+  }, []);
+
+  const handlePostRemoved = useCallback((postId: string) => {
+    setOptimisticPosts((prevPosts) => prevPosts.filter(post => post.id !== postId));
   }, []);
 
   const handleRetry = useCallback(() => {
@@ -323,16 +327,14 @@ export function CommunityPageClient({
 
       {/* New Post Dialog */}
       <Suspense fallback={null}>
-        {isDialogOpen && (
-          <NewPostDialogClient
-            open={isDialogOpen}
-            onClose={handleDialogClose}
-            cities={cities || []}
-            apartments={apartments || []}
-            onPostCreated={handlePostCreated}
-            onPostRemoved={() => {}}
-          />
-        )}
+        <NewPostDialogClient
+          open={isDialogOpen}
+          onClose={handleDialogClose}
+          cities={cities || []}
+          apartments={apartments || []}
+          onPostCreated={handlePostCreated}
+          onPostRemoved={handlePostRemoved}
+        />
       </Suspense>
 
       {/* Mobile Bottom Navigation */}

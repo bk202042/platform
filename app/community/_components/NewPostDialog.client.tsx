@@ -99,7 +99,7 @@ export function NewPostDialogClient({
           onPostRemoved(tempId);
           onPostCreated(newPost as Post);
           toast.success("게시글이 작성되었습니다.");
-          onClose();
+          // Note: Dialog closing is handled by parent component to prevent duplicate state updates
         },
         onError: (err) => {
           setError(err.message);
