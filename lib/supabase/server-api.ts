@@ -27,7 +27,9 @@ export async function createClient() {
 
   // Establish user session for database operations
   // This ensures auth.uid() works in RLS policies
-  const { data: { user }, error } = await supabase.auth.getUser();
+  // Note: We use getUser() here (not getClaims()) because RLS policies
+  // need an active session context for auth.uid() to work
+  const { error } = await supabase.auth.getUser();
   
   if (error) {
     console.warn('Auth session error in server client:', error.message);
