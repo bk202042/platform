@@ -36,6 +36,7 @@ export function ApartmentAutocomplete({
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+
   const filteredApartments = allApartments.filter(apartment =>
     apartment.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -51,6 +52,7 @@ export function ApartmentAutocomplete({
           role="combobox"
           aria-expanded={open}
           className={cn("w-full justify-between", className)}
+          onClick={() => setOpen(!open)}
         >
           <span className={cn(
             selectedApartment && selectedCity ? "text-foreground" : "text-muted-foreground"
@@ -79,7 +81,6 @@ export function ApartmentAutocomplete({
                     key={apartment.id}
                     value={apartment.id}
                     onSelect={(currentValue) => {
-                      console.log('CommandItem onSelect:', { currentValue, value, apartment });
                       // Fix: Ensure proper string comparison and handle selection properly
                       const isCurrentlySelected = String(currentValue) === String(value);
                       const newValue = isCurrentlySelected ? "" : currentValue;

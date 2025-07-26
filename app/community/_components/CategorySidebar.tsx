@@ -32,7 +32,9 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
     } else {
       params.delete("category");
     }
-    router.push(`${pathname}?${params.toString()}`);
+    
+    const newUrl = `${pathname}?${params.toString()}`;
+    router.push(newUrl);
   };
 
   const getCategoryDisplayName = (category: string) => {
