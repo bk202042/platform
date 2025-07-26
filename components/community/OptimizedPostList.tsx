@@ -9,16 +9,18 @@ import { MobileErrorState } from "./MobileErrorState";
 import { MobileLoadingState } from "./MobileLoadingState";
 import { LazyLoad } from "@/components/common/LazyLoad";
 import { CommunityCategory } from "@/lib/validation/community";
+import { PostImage } from "@/lib/types/community";
 
 interface Post {
   id: string;
   title?: string;
   body: string;
-  images?: string[];
+  images?: PostImage[];
   user?: { name?: string };
   created_at: string;
   likes_count: number;
   comments_count: number;
+  views_count?: number;
   category?: CommunityCategory;
   isLiked?: boolean;
   apartments?: {
