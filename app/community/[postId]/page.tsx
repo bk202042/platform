@@ -54,21 +54,33 @@ export default async function CommunityPostDetailPage({
   try {
     // Get current user for like status
     const supabase = await createClient();
+    
+    // First try getting user session directly
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    // Then try getting claims
     const {
       data: claims,
     } = await supabase.auth.getClaims();
     
     // Debug: Log auth context for troubleshooting
     console.log('Post detail page auth debug:', {
+      hasUser: !!user,
+      userId: user?.id,
+      userEmail: user?.email,
       hasClaims: !!claims,
       hasClaimsData: !!claims?.claims,
-      userId: claims?.claims?.sub,
-      userEmail: claims?.claims?.email
+      claimsUserId: claims?.claims?.sub,
+      claimsUserEmail: claims?.claims?.email,
+      userError: userError?.message
     });
+    
+    // Use user.id as fallback if claims don't work
+    const currentUserId = user?.id || claims?.claims?.sub;
 
     // Server-side data fetching with error handling
     const [post, commentsSSR] = await Promise.all([
-      getPostByIdWithLikeStatus(postId, claims?.claims?.sub),
+      getPostByIdWithLikeStatus(postId, currentUserId),
       getComments(postId),
     ]);
 
@@ -109,7 +121,7 @@ export default async function CommunityPostDetailPage({
                 <CommentSection
                   postId={post.id}
                   initialComments={commentsSSR}
-                  currentUserId={claims?.claims?.sub}
+                  currentUserId={currentUserId}
                 />
               </div>
 

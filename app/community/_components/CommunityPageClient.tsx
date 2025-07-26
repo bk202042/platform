@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useCallback, useMemo, useOptimistic } from "react";
+import { useState, useCallback, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PostList } from "@/components/community/PostList";
 import { SortSelector, SortOption } from "@/components/community/SortSelector";
-import { lazy, Suspense } from "react";
 import { CategorySidebar } from "./CategorySidebar";
 import { CommunityBreadcrumb } from "@/components/community/CommunityBreadcrumb";
 import { MobileNavigation } from "@/components/community/MobileNavigation";
@@ -18,10 +17,7 @@ import { LocationSearchResult } from "@/lib/data/vietnamese-locations";
 import { PullToRefresh } from "@/components/community/PullToRefresh";
 import { MobileBottomNavigation } from "@/components/community/MobileBottomNavigation";
 
-// 지연 로딩으로 성능 최적화
-const NewPostDialog = lazy(() =>
-  import("./NewPostDialog").then((mod) => ({ default: mod.NewPostDialog }))
-);
+import { NewPostDialogClient } from "./NewPostDialog.client";
 import { Button } from "@/components/ui/button";
 import { CommunityCategory } from "@/lib/validation/community";
 import { Plus } from "lucide-react";
@@ -38,11 +34,13 @@ interface Apartment {
   cities: { name: string } | null;
 }
 
+import { PostImage } from "@/lib/types/community";
+
 export interface Post {
   id: string;
   title?: string;
   body: string;
-  images?: string[];
+  images?: PostImage[];
   user?: { id?: string; name?: string; avatar_url?: string };
   created_at: string;
   likes_count: number;
@@ -80,10 +78,7 @@ export function CommunityPageClient({
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] =
     useState<LocationSearchResult | null>(null);
-  const [optimisticPosts, addOptimisticPost] = useOptimistic(
-    posts,
-    (state: Post[], newPost: Post) => [newPost, ...state]
-  );
+  const [optimisticPosts, setOptimisticPosts] = useState(posts);
 
   // Get current sort from URL params
   const currentSort = (searchParams.get("sort") as SortOption) || "latest";
@@ -164,27 +159,10 @@ export function CommunityPageClient({
     setIsDialogOpen(false);
   }, []);
 
-  const handlePostCreated = useCallback(
-    (
-      newPost: Omit<
-        Post,
-        "id" | "created_at" | "likes_count" | "comments_count"
-      >
-    ) => {
-      const optimisticPost: Post = {
-        ...newPost,
-        id: crypto.randomUUID(),
-        created_at: new Date().toISOString(),
-        likes_count: 0,
-        comments_count: 0,
-        user: { name: "You" }, // Placeholder user
-        isOptimistic: true,
-      };
-      addOptimisticPost(optimisticPost);
-      setIsDialogOpen(false);
-    },
-    [addOptimisticPost]
-  );
+  const handlePostCreated = useCallback((newPost: Post) => {
+    setOptimisticPosts((prevPosts) => [newPost, ...prevPosts]);
+    setIsDialogOpen(false);
+  }, []);
 
   const handleRetry = useCallback(() => {
     router.refresh();
@@ -345,13 +323,16 @@ export function CommunityPageClient({
 
       {/* New Post Dialog */}
       <Suspense fallback={null}>
-        <NewPostDialog
-          open={isDialogOpen}
-          onClose={handleDialogClose}
-          onSubmit={handlePostCreated}
-          cities={cities || []}
-          apartments={apartments || []}
-        />
+        {isDialogOpen && (
+          <NewPostDialogClient
+            open={isDialogOpen}
+            onClose={handleDialogClose}
+            cities={cities || []}
+            apartments={apartments || []}
+            onPostCreated={handlePostCreated}
+            onPostRemoved={() => {}}
+          />
+        )}
       </Suspense>
 
       {/* Mobile Bottom Navigation */}

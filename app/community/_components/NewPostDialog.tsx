@@ -20,7 +20,6 @@ import { useToast } from "@/components/community/ToastProvider";
 import { AlertCircle, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
-import { useAutoSave } from "@/lib/hooks/useAutoSave";
 
 interface City {
   id: string;
@@ -93,7 +92,7 @@ export function NewPostDialog({
   const [touched, setTouched] = React.useState<Partial<Record<keyof z.infer<typeof createPostSchema>, boolean>>>({});
   const { showValidationError } = useToast();
 
-  useAutoSave(form, `new-post-draft-${defaultValues?.apartment_id || ""}`);
+  // useAutoSave(form, `new-post-draft-${defaultValues?.apartment_id || ""}`);
 
   // Clear field errors when form values change
   React.useEffect(() => {

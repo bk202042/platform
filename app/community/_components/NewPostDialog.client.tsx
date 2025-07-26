@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { NewPostDialog as DialogUI } from "./NewPostDialog";
 import type { z } from "zod";
 import { createPostSchema } from "@/lib/validation/community";
@@ -40,6 +41,12 @@ export function NewPostDialogClient({
   const { executeOptimistic, isLoading } = useOptimisticUpdate();
   const [error, setError] = useState<string | undefined>();
   const { user } = useAuth();
+  const searchParams = useSearchParams();
+
+  const defaultValues = useMemo(() => {
+    const apartmentId = searchParams.get("apartmentId");
+    return apartmentId ? { apartment_id: apartmentId } : {};
+  }, [searchParams]);
 
   const handleSubmit = async (values: z.infer<typeof createPostSchema>) => {
     if (!user) {
@@ -48,6 +55,7 @@ export function NewPostDialogClient({
     }
 
     const tempId = Date.now().toString();
+    const apartment = apartments.find(apt => apt.id === values.apartment_id);
     const optimisticPost: Post = {
       ...values,
       id: tempId,
@@ -55,7 +63,17 @@ export function NewPostDialogClient({
       likes_count: 0,
       comments_count: 0,
       user: { name: user.user_metadata.name || "나" },
+      apartments: apartment ? { name: apartment.name, cities: { name: cities.find(c => c.id === apartment.city_id)?.name || '' } } : undefined,
       isOptimistic: true,
+      images: values.images?.map(url => ({
+        id: crypto.randomUUID(),
+        post_id: tempId,
+        storage_path: url,
+        display_order: 0,
+        alt_text: '',
+        metadata: {},
+        created_at: new Date().toISOString(),
+      })) || [],
     };
 
     executeOptimistic(
@@ -99,6 +117,7 @@ export function NewPostDialogClient({
       apartments={apartments}
       loading={isLoading}
       error={error}
+      defaultValues={defaultValues}
     />
   );
 }

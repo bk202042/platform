@@ -185,9 +185,7 @@ export async function getPostsWithLikeStatus(params: {
   }
 
   return posts.map((post) => {
-    const profile = Array.isArray(post.profiles)
-      ? post.profiles[0]
-      : post.profiles;
+    const profile = post.profiles;
     const displayName = profile
       ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() ||
         "익명"

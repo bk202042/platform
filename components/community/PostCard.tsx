@@ -1,6 +1,7 @@
 import React, { memo, useMemo, useCallback, useState } from "react";
 import { MessageCircle, User, Eye, Heart, Share2 } from "lucide-react";
 import { CommunityCategory } from "@/lib/validation/community";
+import { PostImage } from "@/lib/types/community";
 import { LikeButton } from "./LikeButton";
 import { formatKoreanTime, getTimeTooltip } from "@/lib/utils/time";
 import { useMobileGestures } from "@/lib/hooks/useMobileGestures";
@@ -11,7 +12,7 @@ export interface PostCardProps {
     id: string;
     title?: string;
     body: string;
-    images?: string[];
+    images?: PostImage[];
     user?: { name?: string };
     created_at: string;
     likes_count: number;
@@ -29,8 +30,8 @@ export interface PostCardProps {
 
 // Category badge configuration with Korean labels and Daangn-style colors
 const CATEGORY_CONFIG = {
-  QNA: { 
-    label: "Q&A", 
+  QNA: {
+    label: "Q&A",
     color: "bg-blue-50 text-blue-600 border border-blue-200",
     icon: "💬"
   },
@@ -41,7 +42,7 @@ const CATEGORY_CONFIG = {
   },
   SECONDHAND: {
     label: "중고거래",
-    color: "bg-orange-50 text-orange-600 border border-orange-200", 
+    color: "bg-orange-50 text-orange-600 border border-orange-200",
     icon: "🛍️"
   },
   FREE: {
@@ -151,8 +152,8 @@ export const PostCard = memo(function PostCard({
               </span>
             )}
           </div>
-          <span 
-            className="text-xs text-zinc-400 flex-shrink-0 group-hover:text-zinc-600 transition-colors duration-200" 
+          <span
+            className="text-xs text-zinc-400 flex-shrink-0 group-hover:text-zinc-600 transition-colors duration-200"
             title={timeTooltip}
           >
             {timeAgo}
@@ -203,7 +204,7 @@ export const PostCard = memo(function PostCard({
                 </span>
               </div>
             )}
-            
+
             {/* Like button with enhanced styling */}
             <LikeButton
               postId={post.id}
@@ -212,7 +213,7 @@ export const PostCard = memo(function PostCard({
               size="sm"
               showCount={true}
             />
-            
+
             {/* Comments with enhanced styling */}
             <div className="flex items-center gap-1 text-zinc-500 group-hover:text-orange-500 transition-colors duration-200">
               <MessageCircle size={12} className="text-zinc-400 group-hover:text-orange-400 transition-colors duration-200" aria-label="댓글" />

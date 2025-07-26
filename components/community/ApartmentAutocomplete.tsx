@@ -71,9 +71,9 @@ export function ApartmentAutocomplete({
                 return (
                   <CommandItem
                     key={apartment.id}
-                    value={`${city?.name}, ${apartment.name}`}
-                    onSelect={() => {
-                      onApartmentSelect(apartment.id);
+                    value={apartment.id}
+                    onSelect={(currentValue) => {
+                      onApartmentSelect(currentValue === value ? "" : currentValue);
                       setOpen(false);
                     }}
                   >
