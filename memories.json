@@ -127,7 +127,31 @@
       "lastAccessed": "2025-07-25T23:00:22.627Z",
       "lastVerified": "2025-07-25T23:00:22.627Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753485806145_wrzyziidy",
+      "content": "AUTHENTICATION CONTEXT ISSUES - BYTEROVER REFERENCE\n\n## Critical Database Authentication Problem\n\n### Issue: auth.uid() Returns NULL in Server Context\n**Symptom**: When querying `SELECT auth.uid()` from server-side Supabase client, it returns `null` instead of the authenticated user ID.\n\n**Impact**: \n- RLS policies that depend on `auth.uid() = user_id` fail\n- INSERT operations blocked by policy: \"Allow authenticated users to create posts\" \n- User appears authenticated in frontend but database sees no user context\n\n### Technical Details\n**Database Schema**: Supabase with RLS enabled\n- Table: `community_posts` \n- INSERT Policy: `auth.uid() = user_id` (BLOCKS when auth.uid() is null)\n- User exists in profiles table but JWT context not reaching database\n\n**Query Results**:\n```sql\nSELECT auth.uid(), auth.role(), current_setting('request.jwt.claims', true)::json;\n-- Returns: null, null, null\n```\n\n### Root Cause Analysis\n1. **JWT Token Not Propagated**: Server-side Supabase client not receiving JWT from cookies\n2. **Session Context Loss**: Authentication context lost between middleware and database operations  \n3. **Client Configuration Issue**: Server clients may not be properly inheriting auth state\n\n### Common Scenarios Where This Occurs\n- Next.js server actions with Supabase RLS\n- API routes requiring authenticated database operations\n- Server-side rendering with user-specific data queries\n- Any server context requiring `auth.uid()` for RLS policies\n\n### Solutions to Investigate\n1. **JWT Context Passing**: Ensure JWT token reaches database client\n2. **Cookie Handling**: Verify session cookies are properly read by server clients\n3. **Client Initialization**: Review server Supabase client configuration\n4. **RLS Policy Adjustment**: Consider alternative policy structures for server operations\n\n### Related Files in Platform Project\n- `/lib/supabase/server-api.ts` - Server API client configuration\n- `/middleware.ts` - Session refresh handling\n- `/app/api/community/posts/route.ts` - POST endpoint failing\n- RLS policies on `community_posts` table\n\n### Error Pattern\nUser authenticated → Frontend works → Server database operations fail → `auth.uid()` returns null → RLS blocks operation → Generic error page shown",
+      "type": "config",
+      "tags": [
+        "config",
+        "authentication",
+        "database",
+        "api",
+        "byterover",
+        "auth-context",
+        "supabase",
+        "rls",
+        "auth-uid-null",
+        "server-side",
+        "critical-issue"
+      ],
+      "timestamp": "2025-07-25T23:23:26.144Z",
+      "context": "Critical authentication context issue reference for Byterover knowledge base",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-25T23:23:26.144Z",
+      "lastVerified": "2025-07-25T23:23:26.144Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-25T23:00:22.627Z"
+  "lastUpdated": "2025-07-25T23:23:26.144Z"
 }
