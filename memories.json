@@ -205,7 +205,25 @@
       "lastAccessed": "2025-07-26T05:32:56.284Z",
       "lastVerified": "2025-07-26T05:32:56.284Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753509142107_jg6gnnxuw",
+      "content": "New critical finding from images: The posting error persists. From Supabase dashboard images I can see:\n\n1. Auth Users table: LEO KANG user exists with ID \"27b5f32a-69a8-45b6-854a-1338e52b34eb\" \n2. Profiles table: LEO KANG exists with same ID \"27b5f32a-69a8-45b6-854a-1338e52b34eb\"\n3. However, posting still fails with error \"문제가 발생했습니다\" (A problem occurred)\n\nThis suggests the issue is NOT about auth.uid() being null, but rather a different constraint or validation problem in the community_posts table or API logic.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "api",
+        "auth-debug",
+        "posting-error",
+        "database",
+        "foreign-key"
+      ],
+      "timestamp": "2025-07-26T05:52:22.107Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-26T05:52:22.107Z",
+      "lastVerified": "2025-07-26T05:52:22.107Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-26T05:32:56.284Z"
+  "lastUpdated": "2025-07-26T05:52:22.107Z"
 }

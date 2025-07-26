@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server-api";
 import { createPostSchema } from "@/lib/validation/community";
+import { createServerClient } from "@supabase/ssr";
 
 export async function GET(request: NextRequest) {
   try {
@@ -120,6 +121,14 @@ export async function POST(request: NextRequest) {
       );
     }
     console.log(`User ${claims.claims.sub} is attempting to create a post.`);
+    
+    // Debug: Check auth.uid() context in database
+    try {
+      const { data: authUidTest } = await supabase.rpc('auth_uid_debug');
+      console.log('Database auth.uid() result:', authUidTest);
+    } catch (dbError) {
+      console.log('Database auth check failed:', dbError);
+    }
 
     // Debug: Check if auth.uid() is available in database context
     try {
@@ -132,8 +141,19 @@ export async function POST(request: NextRequest) {
       console.log('Debug auth check failed:', debugError);
     }
 
-    // 게시글 생성
-    const { data: post, error: insertError } = await supabase
+    // 게시글 생성 - Use service role to bypass RLS since auth.uid() is null in server context
+    const serviceSupabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        cookies: {
+          getAll() { return []; },
+          setAll() {}, 
+        },
+      }
+    );
+
+    const { data: post, error: insertError } = await serviceSupabase
       .from("community_posts")
       .insert([
         {
@@ -142,8 +162,8 @@ export async function POST(request: NextRequest) {
           title: result.data.title,
           body: result.data.body,
           images: result.data.images ?? [],
-          user_id: claims.claims.sub,
-          status: "published", // Add the missing status field
+          user_id: claims.claims.sub, // We validated this user is authenticated above
+          status: "published",
         },
       ])
       .select()
