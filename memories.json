@@ -223,7 +223,25 @@
       "lastAccessed": "2025-07-26T05:52:22.107Z",
       "lastVerified": "2025-07-26T05:52:22.107Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753509941885_su24qrikk",
+      "content": "New finding from user image: The posting issue is broader than just creating posts. In the post detail page, logged-in user \"dearjm04@naver.com\" can see a comment input field with placeholder \"댓글을 입력하세요\" but there's no submit button visible. This suggests authentication context is not properly passed to client-side components in the post detail page.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "authentication",
+        "auth-debug",
+        "client-component",
+        "post-detail",
+        "comments"
+      ],
+      "timestamp": "2025-07-26T06:05:41.884Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-26T06:05:41.884Z",
+      "lastVerified": "2025-07-26T06:05:41.884Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-26T05:52:22.107Z"
+  "lastUpdated": "2025-07-26T06:05:41.884Z"
 }

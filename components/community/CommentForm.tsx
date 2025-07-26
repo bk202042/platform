@@ -49,10 +49,10 @@ export function CommentForm({
       <div className="flex justify-end">
         <button
           type="submit"
-          className="bg-primary-600 text-white font-semibold px-4 py-1.5 rounded-lg hover:bg-primary-700 transition-colors text-sm"
+          className="bg-blue-600 text-white font-semibold px-4 py-1.5 rounded-lg hover:bg-blue-700 transition-colors text-sm disabled:bg-gray-300"
           disabled={loading || !body.trim()}
         >
-          등록
+          {loading ? "등록 중..." : "등록"}
         </button>
       </div>
     </form>

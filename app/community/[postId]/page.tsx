@@ -57,6 +57,14 @@ export default async function CommunityPostDetailPage({
     const {
       data: claims,
     } = await supabase.auth.getClaims();
+    
+    // Debug: Log auth context for troubleshooting
+    console.log('Post detail page auth debug:', {
+      hasClaims: !!claims,
+      hasClaimsData: !!claims?.claims,
+      userId: claims?.claims?.sub,
+      userEmail: claims?.claims?.email
+    });
 
     // Server-side data fetching with error handling
     const [post, commentsSSR] = await Promise.all([
