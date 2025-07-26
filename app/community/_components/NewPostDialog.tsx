@@ -212,7 +212,10 @@ export function NewPostDialog({
               cities={cities}
               apartments={apartments}
               value={form.apartment_id}
-              onApartmentSelect={(id) => handleInputChange("apartment_id", id)}
+              onApartmentSelect={(id) => {
+                console.log('ApartmentAutocomplete onApartmentSelect:', { id, currentFormValue: form.apartment_id });
+                handleInputChange("apartment_id", id);
+              }}
               className={cn(
                 hasFieldError("apartment_id") &&
                   touched.apartment_id &&

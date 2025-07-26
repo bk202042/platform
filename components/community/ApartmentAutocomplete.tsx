@@ -73,6 +73,7 @@ export function ApartmentAutocomplete({
                     key={apartment.id}
                     value={apartment.id}
                     onSelect={(currentValue) => {
+                      console.log('CommandItem onSelect:', { currentValue, value, apartment });
                       onApartmentSelect(currentValue === value ? "" : currentValue);
                       setOpen(false);
                     }}
