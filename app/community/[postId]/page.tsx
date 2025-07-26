@@ -55,12 +55,12 @@ export default async function CommunityPostDetailPage({
     // Get current user for like status
     const supabase = await createClient();
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      data: claims,
+    } = await supabase.auth.getClaims();
 
     // Server-side data fetching with error handling
     const [post, commentsSSR] = await Promise.all([
-      getPostByIdWithLikeStatus(postId, user?.id),
+      getPostByIdWithLikeStatus(postId, claims?.claims?.sub),
       getComments(postId),
     ]);
 
@@ -101,7 +101,7 @@ export default async function CommunityPostDetailPage({
                 <CommentSection
                   postId={post.id}
                   initialComments={commentsSSR}
-                  currentUserId={user?.id}
+                  currentUserId={claims?.claims?.sub}
                 />
               </div>
 

@@ -12,9 +12,9 @@ export async function POST(
     // SSR 인증: 로그인 사용자만 허용
     const supabase = await createClient();
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
+      data: claims,
+    } = await supabase.auth.getClaims();
+    if (!claims || !claims.claims || !claims.claims.sub) {
       return NextResponse.json(
         { success: false, message: "로그인이 필요합니다." },
         { status: 401 },
@@ -42,7 +42,7 @@ export async function POST(
       );
     }
     // createComment 호출
-    const comment = await createComment({ ...parsed.data, user_id: user.id });
+    const comment = await createComment({ ...parsed.data, user_id: claims.claims.sub });
     return NextResponse.json({ success: true, data: comment });
   } catch (error: unknown) {
     console.error(error);

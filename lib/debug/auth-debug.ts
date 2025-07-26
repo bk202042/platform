@@ -11,12 +11,12 @@ export async function debugServerAuth() {
   try {
     const supabase = await createServerClient();
 
-    // Check if we can get the current user
+    // Check if we can get the current user claims
     const {
-      data: { user },
+      data: claims,
       error: userError,
-    } = await supabase.auth.getUser();
-    console.log("Server User:", user ? `${user.id} (${user.email})` : "null");
+    } = await supabase.auth.getClaims();
+    console.log("Server User:", claims && claims.claims ? `${claims.claims.sub} (${claims.claims.email})` : "null");
     console.log("Server User Error:", userError);
 
     // Check if we can get the session
@@ -38,7 +38,7 @@ export async function debugServerAuth() {
     console.log("Server auth.uid() Error:", authUidError);
 
     return {
-      user,
+      user: claims && claims.claims ? { id: claims.claims.sub, email: claims.claims.email } : null,
       session,
       authUid,
       errors: { userError, sessionError, authUidError },
@@ -55,12 +55,12 @@ export async function debugApiAuth() {
   try {
     const supabase = await createApiClient();
 
-    // Check if we can get the current user
+    // Check if we can get the current user claims
     const {
-      data: { user },
+      data: claims,
       error: userError,
-    } = await supabase.auth.getUser();
-    console.log("API User:", user ? `${user.id} (${user.email})` : "null");
+    } = await supabase.auth.getClaims();
+    console.log("API User:", claims && claims.claims ? `${claims.claims.sub} (${claims.claims.email})` : "null");
     console.log("API User Error:", userError);
 
     // Check if we can get the session
@@ -75,7 +75,7 @@ export async function debugApiAuth() {
     console.log("API Session Error:", sessionError);
 
     return {
-      user,
+      user: claims && claims.claims ? { id: claims.claims.sub, email: claims.claims.email } : null,
       session,
       errors: { userError, sessionError },
     };
@@ -92,10 +92,10 @@ export function debugBrowserAuth() {
 
   // This should be called from the client side
   return new Promise((resolve) => {
-    supabase.auth.getUser().then(({ data: { user }, error: userError }) => {
+    supabase.auth.getClaims().then(({ data: claims, error: userError }) => {
       console.log(
         "Browser User:",
-        user ? `${user.id} (${user.email})` : "null"
+        claims && claims.claims ? `${claims.claims.sub} (${claims.claims.email})` : "null"
       );
       console.log("Browser User Error:", userError);
 
@@ -109,7 +109,7 @@ export function debugBrowserAuth() {
           console.log("Browser Session Error:", sessionError);
 
           resolve({
-            user,
+            user: claims && claims.claims ? { id: claims.claims.sub, email: claims.claims.email } : null,
             session,
             errors: { userError, sessionError },
           });

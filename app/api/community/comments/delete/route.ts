@@ -12,10 +12,10 @@ export async function POST(req: NextRequest) {
     // SSR 인증: 로그인 사용자만 허용
     const supabase = await createClient();
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      data: claims,
+    } = await supabase.auth.getClaims();
 
-    if (!user) {
+    if (!claims || !claims.claims || !claims.claims.sub) {
       return NextResponse.json(
         {
           success: false,
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     // 댓글 삭제 권한 검증
     const { isValid, error: validationError } = validateCommentDeletion(
       comment,
-      user.id
+      claims.claims.sub
     );
     if (!isValid) {
       return NextResponse.json(

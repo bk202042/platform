@@ -15,13 +15,13 @@ export async function GET(_request: NextRequest) {
     // Get current user for authenticated tests
     const supabase = await createClient();
     const {
-      data: { user },
+      data: claims,
       error: userError,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getClaims();
 
     let authResults = null;
-    if (user && !userError) {
-      authResults = await testAuthenticatedOperations(user.id);
+    if (claims && claims.claims && claims.claims.sub && !userError) {
+      authResults = await testAuthenticatedOperations(claims.claims.sub);
     }
 
     // Test database connectivity with a simple query
@@ -38,10 +38,10 @@ export async function GET(_request: NextRequest) {
         connected: !dbError,
         error: dbError?.message,
       },
-      currentUser: user
+      currentUser: claims && claims.claims && claims.claims.sub
         ? {
-            id: user.id,
-            email: user.email,
+            id: claims.claims.sub,
+            email: claims.claims.email,
           }
         : null,
       recommendations: [] as string[],
@@ -66,7 +66,7 @@ export async function GET(_request: NextRequest) {
     if (basicResults.errors.length > 0) {
       testSummary.recommendations.push("Database errors detected - check logs");
     }
-    if (!user) {
+    if (!claims || !claims.claims || !claims.claims.sub) {
       testSummary.recommendations.push(
         "No authenticated user - test with authentication for full functionality"
       );
@@ -102,11 +102,11 @@ export async function POST(request: NextRequest) {
 
     // Check authentication
     const {
-      data: { user },
+      data: claims,
       error: userError,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getClaims();
 
-    if (userError || !user) {
+    if (userError || !claims || !claims.claims || !claims.claims.sub) {
       return NextResponse.json(
         {
           success: false,
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
             postBody || "This is a test post created by the community test API",
           category: category || "FREE",
           apartment_id: apartmentId || "apt1",
-          user_id: user.id,
+          user_id: claims.claims.sub,
           status: "published",
         },
       ])
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: "Post creation failed",
           details: postError.message,
-          user: { id: user.id, email: user.email },
+          user: { id: claims.claims.sub, email: claims.claims.email },
           timestamp: new Date().toISOString(),
         },
         { status: 400 }
@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
           category: post.category,
           apartment_id: post.apartment_id,
         },
-        user: { id: user.id, email: user.email },
+        user: { id: claims.claims.sub, email: claims.claims.email },
         timestamp: new Date().toISOString(),
       },
       { status: 201 }

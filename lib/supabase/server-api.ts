@@ -26,7 +26,7 @@ export async function createClient() {
   );
 
   // Ensure authentication context is properly set
-  await supabase.auth.getUser();
+  await supabase.auth.getClaims();
 
   return supabase;
 }

@@ -15,11 +15,11 @@ export async function POST(request: NextRequest) {
 
     // 현재 인증된 사용자 확인
     const {
-      data: { user },
+      data: claims,
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getClaims();
 
-    if (authError || !user) {
+    if (authError || !claims || !claims.claims || !claims.claims.sub) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       .from("community_likes")
       .select("id")
       .eq("post_id", postId)
-      .eq("user_id", user.id)
+      .eq("user_id", claims.claims.sub)
       .single();
 
     if (selectError && selectError.code !== "PGRST116") {
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       // 없으면 추가
       const { error: insertError } = await supabase
         .from("community_likes")
-        .insert([{ post_id: postId, user_id: user.id }]);
+        .insert([{ post_id: postId, user_id: claims.claims.sub }]);
 
       if (insertError) {
         console.error("Like insertion error:", insertError);

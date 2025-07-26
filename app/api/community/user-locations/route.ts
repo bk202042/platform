@@ -12,18 +12,18 @@ export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
-      data: { user },
+      data: claims,
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getClaims();
 
-    if (authError || !user) {
+    if (authError || !claims || !claims.claims || !claims.claims.sub) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
       );
     }
 
-    const locations = await getUserPreferredLocations(user.id);
+    const locations = await getUserPreferredLocations(claims.claims.sub);
     return NextResponse.json({ locations });
   } catch (error) {
     console.error("Error fetching user locations:", error);
@@ -39,11 +39,11 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
-      data: { user },
+      data: claims,
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getClaims();
 
-    if (authError || !user) {
+    if (authError || !claims || !claims.claims || !claims.claims.sub) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     }
 
     const locationId = await addUserLocationPreference(
-      user.id,
+      claims.claims.sub,
       cityId,
       apartmentId,
       makePrimary
@@ -86,11 +86,11 @@ export async function PUT(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
-      data: { user },
+      data: claims,
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getClaims();
 
-    if (authError || !user) {
+    if (authError || !claims || !claims.claims || !claims.claims.sub) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
@@ -108,7 +108,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const locationId = await setUserPrimaryLocation(
-      user.id,
+      claims.claims.sub,
       cityId,
       apartmentId
     );
@@ -132,11 +132,11 @@ export async function DELETE(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
-      data: { user },
+      data: claims,
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getClaims();
 
-    if (authError || !user) {
+    if (authError || !claims || !claims.claims || !claims.claims.sub) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
@@ -153,7 +153,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await removeUserLocationPreference(user.id, locationId);
+    await removeUserLocationPreference(claims.claims.sub, locationId);
 
     return NextResponse.json({
       success: true,

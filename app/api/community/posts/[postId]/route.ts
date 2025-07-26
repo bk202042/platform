@@ -15,11 +15,11 @@ export async function DELETE(request: NextRequest) {
 
     // 현재 인증된 사용자 확인
     const {
-      data: { user },
+      data: claims,
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getClaims();
 
-    if (authError || !user) {
+    if (authError || !claims || !claims.claims || !claims.claims.sub) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
@@ -41,12 +41,12 @@ export async function DELETE(request: NextRequest) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
-      .eq("id", user.id)
+      .eq("id", claims.claims.sub)
       .single();
 
     const isAdmin = profile?.role === "admin";
 
-    if (post.user_id !== user.id && !isAdmin) {
+    if (post.user_id !== claims.claims.sub && !isAdmin) {
       return NextResponse.json(
         { error: "You don't have permission to delete this post" },
         { status: 403 }

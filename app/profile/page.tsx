@@ -22,18 +22,30 @@ export default function ClientProfilePage() {
   useEffect(() => {
     async function loadUser() {
       setIsLoading(true);
-      const { data } = await supabase.auth.getUser();
+      const { data: claims } = await supabase.auth.getClaims();
 
-      if (!data.user) {
+      if (!claims || !claims.claims || !claims.claims.sub) {
         router.push("/auth/sign-in");
         return;
       }
 
-      setUser(data.user);
+      // Convert claims to User format for compatibility
+      const user: User = {
+        id: claims.claims.sub,
+        email: claims.claims.email || '',
+        user_metadata: claims.claims.user_metadata || {},
+        app_metadata: claims.claims.app_metadata || {},
+        aud: Array.isArray(claims.claims.aud) ? claims.claims.aud[0] : (claims.claims.aud || ''),
+        created_at: claims.claims.iat ? new Date(claims.claims.iat * 1000).toISOString() : new Date().toISOString(),
+        role: claims.claims.role || '',
+        updated_at: new Date().toISOString()
+      };
+
+      setUser(user);
       setFormData({
-        fullName: data.user.user_metadata?.full_name || "",
-        phone: data.user.user_metadata?.phone || "",
-        role: data.user.user_metadata?.role || "관리자",
+        fullName: user.user_metadata?.full_name || "",
+        phone: user.user_metadata?.phone || "",
+        role: user.user_metadata?.role || "관리자",
       });
       setIsLoading(false);
     }

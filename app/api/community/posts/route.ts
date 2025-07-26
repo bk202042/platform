@@ -108,18 +108,18 @@ export async function POST(request: NextRequest) {
 
     // 현재 인증된 사용자 확인
     const {
-      data: { user },
+      data: claims,
       error: authError,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getClaims();
 
-    if (authError || !user) {
+    if (authError || !claims || !claims.claims || !claims.claims.sub) {
       console.error("Auth error in create post API:", authError);
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
       );
     }
-    console.log(`User ${user.id} is attempting to create a post.`);
+    console.log(`User ${claims.claims.sub} is attempting to create a post.`);
 
     // 게시글 생성
     const { data: post, error: insertError } = await supabase
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
           title: result.data.title,
           body: result.data.body,
           images: result.data.images ?? [],
-          user_id: user.id,
+          user_id: claims.claims.sub,
           status: "published", // Add the missing status field
         },
       ])

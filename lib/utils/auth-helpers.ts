@@ -1,14 +1,27 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { User } from "@supabase/supabase-js";
 
 /**
  * 인증된 사용자 정보를 가져오는 함수
  * 인증되지 않은 경우 null 반환
  */
-export async function getAuthenticatedUser() {
+export async function getAuthenticatedUser(): Promise<User | null> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  return user;
+  const { data: claims } = await supabase.auth.getClaims();
+  
+  if (!claims || !claims.claims || !claims.claims.sub) return null;
+  
+  return {
+    id: claims.claims.sub,
+    email: claims.claims.email || '',
+    user_metadata: claims.claims.user_metadata || {},
+    app_metadata: claims.claims.app_metadata || {},
+    aud: Array.isArray(claims.claims.aud) ? claims.claims.aud[0] : (claims.claims.aud || ''),
+    created_at: claims.claims.iat ? new Date(claims.claims.iat * 1000).toISOString() : new Date().toISOString(),
+    role: claims.claims.role || '',
+    updated_at: new Date().toISOString()
+  } as User;
 }
 
 /**

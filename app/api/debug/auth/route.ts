@@ -7,9 +7,9 @@ export async function GET(_request: NextRequest) {
 
     // Get authentication status
     const {
-      data: { user },
+      data: claims,
       error: userError,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getClaims();
     const {
       data: { session },
       error: sessionError,
@@ -25,10 +25,10 @@ export async function GET(_request: NextRequest) {
 
     // Test profile existence if user is authenticated
     let profileCheck = null;
-    if (user) {
+    if (claims && claims.claims && claims.claims.sub) {
       const { data: profileData, error: profileError } = await supabase.rpc(
         "check_profile_exists",
-        { p_user_id: user.id }
+        { p_user_id: claims.claims.sub }
       );
       profileCheck = { data: profileData, error: profileError };
     }
@@ -48,11 +48,11 @@ export async function GET(_request: NextRequest) {
     const debugInfo = {
       timestamp: new Date().toISOString(),
       authentication: {
-        user: user
+        user: claims && claims.claims && claims.claims.sub
           ? {
-              id: user.id,
-              email: user.email,
-              created_at: user.created_at,
+              id: claims.claims.sub,
+              email: claims.claims.email,
+              created_at: claims.claims.created_at,
             }
           : null,
         userError,
@@ -114,11 +114,11 @@ export async function POST(request: NextRequest) {
 
     // Get current user
     const {
-      data: { user },
+      data: claims,
       error: userError,
-    } = await supabase.auth.getUser();
+    } = await supabase.auth.getClaims();
 
-    if (userError || !user) {
+    if (userError || !claims || !claims.claims || !claims.claims.sub) {
       return NextResponse.json(
         {
           success: false,
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
         p_category: category,
         p_title: title,
         p_body: postBody,
-        p_user_id: user.id,
+        p_user_id: claims.claims.sub,
       }
     );
 
@@ -147,8 +147,8 @@ export async function POST(request: NextRequest) {
         testResult,
         testError,
         user: {
-          id: user.id,
-          email: user.email,
+          id: claims.claims.sub,
+          email: claims.claims.email,
         },
         timestamp: new Date().toISOString(),
       },
