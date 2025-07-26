@@ -52,7 +52,11 @@ export function ApartmentAutocomplete({
           aria-expanded={open}
           className={cn("w-full justify-between", className)}
         >
-          {selectedApartment && selectedCity ? `${selectedCity.name}, ${selectedApartment.name}` : "아파트를 선택하세요..."}
+          <span className={cn(
+            selectedApartment && selectedCity ? "text-foreground" : "text-muted-foreground"
+          )}>
+            {selectedApartment && selectedCity ? `${selectedCity.name}, ${selectedApartment.name}` : "아파트를 선택하세요..."}
+          </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -64,7 +68,9 @@ export function ApartmentAutocomplete({
             onValueChange={setSearchQuery}
           />
           <CommandList>
-            <CommandEmpty>결과 없음.</CommandEmpty>
+            <CommandEmpty>
+              {searchQuery ? `"${searchQuery}"에 대한 검색 결과가 없습니다.` : "아파트를 검색해보세요."}
+            </CommandEmpty>
             <CommandGroup>
               {filteredApartments.map((apartment) => {
                 const city = cities.find(c => c.id === apartment.city_id);
@@ -74,7 +80,10 @@ export function ApartmentAutocomplete({
                     value={apartment.id}
                     onSelect={(currentValue) => {
                       console.log('CommandItem onSelect:', { currentValue, value, apartment });
-                      onApartmentSelect(currentValue === value ? "" : currentValue);
+                      // Fix: Ensure proper string comparison and handle selection properly
+                      const isCurrentlySelected = String(currentValue) === String(value);
+                      const newValue = isCurrentlySelected ? "" : currentValue;
+                      onApartmentSelect(newValue);
                       setOpen(false);
                     }}
                   >

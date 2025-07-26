@@ -324,7 +324,25 @@
       "lastAccessed": "2025-07-26T13:10:30.142Z",
       "lastVerified": "2025-07-26T13:10:30.142Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753570457092_ks93ao3cz",
+      "content": "DEBUG TASK: Apartment selector not responding when user tries to post. Need to investigate posting flow, apartment selection components, and related UI interactions. User wants comprehensive analysis of all related issues.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "debug",
+        "apartment-selector",
+        "posting",
+        "ui-issue"
+      ],
+      "timestamp": "2025-07-26T22:54:17.092Z",
+      "context": "Starting debug investigation for apartment selector posting issue",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-26T22:54:17.092Z",
+      "lastVerified": "2025-07-26T22:54:17.092Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-26T13:10:30.142Z"
+  "lastUpdated": "2025-07-26T22:54:17.092Z"
 }

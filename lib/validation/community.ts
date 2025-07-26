@@ -183,7 +183,7 @@ export const locationBasedPostQuerySchema = z.object({
 
 // Enhanced post creation with location validation
 export const createPostWithLocationSchema = z.object({
-  apartment_id: z.string().uuid("유효한 아파트 ID가 필요합니다."),
+  apartment_id: z.string().min(1, { message: "아파트를 선택해주세요." }),
   category: z.enum(COMMUNITY_CATEGORIES, {
     required_error: "카테고리를 선택해주세요.",
   }),

@@ -117,10 +117,14 @@ export function NewPostDialog({
     value: string | string[],
   ) => {
     setForm((prev) => ({ ...prev, [field]: value }));
-    if (touched[field]) {
-      validateField(field, value);
-    }
-  }, [touched]);
+    // Use current touched state to avoid dependency issues
+    setTouched((currentTouched) => {
+      if (currentTouched[field]) {
+        validateField(field, value);
+      }
+      return currentTouched;
+    });
+  }, []); // Remove touched dependency to prevent callback recreation
 
   const handleBlur = (field: keyof z.infer<typeof createPostSchema>) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
