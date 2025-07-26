@@ -94,10 +94,8 @@ export function NewPostDialog({
 
   // useAutoSave(form, `new-post-draft-${defaultValues?.apartment_id || ""}`);
 
-  // Clear field errors when form values change
-  React.useEffect(() => {
-    setFieldErrors([]);
-  }, [form]);
+  // Note: Removed automatic field error clearing to prevent infinite render loops
+  // Field errors are now cleared individually during validation
 
   // Reset form when dialog opens/closes
   React.useEffect(() => {
