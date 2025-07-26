@@ -110,7 +110,7 @@ export function NewPostDialog({
       setFieldErrors([]);
       setTouched({});
     }
-  }, [open, defaultValues]);
+  }, [open, defaultValues?.apartment_id, defaultValues?.category, defaultValues?.title, defaultValues?.body, defaultValues?.images]);
 
   const handleInputChange = (
     field: keyof z.infer<typeof createPostSchema>,
