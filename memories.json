@@ -151,7 +151,61 @@
       "lastAccessed": "2025-07-25T23:23:26.144Z",
       "lastVerified": "2025-07-25T23:23:26.144Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753507899328_1s5tw4gbw",
+      "content": "Auth user posting error debug task - User experiencing error when logged in user tries to post. Error images: auth_error_posting.png and supabase_user.png. Debug plan exists at Auth User Posting Error Debug Plan.md. Suspected issue: codebase not getting auth user data from Supabase auth database correctly after JWT migration.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "database",
+        "auth-error",
+        "posting",
+        "supabase",
+        "debug"
+      ],
+      "timestamp": "2025-07-26T05:31:39.328Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-26T05:31:39.328Z",
+      "lastVerified": "2025-07-26T05:31:39.328Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1753507954536_sobyjq7uj",
+      "content": "Critical finding: auth.uid() returns null in server database context, which confirms the root cause. The JWT migration is working (getClaims() returns valid data in app code), but the database-level auth.uid() function is not receiving the authentication context in server-side operations. This explains why RLS policies are blocking the INSERT operation.",
+      "type": "code",
+      "tags": [
+        "code",
+        "database",
+        "authentication",
+        "auth-debug",
+        "jwt",
+        "rls",
+        "supabase"
+      ],
+      "timestamp": "2025-07-26T05:32:34.536Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-26T05:32:34.536Z",
+      "lastVerified": "2025-07-26T05:32:34.536Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1753507976284_od436natl",
+      "content": "Root cause identified: After JWT migration, Supabase server client initialization may not be properly passing JWT context to database operations. The getClaims() works fine in application code, but auth.uid() returns null at database level, causing RLS policy failures. Need to verify server client cookie handling and JWT context propagation.",
+      "type": "general",
+      "tags": [
+        "general",
+        "database",
+        "auth-bug",
+        "jwt-migration",
+        "server-client"
+      ],
+      "timestamp": "2025-07-26T05:32:56.284Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-26T05:32:56.284Z",
+      "lastVerified": "2025-07-26T05:32:56.284Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-25T23:23:26.144Z"
+  "lastUpdated": "2025-07-26T05:32:56.284Z"
 }

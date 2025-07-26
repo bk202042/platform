@@ -121,6 +121,17 @@ export async function POST(request: NextRequest) {
     }
     console.log(`User ${claims.claims.sub} is attempting to create a post.`);
 
+    // Debug: Check if auth.uid() is available in database context
+    try {
+      const { data: debugAuth } = await supabase.rpc('get_auth_uid');
+      console.log('Database auth.uid() context:', debugAuth);
+      
+      const { data: debugRLS } = await supabase.rpc('debug_rls_context');
+      console.log('RLS context debug:', debugRLS);
+    } catch (debugError) {
+      console.log('Debug auth check failed:', debugError);
+    }
+
     // 게시글 생성
     const { data: post, error: insertError } = await supabase
       .from("community_posts")
