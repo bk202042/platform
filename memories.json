@@ -396,7 +396,44 @@
       "lastAccessed": "2025-07-27T08:09:58.074Z",
       "lastVerified": "2025-07-27T08:09:58.074Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753604215683_rr85zrduu",
+      "content": "Console logs show authentication failures: 'Failed to get session: null', 400 error from Supabase auth token endpoint, refresh token failing. User appears to not be properly authenticated in the browser.",
+      "type": "error",
+      "tags": [
+        "error",
+        "authentication",
+        "browser-console",
+        "supabase-token",
+        "session-failure"
+      ],
+      "timestamp": "2025-07-27T08:16:55.682Z",
+      "context": "Post creation debugging - browser authentication issues",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-27T08:16:55.682Z",
+      "lastVerified": "2025-07-27T08:16:55.682Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1753604361979_fhqpjnyjs",
+      "content": "User has implemented Supabase JWT signing keys feature from https://supabase.com/blog/jwt-signing-keys. This is a new security feature that may affect authentication token validation.",
+      "type": "general",
+      "tags": [
+        "general",
+        "authentication",
+        "jwt",
+        "signing-keys",
+        "supabase",
+        "security"
+      ],
+      "timestamp": "2025-07-27T08:19:21.978Z",
+      "context": "Authentication debugging - JWT signing keys implementation",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-27T08:19:21.978Z",
+      "lastVerified": "2025-07-27T08:19:21.978Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-27T08:09:58.074Z"
+  "lastUpdated": "2025-07-27T08:19:21.978Z"
 }
