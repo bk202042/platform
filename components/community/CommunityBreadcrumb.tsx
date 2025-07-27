@@ -65,7 +65,7 @@ export function CommunityBreadcrumb({
     // Add category if provided
     if (category) {
       const categoryUrl = buildFilterUrl({
-        category: category.toLowerCase(),
+        category: category,
         apartmentId: searchParams.get("apartmentId"),
         sort: searchParams.get("sort"),
       });
