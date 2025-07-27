@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, Suspense } from "react";
+import { useState, useCallback, useMemo, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PostList } from "@/components/community/PostList";
 import { SortSelector, SortOption } from "@/components/community/SortSelector";
@@ -68,24 +68,44 @@ export function CommunityPageClient({
   posts,
   cities,
   apartments,
+  initialCategory,
   initialApartmentId,
   postCounts,
 }: CommunityPageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [apartmentId, setApartmentId] = useState(initialApartmentId);
+  const [currentCategory, setCurrentCategory] = useState(initialCategory);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] =
     useState<LocationSearchResult | null>(null);
   const [optimisticPosts, setOptimisticPosts] = useState(posts);
 
+  // Sync component state with URL parameters and trigger refetch when they change
+  useEffect(() => {
+    const urlCategory = searchParams.get("category") || "";
+    const urlApartmentId = searchParams.get("apartmentId") || "";
+    
+    // Check if URL parameters have changed
+    const categoryChanged = urlCategory !== currentCategory;
+    const apartmentChanged = urlApartmentId !== apartmentId;
+    
+    if (categoryChanged || apartmentChanged) {
+      // Update local state to match URL
+      setCurrentCategory(urlCategory);
+      setApartmentId(urlApartmentId);
+      
+      // Trigger server-side re-render to fetch new data
+      router.refresh();
+    }
+  }, [searchParams, currentCategory, apartmentId, router]);
+
   // Get current sort from URL params
   const currentSort = (searchParams.get("sort") as SortOption) || "latest";
 
   const _handleApartmentChange = useCallback(
     (newApartmentId: string) => {
-      setApartmentId(newApartmentId);
       const params = new URLSearchParams(searchParams.toString());
       if (newApartmentId) {
         params.set("apartmentId", newApartmentId);
@@ -93,6 +113,7 @@ export function CommunityPageClient({
         params.delete("apartmentId");
       }
       router.push(`/community?${params.toString()}`);
+      // Note: setApartmentId is handled by useEffect when URL changes
     },
     [searchParams, router]
   );
@@ -105,20 +126,18 @@ export function CommunityPageClient({
       if (location) {
         if (location.type === "apartment") {
           params.set("apartmentId", location.id);
-          setApartmentId(location.id);
         } else {
           // For city selection, clear apartment filter
           params.delete("apartmentId");
-          setApartmentId("");
           // Could add city filter here if needed
         }
       } else {
         // Clear all location filters
         params.delete("apartmentId");
-        setApartmentId("");
       }
 
       router.push(`/community?${params.toString()}`);
+      // Note: setApartmentId is handled by useEffect when URL changes
     },
     [searchParams, router]
   );
@@ -136,7 +155,7 @@ export function CommunityPageClient({
     [searchParams, router]
   );
 
-  const currentCategory = searchParams.get("category");
+  // currentCategory is now managed by state and synced with URL via useEffect
 
   // Memoize expensive computations
   const currentApartment = useMemo(
