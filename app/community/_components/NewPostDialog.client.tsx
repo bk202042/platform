@@ -10,6 +10,7 @@ import { ActionState } from "@/lib/action-helpers";
 import { Post } from "./CommunityPageClient";
 import { useOptimisticUpdate } from "@/lib/hooks/useOptimisticUpdate";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { EnhancedError, ActionResult } from "@/lib/types/community";
 
 interface City {
   id: string;
@@ -120,16 +121,17 @@ export function NewPostDialogClient({
           
           if (result.error) {
             // Enhanced error logging with error details
-            const errorCode = (result as any).errorCode || 'unknown';
-            const timestamp = (result as any).timestamp || new Date().toISOString();
+            const actionResult = result as ActionResult;
+            const errorCode = actionResult.errorCode || 'unknown';
+            const timestamp = actionResult.timestamp || new Date().toISOString();
             
             console.error(`ERROR|client|NewPostDialog|server_action_failed|${errorCode}|${result.error}|user_id=${user.id}|timestamp=${timestamp}`);
             
             // Create enhanced error for better user experience
-            const enhancedError = new Error(result.error);
-            (enhancedError as any).code = errorCode;
-            (enhancedError as any).timestamp = timestamp;
-            (enhancedError as any).context = 'server_action';
+            const enhancedError: EnhancedError = new Error(result.error);
+            enhancedError.code = errorCode;
+            enhancedError.timestamp = timestamp;
+            enhancedError.context = 'server_action';
             
             throw enhancedError;
           }
@@ -139,7 +141,8 @@ export function NewPostDialogClient({
         } catch (actionError) {
           // Comprehensive error logging for action failures
           const errorMessage = actionError instanceof Error ? actionError.message : String(actionError);
-          const errorCode = (actionError as any).code || 'unknown';
+          const enhancedActionError = actionError as EnhancedError;
+          const errorCode = enhancedActionError.code || 'unknown';
           
           console.error(`ERROR|client|NewPostDialog|action_execution_failed|${errorCode}|${errorMessage}|user_id=${user.id}`);
           console.error("Full action error object:", actionError);
@@ -159,9 +162,10 @@ export function NewPostDialogClient({
         },
         onError: (err) => {
           // Enhanced error categorization for user-friendly messages
-          const errorMessage = err.message || String(err);
-          const errorCode = (err as any).code || 'unknown';
-          const context = (err as any).context || 'unknown';
+          const enhancedErr = err as EnhancedError;
+          const errorMessage = enhancedErr.message || String(err);
+          const errorCode = enhancedErr.code || 'unknown';
+          const context = enhancedErr.context || 'unknown';
           
           console.error(`ERROR|client|NewPostDialog|optimistic_update_failed|${errorCode}|${errorMessage}|user_id=${user.id}|context=${context}`);
           

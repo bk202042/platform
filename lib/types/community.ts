@@ -126,3 +126,33 @@ export interface CommunityImageDropzoneConfig {
   bucket: string;
   folder: string;
 }
+
+// Enhanced error types for better error handling
+export interface EnhancedError extends Error {
+  code?: string;
+  category?: ErrorCategory;
+  details?: string;
+  context?: string;
+  operation?: string;
+  user_id?: string;
+  apartment_id?: string;
+  timestamp?: string;
+}
+
+export type ErrorCategory = 
+  | 'FOREIGN_KEY_VIOLATION'
+  | 'NULL_VIOLATION' 
+  | 'UNIQUE_VIOLATION'
+  | 'RLS_VIOLATION'
+  | 'CONNECTION_ERROR'
+  | 'INSUFFICIENT_PRIVILEGE'
+  | 'NETWORK_ERROR'
+  | 'UNKNOWN_DB_ERROR';
+
+// Action result with enhanced error information
+export interface ActionResult {
+  error?: string;
+  errorCode?: string;
+  timestamp?: string;
+  data?: Post | null;
+}
