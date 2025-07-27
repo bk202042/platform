@@ -360,7 +360,43 @@
       "lastAccessed": "2025-07-27T04:06:57.562Z",
       "lastVerified": "2025-07-27T04:06:57.562Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753595415270_y4w9wmqnl",
+      "content": "User reports posting error still exists after comprehensive error tracking implementation. Screenshot shows Korean error message \"오류가 발생했습니다 (Error). 잠시 후 다시 시도해주세요.\" in the dialog and \"오류가 발생했습니다 (Error). 잠시 후 다시 시도해주세요.\" in toast notification. User is trying to create a post with text content and image upload.",
+      "type": "error",
+      "tags": [
+        "error",
+        "debugging",
+        "post-creation",
+        "error-tracking",
+        "korean-ui"
+      ],
+      "timestamp": "2025-07-27T05:50:15.270Z",
+      "context": "Post creation debugging - need to investigate actual error despite error tracking implementation",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-27T05:50:15.270Z",
+      "lastVerified": "2025-07-27T05:50:15.270Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1753603798074_t0xhxn058",
+      "content": "Fixed authentication issue in post creation. Changed from getClaims() to getUser() method in lib/auth/server.ts. Also updated import in lib/action-helpers.ts to use the server auth function. Valid categories are: QNA, RECOMMEND, SECONDHAND, FREE. Build successful.",
+      "type": "tip",
+      "tags": [
+        "tip",
+        "authentication",
+        "post-creation",
+        "bug-fix",
+        "supabase"
+      ],
+      "timestamp": "2025-07-27T08:09:58.074Z",
+      "context": "Post creation debugging - authentication fix",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-27T08:09:58.074Z",
+      "lastVerified": "2025-07-27T08:09:58.074Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-27T04:06:57.562Z"
+  "lastUpdated": "2025-07-27T08:09:58.074Z"
 }
