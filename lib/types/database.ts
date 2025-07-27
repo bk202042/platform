@@ -6,15 +6,12 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-// Vietnamese Location Types
+// Community Categories - matches database enum
 export type CommunityCategory =
-  | "general"
-  | "housing"
-  | "jobs"
-  | "marketplace"
-  | "events"
-  | "questions"
-  | "recommendations";
+  | "QNA"
+  | "RECOMMEND" 
+  | "SECONDHAND"
+  | "FREE";
 
 export interface Database {
   public: {
