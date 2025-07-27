@@ -170,10 +170,58 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError) {
-      console.error("Supabase post creation error:", insertError);
+      // Enhanced error logging for debugging
+      const errorCode = insertError.code || 'unknown';
+      const errorMessage = insertError.message || 'Unknown error';
+      const errorDetails = insertError.details || 'No details available';
+      
+      console.error(`ERROR|/api/community/posts|POST|${errorCode}|${errorMessage}|${errorDetails}`);
+      console.error("Full Supabase error object:", JSON.stringify(insertError, null, 2));
+      
+      // Categorize errors for better user feedback
+      let userMessage = "Failed to create post";
+      let statusCode = 500;
+      
+      switch (errorCode) {
+        case '23503': // Foreign key violation
+          console.error(`ERROR|FK_VIOLATION|apartment_id=${result.data.apartment_id}|user_id=${claims.claims.sub}`);
+          userMessage = "Invalid apartment selection. Please try again.";
+          statusCode = 400;
+          break;
+        case '23502': // Not null violation  
+          console.error(`ERROR|NULL_VIOLATION|missing_required_field|${errorDetails}`);
+          userMessage = "Missing required information. Please check all fields.";
+          statusCode = 400;
+          break;
+        case '23505': // Unique violation
+          console.error(`ERROR|UNIQUE_VIOLATION|duplicate_entry|${errorDetails}`);
+          userMessage = "Duplicate post detected. Please refresh and try again.";
+          statusCode = 409;
+          break;
+        case 'PGRST301': // RLS policy violation
+          console.error(`ERROR|RLS_VIOLATION|user_id=${claims.claims.sub}|apartment_id=${result.data.apartment_id}`);
+          userMessage = "Permission denied. Please check your account status.";
+          statusCode = 403;
+          break;
+        case '08P01': // Connection error
+          console.error(`ERROR|DB_CONNECTION|network_timeout|${errorMessage}`);
+          userMessage = "Database connection error. Please try again.";
+          statusCode = 503;
+          break;
+        default:
+          console.error(`ERROR|UNKNOWN_DB_ERROR|code=${errorCode}|user_id=${claims.claims.sub}`);
+          userMessage = `Database error (${errorCode}). Please try again or contact support.`;
+          statusCode = 500;
+      }
+      
       return NextResponse.json(
-        { error: "Failed to create post" },
-        { status: 500 }
+        { 
+          error: userMessage,
+          code: errorCode,
+          timestamp: new Date().toISOString(),
+          request_id: crypto.randomUUID()
+        },
+        { status: statusCode }
       );
     }
 

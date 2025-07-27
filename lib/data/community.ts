@@ -211,24 +211,102 @@ export async function createPost(data: {
   images?: string[];
   user_id: string;
 }) {
-  const supabase = await createClient();
-  const { data: post, error } = await supabase
-    .from("community_posts")
-    .insert([
-      {
-        apartment_id: data.apartment_id,
-        category: data.category,
-        title: data.title,
-        body: data.body,
-        images: data.images ?? [],
-        user_id: data.user_id,
-        status: "published", // Add the missing status field
-      },
-    ])
-    .select()
-    .single();
-  if (error) throw error;
-  return post;
+  // Enhanced logging for data layer operations
+  console.log(`INFO|data_layer|createPost|user_id=${data.user_id}|apartment_id=${data.apartment_id}|category=${data.category}`);
+  
+  try {
+    const supabase = await createClient();
+    
+    // Log the data being inserted for debugging
+    const insertData = {
+      apartment_id: data.apartment_id,
+      category: data.category,
+      title: data.title,
+      body: data.body,
+      images: data.images ?? [],
+      user_id: data.user_id,
+      status: "published",
+    };
+    
+    console.log(`INFO|data_layer|createPost|insert_attempt|data=${JSON.stringify(insertData)}`);
+    
+    const { data: post, error } = await supabase
+      .from("community_posts")
+      .insert([insertData])
+      .select()
+      .single();
+      
+    if (error) {
+      // Enhanced error classification for data layer
+      const errorCode = error.code || 'unknown';
+      const errorMessage = error.message || 'Unknown database error';
+      const errorDetails = error.details || 'No additional details';
+      
+      console.error(`ERROR|data_layer|createPost|${errorCode}|${errorMessage}|user_id=${data.user_id}`);
+      console.error(`ERROR|data_layer|createPost|full_error|${JSON.stringify(error, null, 2)}`);
+      
+      // Create enhanced error with classification
+      const enhancedError = new Error(errorMessage);
+      (enhancedError as any).code = errorCode;
+      (enhancedError as any).details = errorDetails;
+      (enhancedError as any).context = 'data_layer';
+      (enhancedError as any).operation = 'createPost';
+      (enhancedError as any).user_id = data.user_id;
+      (enhancedError as any).apartment_id = data.apartment_id;
+      
+      // Add specific error classification
+      switch (errorCode) {
+        case '23503': // Foreign key violation
+          (enhancedError as any).category = 'FOREIGN_KEY_VIOLATION';
+          enhancedError.message = `Invalid apartment_id: ${data.apartment_id}. Please select a valid apartment.`;
+          break;
+        case '23502': // Not null violation
+          (enhancedError as any).category = 'NULL_VIOLATION';
+          enhancedError.message = `Missing required field. ${errorDetails}`;
+          break;
+        case '23505': // Unique violation
+          (enhancedError as any).category = 'UNIQUE_VIOLATION';
+          enhancedError.message = `Duplicate post detected. Please modify your content.`;
+          break;
+        case 'PGRST301': // RLS policy violation
+          (enhancedError as any).category = 'RLS_VIOLATION';
+          enhancedError.message = `Permission denied for user ${data.user_id} in apartment ${data.apartment_id}`;
+          break;
+        case '08P01': // Connection error
+          (enhancedError as any).category = 'CONNECTION_ERROR';
+          enhancedError.message = `Database connection failed. Please try again.`;
+          break;
+        case '42501': // Insufficient privilege
+          (enhancedError as any).category = 'INSUFFICIENT_PRIVILEGE';
+          enhancedError.message = `Insufficient database privileges for user ${data.user_id}`;
+          break;
+        default:
+          (enhancedError as any).category = 'UNKNOWN_DB_ERROR';
+          enhancedError.message = `Database error (${errorCode}): ${errorMessage}`;
+      }
+      
+      throw enhancedError;
+    }
+    
+    console.log(`SUCCESS|data_layer|createPost|post_created|post_id=${post.id}|user_id=${data.user_id}`);
+    return post;
+  } catch (error) {
+    // Handle non-database errors (network, parsing, etc.)
+    if (!(error as any).code) {
+      console.error(`ERROR|data_layer|createPost|non_db_error|${error}|user_id=${data.user_id}`);
+      
+      const networkError = new Error(`Failed to create post: ${error}`);
+      (networkError as any).category = 'NETWORK_ERROR';
+      (networkError as any).context = 'data_layer';
+      (networkError as any).operation = 'createPost';
+      (networkError as any).user_id = data.user_id;
+      
+      throw networkError;
+    }
+    
+    // Re-throw enhanced database errors
+    throw error;
+  }
 }
 
 // 댓글 목록 조회 (개선된 버전)

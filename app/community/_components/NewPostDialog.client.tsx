@@ -49,13 +49,35 @@ export function NewPostDialogClient({
   }, [searchParams]);
 
   const handleSubmit = async (values: z.infer<typeof createPostSchema>) => {
+    // Enhanced authentication validation with logging
     if (!user) {
+      console.error(`ERROR|client|NewPostDialog|authentication_required|no_user_session`);
       toast.error("로그인이 필요합니다.");
+      setError("로그인이 필요합니다. 페이지를 새로고침하고 다시 시도해주세요.");
       return;
     }
 
+    // Validate user session completeness
+    if (!user.id) {
+      console.error(`ERROR|client|NewPostDialog|invalid_user_session|missing_user_id`);
+      toast.error("사용자 정보가 올바르지 않습니다.");
+      setError("사용자 세션이 유효하지 않습니다. 다시 로그인해주세요.");
+      return;
+    }
+
+    // Log post creation attempt
+    console.log(`INFO|client|NewPostDialog|post_creation_attempt|user_id=${user.id}|apartment_id=${values.apartment_id}|category=${values.category}`);
+
     const tempId = Date.now().toString();
     const apartment = apartments.find(apt => apt.id === values.apartment_id);
+    
+    // Validate apartment selection
+    if (!apartment) {
+      console.error(`ERROR|client|NewPostDialog|invalid_apartment|apartment_id=${values.apartment_id}|user_id=${user.id}`);
+      setError("선택한 아파트가 유효하지 않습니다. 다시 선택해주세요.");
+      return;
+    }
+
     const optimisticPost: Post = {
       ...values,
       id: tempId,
@@ -79,30 +101,91 @@ export function NewPostDialogClient({
     executeOptimistic(
       () => onPostCreated(optimisticPost),
       async () => {
-        const formData = new FormData();
-        Object.entries(values).forEach(([key, value]) => {
-          if (value) {
-            if (Array.isArray(value)) {
-              value.forEach((item) => formData.append(key, item));
-            } else {
-              formData.append(key, String(value));
+        try {
+          console.log(`INFO|client|NewPostDialog|form_data_preparation|user_id=${user.id}`);
+          
+          const formData = new FormData();
+          Object.entries(values).forEach(([key, value]) => {
+            if (value) {
+              if (Array.isArray(value)) {
+                value.forEach((item) => formData.append(key, item));
+              } else {
+                formData.append(key, String(value));
+              }
             }
+          });
+          
+          console.log(`INFO|client|NewPostDialog|server_action_call|user_id=${user.id}`);
+          const result = await createCommunityPost({} as ActionState, formData);
+          
+          if (result.error) {
+            // Enhanced error logging with error details
+            const errorCode = (result as any).errorCode || 'unknown';
+            const timestamp = (result as any).timestamp || new Date().toISOString();
+            
+            console.error(`ERROR|client|NewPostDialog|server_action_failed|${errorCode}|${result.error}|user_id=${user.id}|timestamp=${timestamp}`);
+            
+            // Create enhanced error for better user experience
+            const enhancedError = new Error(result.error);
+            (enhancedError as any).code = errorCode;
+            (enhancedError as any).timestamp = timestamp;
+            (enhancedError as any).context = 'server_action';
+            
+            throw enhancedError;
           }
-        });
-        const result = await createCommunityPost({} as ActionState, formData);
-        if (result.error) throw new Error(result.error);
-        return result.data;
+          
+          console.log(`SUCCESS|client|NewPostDialog|post_created|user_id=${user.id}|post_id=${result.data?.id}`);
+          return result.data;
+        } catch (actionError) {
+          // Comprehensive error logging for action failures
+          const errorMessage = actionError instanceof Error ? actionError.message : String(actionError);
+          const errorCode = (actionError as any).code || 'unknown';
+          
+          console.error(`ERROR|client|NewPostDialog|action_execution_failed|${errorCode}|${errorMessage}|user_id=${user.id}`);
+          console.error("Full action error object:", actionError);
+          
+          throw actionError;
+        }
       },
       () => onPostRemoved(tempId),
       {
         onSuccess: (newPost) => {
           onPostRemoved(tempId);
           onPostCreated(newPost as Post);
+          console.log(`SUCCESS|client|NewPostDialog|optimistic_update_completed|user_id=${user.id}|post_id=${newPost?.id}`);
           toast.success("게시글이 작성되었습니다.");
+          setError(undefined); // Clear any previous errors
           // Note: Dialog closing is handled by parent component to prevent duplicate state updates
         },
         onError: (err) => {
-          setError(err.message);
+          // Enhanced error categorization for user-friendly messages
+          const errorMessage = err.message || String(err);
+          const errorCode = (err as any).code || 'unknown';
+          const context = (err as any).context || 'unknown';
+          
+          console.error(`ERROR|client|NewPostDialog|optimistic_update_failed|${errorCode}|${errorMessage}|user_id=${user.id}|context=${context}`);
+          
+          // Categorize errors for better user experience
+          let userFriendlyMessage = errorMessage;
+          
+          if (errorMessage.includes('Invalid apartment')) {
+            userFriendlyMessage = "선택한 아파트가 유효하지 않습니다. 아파트를 다시 선택해주세요.";
+          } else if (errorMessage.includes('Authentication') || errorMessage.includes('로그인')) {
+            userFriendlyMessage = "로그인 상태를 확인할 수 없습니다. 페이지를 새로고침하고 다시 로그인해주세요.";
+          } else if (errorMessage.includes('network') || errorMessage.includes('timeout')) {
+            userFriendlyMessage = "네트워크 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해주세요.";
+          } else if (errorMessage.includes('duplicate') || errorMessage.includes('중복')) {
+            userFriendlyMessage = "이미 같은 내용의 게시글이 있습니다. 내용을 수정하고 다시 시도해주세요.";
+          } else if (errorMessage.includes('permission') || errorMessage.includes('권한')) {
+            userFriendlyMessage = "게시글 작성 권한이 없습니다. 계정 상태를 확인해주세요.";
+          } else if (errorMessage.includes('validation') || errorMessage.includes('필드')) {
+            userFriendlyMessage = "입력한 정보가 올바르지 않습니다. 모든 필드를 확인하고 다시 시도해주세요.";
+          } else if (errorCode !== 'unknown') {
+            userFriendlyMessage = `오류가 발생했습니다 (${errorCode}). 잠시 후 다시 시도해주세요.`;
+          }
+          
+          setError(userFriendlyMessage);
+          toast.error(userFriendlyMessage);
         },
       },
     );
