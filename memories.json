@@ -507,7 +507,44 @@
       "lastAccessed": "2025-07-27T08:59:51.240Z",
       "lastVerified": "2025-07-27T08:59:51.240Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753608063044_42igpjkej",
+      "content": "TypeScript build error in auth/server.ts:31 - JWT claims.aud property type mismatch. Claims.aud can be string | string[] but User type expects string only. Need to handle the array case.",
+      "type": "error",
+      "tags": [
+        "error",
+        "typescript",
+        "build-error",
+        "jwt-claims",
+        "type-mismatch"
+      ],
+      "timestamp": "2025-07-27T09:21:03.044Z",
+      "context": "Build error debugging - type error in JWT migration",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-27T09:21:03.044Z",
+      "lastVerified": "2025-07-27T09:21:03.044Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1753608108908_n3jjvvkgu",
+      "content": "Build error successfully resolved. Fixed TypeScript error by handling JWT claims.aud property which can be string | string[] but User type expects string. Used Array.isArray() check to take first element if array. Build now completes successfully with all 48 pages generated.",
+      "type": "error",
+      "tags": [
+        "error",
+        "typescript",
+        "build-success",
+        "typescript-fix",
+        "jwt-claims",
+        "resolved"
+      ],
+      "timestamp": "2025-07-27T09:21:48.907Z",
+      "context": "Build error resolution - TypeScript type fix",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-27T09:21:48.907Z",
+      "lastVerified": "2025-07-27T09:21:48.907Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-27T08:59:51.240Z"
+  "lastUpdated": "2025-07-27T09:21:48.907Z"
 }

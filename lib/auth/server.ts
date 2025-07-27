@@ -28,7 +28,7 @@ export async function getSessionUser(): Promise<User | null> {
     updated_at: claims.updated_at,
     last_sign_in_at: claims.last_sign_in_at,
     role: claims.role,
-    aud: claims.aud,
+    aud: Array.isArray(claims.aud) ? claims.aud[0] : claims.aud,
     app_metadata: claims.app_metadata || {},
     user_metadata: claims.user_metadata || {}
   };
