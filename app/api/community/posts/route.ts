@@ -8,19 +8,29 @@ import { PostImage } from "@/lib/types/community";
 /**
  * Transforms raw community_post_images data into PostImage format with public URLs
  */
-function transformPostImages(rawImages: any[]): PostImage[] {
+interface RawPostImage {
+  id: string;
+  post_id: string;
+  storage_path: string;
+  display_order: number;
+  alt_text: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+function transformPostImages(rawImages: unknown[]): PostImage[] {
   if (!rawImages || rawImages.length === 0) return [];
   
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   
-  return rawImages
+  return (rawImages as RawPostImage[])
     .sort((a, b) => a.display_order - b.display_order)
     .map((image) => ({
       id: image.id,
       post_id: image.post_id,
       storage_path: image.storage_path,
       display_order: image.display_order,
-      alt_text: image.alt_text,
+      alt_text: image.alt_text || undefined,
       metadata: image.metadata || {},
       created_at: image.created_at,
       // Generate public URL for frontend use
@@ -264,7 +274,7 @@ export async function POST(request: NextRequest) {
           post_id: post.id,
           storage_path: image.storage_path,
           display_order: image.display_order,
-          alt_text: image.alt_text,
+          alt_text: image.alt_text || undefined,
           metadata: image.metadata || {},
         }));
 

@@ -7,7 +7,7 @@
  * - Validating image data
  */
 
-import { CreatePostImageData, ImageUploadResult } from '@/lib/types/community';
+import { CreatePostImageData } from '@/lib/types/community';
 
 /**
  * Extracts the storage path from a Supabase public URL
@@ -65,7 +65,7 @@ export function convertUrlsToImageData(imageUrls: string[]): CreatePostImageData
     return {
       storage_path: storagePath,
       display_order: index,
-      alt_text: null,
+      alt_text: undefined,
       metadata: {
         // We'll extract this from the file name or use defaults
         original_name: extractOriginalFileName(storagePath),

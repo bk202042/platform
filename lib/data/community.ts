@@ -73,12 +73,18 @@ export async function getPostById(postId: string) {
   // Transform images to include public URLs
   if (data && data.community_post_images) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    data.images = data.community_post_images
-      .sort((a: any, b: any) => a.display_order - b.display_order)
-      .map((image: any) => ({
+    interface RawImageData {
+      display_order: number;
+      storage_path: string;
+      [key: string]: unknown;
+    }
+    data.images = (data.community_post_images as RawImageData[])
+      .sort((a, b) => a.display_order - b.display_order)
+      .map((image) => ({
         ...image,
         post_id: data.id,
         public_url: createPublicUrl(image.storage_path, supabaseUrl),
+        alt_text: image.alt_text || undefined,
       }));
     // Remove the raw data
     delete data.community_post_images;
@@ -114,9 +120,14 @@ export async function getPostByIdWithLikeStatus(
   // Transform images to include public URLs
   if (post && post.community_post_images) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    post.images = post.community_post_images
-      .sort((a: any, b: any) => a.display_order - b.display_order)
-      .map((image: any) => ({
+    interface RawImageData {
+      display_order: number;
+      storage_path: string;
+      [key: string]: unknown;
+    }
+    post.images = (post.community_post_images as RawImageData[])
+      .sort((a, b) => a.display_order - b.display_order)
+      .map((image) => ({
         ...image,
         post_id: post.id,
         public_url: createPublicUrl(image.storage_path, supabaseUrl),
