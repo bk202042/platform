@@ -37,8 +37,8 @@ export async function middleware(request: NextRequest) {
     },
   );
 
-  // 세션을 검증하고 새로고침합니다.
-  await supabase.auth.getUser();
+  // 세션을 검증하고 새로고침합니다. (Using getClaims for JWT signing keys performance)
+  await supabase.auth.getClaims();
 
   // 수정된 쿠키가 포함된 응답을 반환합니다.
   return response;
