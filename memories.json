@@ -453,7 +453,44 @@
       "lastAccessed": "2025-07-27T08:21:19.155Z",
       "lastVerified": "2025-07-27T08:21:19.155Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753604757821_klx7335su",
+      "content": "Reverted to working getUser() authentication method from previous production commit 0a9837c. The getClaims() approach wasn't working despite JWT signing keys being implemented. Now using the proven working authentication method while maintaining enhanced error tracking.",
+      "type": "error",
+      "tags": [
+        "error",
+        "authentication",
+        "getUser",
+        "production-fix",
+        "revert"
+      ],
+      "timestamp": "2025-07-27T08:25:57.821Z",
+      "context": "Authentication method correction - back to working state",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-27T08:25:57.821Z",
+      "lastVerified": "2025-07-27T08:25:57.821Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1753605202592_vpjg40muk",
+      "content": "User signed up with new email but still getting authentication errors. Console shows auth code in URL (code=963620e3-7264-46fd-a886-5addb10678f8) but 'Failed to get session: null' and 400 error from Supabase token endpoint. This suggests OAuth callback handling issue.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "authentication",
+        "oauth",
+        "callback",
+        "sign-up",
+        "400-error"
+      ],
+      "timestamp": "2025-07-27T08:33:22.592Z",
+      "context": "OAuth callback authentication debugging",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-27T08:33:22.592Z",
+      "lastVerified": "2025-07-27T08:33:22.592Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-27T08:21:19.155Z"
+  "lastUpdated": "2025-07-27T08:33:22.592Z"
 }

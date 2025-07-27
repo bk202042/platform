@@ -37,8 +37,8 @@ export async function middleware(request: NextRequest) {
     },
   );
 
-  // 세션을 검증합니다. 새로운 JWT 시스템으로 성능이 향상됩니다.
-  await supabase.auth.getClaims();
+  // 세션을 검증하고 새로고침합니다.
+  await supabase.auth.getUser();
 
   // 수정된 쿠키가 포함된 응답을 반환합니다.
   return response;
