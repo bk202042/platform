@@ -15,6 +15,7 @@ export interface PostImage {
     original_name?: string;
   };
   created_at: string;
+  public_url?: string; // Generated public URL for frontend display
 }
 
 // Image upload data for creating new images

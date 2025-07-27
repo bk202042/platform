@@ -2,6 +2,31 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server-api";
 import { createPostSchema } from "@/lib/validation/community";
 import { createServerClient } from "@supabase/ssr";
+import { processUploadedImages, createPublicUrl } from "@/lib/utils/community-images";
+import { PostImage } from "@/lib/types/community";
+
+/**
+ * Transforms raw community_post_images data into PostImage format with public URLs
+ */
+function transformPostImages(rawImages: any[]): PostImage[] {
+  if (!rawImages || rawImages.length === 0) return [];
+  
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  
+  return rawImages
+    .sort((a, b) => a.display_order - b.display_order)
+    .map((image) => ({
+      id: image.id,
+      post_id: image.post_id,
+      storage_path: image.storage_path,
+      display_order: image.display_order,
+      alt_text: image.alt_text,
+      metadata: image.metadata || {},
+      created_at: image.created_at,
+      // Generate public URL for frontend use
+      public_url: createPublicUrl(image.storage_path, supabaseUrl),
+    }));
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,7 +43,7 @@ export async function GET(request: NextRequest) {
     // 게시글 목록 조회 쿼리 구성
     let query = supabase
       .from("community_posts")
-      .select(`*, apartments(city_id, name, slug, cities(name))`)
+      .select(`*, apartments(city_id, name, slug, cities(name)), community_post_images(id, storage_path, display_order, alt_text, metadata, created_at)`)
       .eq("is_deleted", false);
 
     if (apartmentId) {
@@ -68,18 +93,23 @@ export async function GET(request: NextRequest) {
 
       const likedPostIds = new Set(likes?.map((like) => like.post_id) || []);
 
-      // 좋아요 상태 추가
+      // 좋아요 상태 추가 및 이미지 변환
       const postsWithLikeStatus = posts.map((post) => ({
         ...post,
         isLiked: likedPostIds.has(post.id),
+        images: transformPostImages(post.community_post_images || []),
       }));
 
       return NextResponse.json(postsWithLikeStatus);
     }
 
-    // 좋아요 상태 없이 반환
+    // 좋아요 상태 없이 반환 및 이미지 변환
     return NextResponse.json(
-      posts?.map((post) => ({ ...post, isLiked: false })) || []
+      posts?.map((post) => ({ 
+        ...post, 
+        isLiked: false,
+        images: transformPostImages(post.community_post_images || []),
+      })) || []
     );
   } catch (error) {
     console.error("Unexpected error:", error);
@@ -161,7 +191,6 @@ export async function POST(request: NextRequest) {
           category: result.data.category,
           title: result.data.title,
           body: result.data.body,
-          images: result.data.images ?? [],
           user_id: claims.claims.sub, // We validated this user is authenticated above
           status: "published",
         },
@@ -223,6 +252,35 @@ export async function POST(request: NextRequest) {
         },
         { status: statusCode }
       );
+    }
+
+    // Process and insert images if provided
+    if (result.data.images && result.data.images.length > 0) {
+      try {
+        const imageData = processUploadedImages(result.data.images);
+        
+        // Insert image records
+        const imageRecords = imageData.map(image => ({
+          post_id: post.id,
+          storage_path: image.storage_path,
+          display_order: image.display_order,
+          alt_text: image.alt_text,
+          metadata: image.metadata || {},
+        }));
+
+        const { error: imageInsertError } = await serviceSupabase
+          .from("community_post_images")
+          .insert(imageRecords);
+
+        if (imageInsertError) {
+          console.error("Failed to insert images for post", post.id, imageInsertError);
+          // Note: We don't fail the entire request if images fail to insert
+          // The post was already created successfully
+        }
+      } catch (imageError) {
+        console.error("Image processing failed for post", post.id, imageError);
+        // Continue without failing the request
+      }
     }
 
     return NextResponse.json(

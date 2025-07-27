@@ -9,6 +9,7 @@ import {
   ImageValidationResult,
   EnhancedError,
 } from "../types/community";
+import { createPublicUrl } from "../utils/community-images";
 
 // 게시글 목록 조회
 export async function getPosts(params: {
@@ -56,7 +57,11 @@ export async function getPostById(postId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("community_posts")
-    .select("*, apartments(city_id, name, slug, cities(name))")
+    .select(`
+      *, 
+      apartments(city_id, name, slug, cities(name)),
+      community_post_images(id, storage_path, display_order, alt_text, metadata, created_at)
+    `)
     .eq("id", postId)
     .eq("is_deleted", false)
     .single();
@@ -64,6 +69,21 @@ export async function getPostById(postId: string) {
     console.error("getPostById error:", error);
     return null;
   }
+  
+  // Transform images to include public URLs
+  if (data && data.community_post_images) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    data.images = data.community_post_images
+      .sort((a: any, b: any) => a.display_order - b.display_order)
+      .map((image: any) => ({
+        ...image,
+        post_id: data.id,
+        public_url: createPublicUrl(image.storage_path, supabaseUrl),
+      }));
+    // Remove the raw data
+    delete data.community_post_images;
+  }
+  
   return data;
 }
 
@@ -74,10 +94,14 @@ export async function getPostByIdWithLikeStatus(
 ) {
   const supabase = await createClient();
 
-  // Get post data
+  // Get post data with images
   const { data: post, error: postError } = await supabase
     .from("community_posts")
-    .select("*, apartments(city_id, name, slug, cities(name))")
+    .select(`
+      *, 
+      apartments(city_id, name, slug, cities(name)),
+      community_post_images(id, storage_path, display_order, alt_text, metadata, created_at)
+    `)
     .eq("id", postId)
     .eq("is_deleted", false)
     .single();
@@ -85,6 +109,20 @@ export async function getPostByIdWithLikeStatus(
   if (postError) {
     console.error("getPostByIdWithLikeStatus error:", postError);
     return null;
+  }
+
+  // Transform images to include public URLs
+  if (post && post.community_post_images) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    post.images = post.community_post_images
+      .sort((a: any, b: any) => a.display_order - b.display_order)
+      .map((image: any) => ({
+        ...image,
+        post_id: post.id,
+        public_url: createPublicUrl(image.storage_path, supabaseUrl),
+      }));
+    // Remove the raw data
+    delete post.community_post_images;
   }
 
   // Get user's like status if user is provided
@@ -224,7 +262,6 @@ export async function createPost(data: {
       category: data.category,
       title: data.title,
       body: data.body,
-      images: data.images ?? [],
       user_id: data.user_id,
       status: "published",
     };
@@ -564,7 +601,6 @@ export async function createPostWithLocation(data: {
         category: data.category,
         title: data.title,
         body: data.body,
-        images: data.images ?? [],
         user_id: data.user_id,
         status: "published",
       },

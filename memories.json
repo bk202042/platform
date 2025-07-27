@@ -544,7 +544,26 @@
       "lastAccessed": "2025-07-27T09:21:48.907Z",
       "lastVerified": "2025-07-27T09:21:48.907Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753608851554_f1xkiuiq9",
+      "content": "Starting implementation of community posts image storage fix. The main issue is that API tries to insert 'images' field into community_posts table which doesn't have that column. Images should be stored in separate community_post_images table. Need to fix POST API, GET API, and create image processing utilities.",
+      "type": "tip",
+      "tags": [
+        "tip",
+        "api",
+        "community-posts",
+        "image-storage",
+        "database-fix",
+        "in-progress"
+      ],
+      "timestamp": "2025-07-27T09:34:11.554Z",
+      "context": "Community posts image storage fix implementation",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-27T09:34:11.554Z",
+      "lastVerified": "2025-07-27T09:34:11.554Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-27T09:21:48.907Z"
+  "lastUpdated": "2025-07-27T09:34:11.554Z"
 }
