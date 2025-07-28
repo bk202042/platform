@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect, Suspense } from "react";
+import { useState, useCallback, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PostList } from "@/components/community/PostList";
 import { SortSelector, SortOption } from "@/components/community/SortSelector";
@@ -68,38 +68,22 @@ export function CommunityPageClient({
   posts,
   cities,
   apartments,
-  initialCategory,
-  initialApartmentId,
+  initialCategory: _initialCategory,
+  initialApartmentId: _initialApartmentId,
   postCounts,
 }: CommunityPageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [apartmentId, setApartmentId] = useState(initialApartmentId);
-  const [currentCategory, setCurrentCategory] = useState(initialCategory);
+  // Get current values from URL - URL is the source of truth
+  const urlCategory = searchParams.get("category") || "";
+  const urlApartmentId = searchParams.get("apartmentId") || "";
+  
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] =
     useState<LocationSearchResult | null>(null);
   const [optimisticPosts, setOptimisticPosts] = useState(posts);
 
-  // Sync component state with URL parameters and trigger refetch when they change
-  useEffect(() => {
-    const urlCategory = searchParams.get("category") || "";
-    const urlApartmentId = searchParams.get("apartmentId") || "";
-    
-    // Check if URL parameters have changed
-    const categoryChanged = urlCategory !== currentCategory;
-    const apartmentChanged = urlApartmentId !== apartmentId;
-    
-    if (categoryChanged || apartmentChanged) {
-      // Update local state to match URL
-      setCurrentCategory(urlCategory);
-      setApartmentId(urlApartmentId);
-      
-      // Trigger server-side re-render to fetch new data
-      router.refresh();
-    }
-  }, [searchParams, currentCategory, apartmentId, router]);
 
   // Get current sort from URL params
   const currentSort = (searchParams.get("sort") as SortOption) || "latest";
@@ -155,12 +139,11 @@ export function CommunityPageClient({
     [searchParams, router]
   );
 
-  // currentCategory is now managed by state and synced with URL via useEffect
-
-  // Memoize expensive computations
+  // Use URL values directly for consistent state
+  // Memoize expensive computations using URL values
   const currentApartment = useMemo(
-    () => apartments.find((apt) => apt.id === apartmentId),
-    [apartments, apartmentId]
+    () => apartments.find((apt) => apt.id === urlApartmentId),
+    [apartments, urlApartmentId]
   );
 
   const handlePostClick = useCallback(
@@ -218,7 +201,7 @@ export function CommunityPageClient({
           <div className="bg-white border-b border-zinc-200 sticky top-0 z-40">
             <div className="px-4 sm:px-6 lg:px-8 py-4">
               <CommunityBreadcrumb
-                category={currentCategory as CommunityCategory}
+                category={urlCategory as CommunityCategory}
                 apartmentName={currentApartment?.name}
                 cityName={currentApartment?.cities?.name}
               />

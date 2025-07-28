@@ -2,11 +2,25 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-[byterover-mcp]
+# important
 
-# important 
-always use byterover-retrive-knowledge tool to get the related context before any tasks 
-always use byterover-store-knowledge to store all the critical informations after sucessful tasks
+## 1. Keep It Simple
+Always choose the simplest, most lightweight solution that fully meets the requirements.
+
+## 2. Design for Performance (Without Premature Optimization)
+Consider performance from the start, but never at the cost of clarity or maintainability.
+
+## 3. Write Clean, Maintainable Code
+Prioritize readability, consistency, and clarity. Apply clean code principles and proven design patterns.
+
+## 4. Make Minimal, Targeted Changes
+Keep code changes as small and isolated as possible. Only touch what’s necessary.
+
+## 5. Fix the Root Cause—Always
+Never apply temporary fixes. Always diagnose and solve the underlying problem.
+
+## 6. Never Compromise on Quality
+Don’t cut corners. Don’t be lazy. Act like a senior engineer at all times.
 
 # important-instruction-reminders
 Do what has been asked; nothing more, nothing less.
@@ -79,10 +93,9 @@ NEVER proactively create documentation files (*.md) or README files. Only create
 - **Lazy Loading**: Use `LazyLoad` component from `/components/common/`
 - **Error Boundaries**: Implement for user-facing error handling
 
-### Styling Guidelines  
+### Styling Guidelines
 - **Tailwind CSS v4.1.4**: Latest version with zinc color palette
 - **Component variants**: Use `class-variance-authority` for component variants
-- **Korean fonts**: Noto Sans KR loaded via Google Fonts with proper subsets
 - **Responsive**: Mobile-first approach with proper breakpoints
 
 ### Key Development Notes

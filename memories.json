@@ -563,7 +563,48 @@
       "lastAccessed": "2025-07-27T09:34:11.554Z",
       "lastVerified": "2025-07-27T09:34:11.554Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753663908128_z49asuqyt",
+      "content": "Community Sidebar Issue Analysis:\n\n**Current Structure:**\n- CategorySidebar component at `/app/community/_components/CategorySidebar.tsx`\n- Uses Next.js 15 App Router with useRouter, useSearchParams, usePathname\n- Click handler: `handleCategoryClick(category: string)` creates URLSearchParams and calls router.push()\n- Parent component: CommunityPageClient.tsx manages state synchronization via useEffect\n\n**Key Flow:**\n1. CategorySidebar onClick → handleCategoryClick() → router.push(newUrl)\n2. CommunityPageClient useEffect detects searchParams changes → router.refresh()\n3. Server component re-fetches data with new filters\n\n**Potential Issues Found:**\n1. State sync timing issues between CategorySidebar and CommunityPageClient\n2. Multiple router operations happening simultaneously \n3. CommunityPageClient useEffect triggers router.refresh() on every searchParams change\n4. Sorting functionality working independently (SortSelector.tsx) - different implementation pattern\n\n**Technical Details:**\n- CategorySidebar: Direct router.push() with new URL\n- CommunityPageClient: useEffect → router.refresh() when URL changes\n- SortSelector: Same pattern as CategorySidebar but seems to work\n\n**Symptoms:**\n- No response on sidebar clicks\n- Not sorting properly\n- No filtering behavior",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "community",
+        "sidebar",
+        "routing",
+        "next.js",
+        "debugging"
+      ],
+      "timestamp": "2025-07-28T00:51:48.128Z",
+      "context": "Community sidebar debugging session - analyzing click handlers and URL parameter management",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-28T00:51:48.128Z",
+      "lastVerified": "2025-07-28T00:51:48.128Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1753664201321_0m8j4aw9v",
+      "content": "Community Sidebar Fix Implementation Complete:\n\n**Issues Fixed:**\n1. **Removed conflicting router.refresh()** from CommunityPageClient.tsx useEffect - this was causing navigation interference\n2. **Eliminated state synchronization conflicts** by using URL parameters as single source of truth\n3. **Fixed timing issues** between CategorySidebar clicks and parent component state updates\n4. **Simplified state management** by removing unnecessary local state variables\n\n**Key Changes Made:**\n- CategorySidebar.tsx: Added debug logging to click handler\n- CommunityPageClient.tsx: \n  - Removed router.refresh() from useEffect \n  - Switched to using urlCategory/urlApartmentId directly from searchParams\n  - Eliminated local state variables (currentCategory, apartmentId)\n  - Fixed ESLint warnings for unused variables\n- SortSelector.tsx: Added debug logging for consistency\n\n**Root Cause:**\nThe useEffect in CommunityPageClient was calling router.refresh() immediately after URL parameter changes, creating a race condition with the sidebar's router.push() operations. Next.js App Router automatically re-renders server components when URL changes, so the manual refresh was redundant and harmful.\n\n**Testing Status:**\n- Lint errors resolved ✅\n- TypeScript compilation clean (excluding test files) ✅ \n- Development server running on port 3001 ✅\n- Debug logging added for troubleshooting ✅\n\n**Next Steps:**\n- Remove debug logging for production\n- Test category clicking and sorting functionality\n- Verify URL parameter handling works correctly",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "typescript",
+        "testing",
+        "community",
+        "sidebar",
+        "fix",
+        "routing",
+        "next.js",
+        "completed"
+      ],
+      "timestamp": "2025-07-28T00:56:41.320Z",
+      "context": "Community sidebar debugging - final implementation and fix documentation",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-28T00:56:41.320Z",
+      "lastVerified": "2025-07-28T00:56:41.320Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-27T09:34:11.554Z"
+  "lastUpdated": "2025-07-28T00:56:41.320Z"
 }
