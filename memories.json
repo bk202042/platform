@@ -763,7 +763,25 @@
       "lastAccessed": "2025-07-28T05:07:34.309Z",
       "lastVerified": "2025-07-28T05:07:34.309Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753679550878_c3zdhjdfu",
+      "content": "CRITICAL REFACTORING TASK - Removing obsolete TSX files from components/community/ after UnifiedSearchInterface implementation. Files to remove in order:\n1. SearchBar.tsx - Replaced by UnifiedSearchBar\n2. LocationSelectorModal.tsx - Replaced by unified interface  \n3. PostCardSkeletonDemo.tsx - Unused demo file\n4. OptimizedPostList.tsx - Unused alternative implementation\n5. MobilePostCreation.tsx - Unused mobile component\n\nProtocol: Git commit after EACH removal, build verification, immediate rollback if issues detected. ZERO TOLERANCE for functionality changes - behavior preservation only.",
+      "type": "general",
+      "tags": [
+        "general",
+        "refactoring",
+        "file-removal",
+        "safety-protocol",
+        "community-components"
+      ],
+      "timestamp": "2025-07-28T05:12:30.876Z",
+      "context": "Starting critical file removal task with safety protocols",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-28T05:12:30.876Z",
+      "lastVerified": "2025-07-28T05:12:30.876Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-28T05:07:34.309Z"
+  "lastUpdated": "2025-07-28T05:12:30.876Z"
 }
