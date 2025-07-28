@@ -82,26 +82,6 @@ export const LazyComponents = {
     )
   ),
 
-  LocationSelectorModal: createLazyComponent(
-    () =>
-      import("@/components/community/LocationSelectorModal").then((mod) => ({
-        default: mod.LocationSelectorModal,
-      })),
-    <div className="animate-pulse bg-gray-200 h-64 rounded-lg" />,
-    ({ retry }) => (
-      <div className="p-4 text-center text-red-500">
-        <div>위치 선택 모달을 불러올 수 없습니다.</div>
-        <button
-          type="button"
-          onClick={retry}
-          className="mt-2 text-blue-500 underline"
-        >
-          다시 시도
-        </button>
-      </div>
-    )
-  ),
-
   ImageGallery: createLazyComponent(
     () =>
       import("@/components/community/ImageGallery").then((mod) => ({
@@ -215,11 +195,6 @@ export function preloadCriticalComponents() {
     preloadComponent(() =>
       import("@/app/community/_components/NewPostDialog").then((mod) => ({
         default: mod.NewPostDialog,
-      }))
-    );
-    preloadComponent(() =>
-      import("@/components/community/LocationSelectorModal").then((mod) => ({
-        default: mod.LocationSelectorModal,
       }))
     );
   }, 2000); // Preload after 2 seconds to not interfere with initial load
