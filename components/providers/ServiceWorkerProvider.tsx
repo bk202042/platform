@@ -21,15 +21,10 @@ export function ServiceWorkerProvider({
     registerServiceWorker();
   }, []);
 
-  // Show network status changes
+  // Network status tracking (notifications removed for better UX)
   useEffect(() => {
     if (typeof window === "undefined") return;
-
-    if (isOnline) {
-      toast.success("인터넷 연결이 복구되었습니다.");
-    } else {
-      toast.error("인터넷 연결이 끊어졌습니다. 오프라인 모드로 전환됩니다.");
-    }
+    // Network status is now handled silently - users can see offline status via NetworkStatusIndicator
   }, [isOnline]);
 
   // Show update notification

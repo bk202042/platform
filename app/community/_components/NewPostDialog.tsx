@@ -358,17 +358,8 @@ export function NewPostDialog({
           )}
 
           {/* Submit Button */}
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onClose}
-              className="flex-1"
-              disabled={loading}
-            >
-              취소
-            </Button>
-            <Button type="submit" className="flex-1" disabled={loading}>
+          <div className="flex justify-end pt-4">
+            <Button type="submit" className="px-8" disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

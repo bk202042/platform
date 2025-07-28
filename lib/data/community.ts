@@ -111,7 +111,8 @@ export async function getPostByIdWithLikeStatus(
         id,
         first_name,
         last_name,
-        avatar_url
+        avatar_url,
+        email
       )
     `)
     .eq("id", postId)
@@ -159,6 +160,7 @@ export async function getPostByIdWithLikeStatus(
   const profile = post.profiles;
   const displayName = profile
     ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() ||
+      profile.email?.split("@")[0] ||
       "익명"
     : "익명";
 
@@ -193,7 +195,8 @@ export async function getPostsWithLikeStatus(params: {
         id,
         first_name,
         last_name,
-        avatar_url
+        avatar_url,
+        email
       )
     `
     )
@@ -255,6 +258,7 @@ export async function getPostsWithLikeStatus(params: {
     const profile = post.profiles;
     const displayName = profile
       ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() ||
+        profile.email?.split("@")[0] ||
         "익명"
       : "익명";
 
@@ -394,7 +398,8 @@ export async function getComments(postId: string) {
         id,
         first_name,
         last_name,
-        avatar_url
+        avatar_url,
+        email
       )
     `
     )
@@ -418,6 +423,7 @@ export async function getComments(postId: string) {
       : comment.profiles;
     const displayName = profile
       ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() ||
+        profile.email?.split("@")[0] ||
         "익명"
       : "익명";
 
@@ -670,7 +676,7 @@ export async function searchPostsWithLocation(params: {
         cities(name, name_ko)
       ),
       profiles!community_posts_user_id_fkey (
-        id, first_name, last_name, avatar_url
+        id, first_name, last_name, avatar_url, email
       )
     `
     )
@@ -727,6 +733,7 @@ export async function searchPostsWithLocation(params: {
       : post.profiles;
     const displayName = profile
       ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() ||
+        profile.email?.split("@")[0] ||
         "익명"
       : "익명";
 
