@@ -4,7 +4,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -17,7 +16,7 @@ import {
 } from "@/lib/validation/community";
 import { ImageUpload } from "@/components/community/ImageUpload";
 import { useToast } from "@/components/community/ToastProvider";
-import { AlertCircle, Loader2, X } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 
@@ -186,21 +185,9 @@ export function NewPostDialog({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <DialogHeader className="space-y-3">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-semibold">
-              새 글 작성
-            </DialogTitle>
-            <DialogClose asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0"
-                aria-label="닫기"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </DialogClose>
-          </div>
+          <DialogTitle className="text-xl font-semibold">
+            새 글 작성
+          </DialogTitle>
           <p className="text-sm text-muted-foreground">
             커뮤니티에 새로운 글을 작성해보세요
           </p>
