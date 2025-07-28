@@ -837,7 +837,23 @@
       "lastAccessed": "2025-07-28T05:24:07.770Z",
       "lastVerified": "2025-07-28T05:24:07.770Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753680519153_d17ca4ngq",
+      "content": "REFACTORING DECISION - ApartmentAutocomplete.tsx Migration Analysis:\n\n**DECISION: KEEP ApartmentAutocomplete.tsx - Migration Too Risky**\n\n**ANALYSIS:**\n- ApartmentAutocomplete uses simple interface: onApartmentSelect(id: string) + value: string\n- VietnameseLocationSelector uses complex interface: onLocationSelect(LocationSearchResult) + selectedLocation: LocationSearchResult\n- Migration would require significant changes to NewPostDialog form logic, state management, and submission handling\n\n**RISK ASSESSMENT:**\n- HIGH RISK of breaking post creation functionality\n- Form logic changes could introduce bugs in critical user workflow\n- Not aligned with behavior-preserving refactoring principles\n\n**BEHAVIOR PRESERVATION PRIORITY:**\nThis refactoring task requires ZERO functionality changes. Migrating ApartmentAutocomplete would require:\n1. Changing form state structure (apartment_id string → LocationSearchResult object)\n2. Updating form validation logic\n3. Modifying form submission logic\n4. Risk of breaking post creation workflow\n\n**CONCLUSION:**\nKeep ApartmentAutocomplete.tsx as it's functional and actively used. While not as sophisticated as unified search, it serves its purpose without risk to existing functionality.\n\n**FINAL COUNT:**\n- Successfully removed: 6 obsolete files\n- Evaluated and kept: 2 files with active usage (VietnameseLocationSelector, ApartmentAutocomplete)",
+      "type": "general",
+      "tags": [
+        "general",
+        "refactoring-decision",
+        "risk-assessment",
+        "behavior-preservation"
+      ],
+      "timestamp": "2025-07-28T05:28:39.151Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-28T05:28:39.151Z",
+      "lastVerified": "2025-07-28T05:28:39.151Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-28T05:24:07.770Z"
+  "lastUpdated": "2025-07-28T05:28:39.151Z"
 }
