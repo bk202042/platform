@@ -158,7 +158,7 @@ export function NewPostDialogClient({
           console.log(`SUCCESS|client|NewPostDialog|optimistic_update_completed|user_id=${user.id}|post_id=${newPost?.id}`);
           toast.success("게시글이 작성되었습니다.");
           setError(undefined); // Clear any previous errors
-          // Note: Dialog closing is handled by parent component to prevent duplicate state updates
+          onClose(); // Close dialog after successful post creation
         },
         onError: (err) => {
           // Enhanced error categorization for user-friendly messages

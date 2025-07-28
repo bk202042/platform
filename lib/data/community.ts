@@ -100,13 +100,19 @@ export async function getPostByIdWithLikeStatus(
 ) {
   const supabase = await createClient();
 
-  // Get post data with images
+  // Get post data with images and user profile
   const { data: post, error: postError } = await supabase
     .from("community_posts")
     .select(`
       *, 
       apartments(city_id, name, slug, cities(name)),
-      community_post_images(id, storage_path, display_order, alt_text, metadata, created_at)
+      community_post_images(id, storage_path, display_order, alt_text, metadata, created_at),
+      profiles!community_posts_user_id_fkey (
+        id,
+        first_name,
+        last_name,
+        avatar_url
+      )
     `)
     .eq("id", postId)
     .eq("is_deleted", false)
@@ -149,9 +155,20 @@ export async function getPostByIdWithLikeStatus(
     isLiked = !!likeData;
   }
 
+  // Format user profile data
+  const profile = post.profiles;
+  const displayName = profile
+    ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() ||
+      "익명"
+    : "익명";
+
   return {
     ...post,
     isLiked,
+    user: {
+      name: displayName,
+      avatar_url: profile?.avatar_url,
+    },
   };
 }
 

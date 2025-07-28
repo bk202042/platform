@@ -1,8 +1,27 @@
-import React from "react";
-import { MessageCircle, Clock, User, MapPin } from "lucide-react";
+"use client";
+
+import React, { useState } from "react";
+import { MessageCircle, Clock, User, MapPin, Trash2, MoreHorizontal } from "lucide-react";
 import { CommunityCategory } from "@/lib/validation/community";
 import { LikeButton } from "./LikeButton";
 import { ImageGallery } from "./ImageGallery";
+import { usePostActions } from "@/lib/hooks/usePostActions";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export interface PostDetailProps {
   post: {
@@ -11,6 +30,7 @@ export interface PostDetailProps {
     body: string;
     images?: string[];
     user?: { name?: string };
+    user_id?: string;
     created_at: string;
     likes_count: number;
     comments_count: number;
@@ -42,6 +62,12 @@ const CATEGORY_CONFIG = {
 
 export function PostDetail({ post }: PostDetailProps) {
   const categoryConfig = post.category ? CATEGORY_CONFIG[post.category] : null;
+  const { user } = useAuth();
+  const { deletePost, isLoading } = usePostActions();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  // Check if current user owns this post
+  const isPostOwner = user?.id === post.user_id;
 
   // Format date for better readability
   const formatDate = (dateString: string) => {
@@ -55,10 +81,20 @@ export function PostDetail({ post }: PostDetailProps) {
     });
   };
 
+  // Handle post deletion
+  const handleDelete = async () => {
+    const result = await deletePost(post.id);
+    if (result.success) {
+      setShowDeleteDialog(false);
+      // Navigate back to community page after deletion
+      window.location.href = "/community";
+    }
+  };
+
   return (
     <article className="bg-white rounded-lg sm:rounded-xl lg:rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
       <div className="p-3 xs:p-4 sm:p-6 md:p-8">
-        {/* Header with category badge and location */}
+        {/* Header with category badge, location, and delete button */}
         <div className="flex items-start justify-between gap-2 xs:gap-3 sm:gap-4 mb-4 xs:mb-5 sm:mb-6">
           <div className="flex items-center gap-2 xs:gap-2.5 sm:gap-3 flex-wrap">
             {categoryConfig && (
@@ -83,6 +119,32 @@ export function PostDetail({ post }: PostDetailProps) {
               </div>
             )}
           </div>
+          
+          {/* Post actions (delete button for post owner) */}
+          {isPostOwner && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600"
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">게시글 옵션</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => setShowDeleteDialog(true)}
+                  className="text-red-600 focus:text-red-700 focus:bg-red-50"
+                  disabled={isLoading}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  삭제하기
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         {/* Title */}
@@ -155,6 +217,34 @@ export function PostDetail({ post }: PostDetailProps) {
           </div>
         </div>
       </div>
+      
+      {/* Delete confirmation dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>게시글 삭제</DialogTitle>
+            <DialogDescription>
+              정말로 이 게시글을 삭제하시겠습니까? 삭제된 게시글은 복구할 수 없습니다.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowDeleteDialog(false)}
+              disabled={isLoading}
+            >
+              취소
+            </Button>
+            <Button
+              onClick={handleDelete}
+              disabled={isLoading}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isLoading ? "삭제 중..." : "삭제"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </article>
   );
 }

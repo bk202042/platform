@@ -15,8 +15,8 @@
       ],
       "timestamp": "2025-07-25T22:41:20.238Z",
       "context": "Starting debug investigation for auth user posting error",
-      "accessCount": 4,
-      "lastAccessed": "2025-07-27T03:57:16.872Z",
+      "accessCount": 5,
+      "lastAccessed": "2025-07-28T01:10:09.947Z",
       "lastVerified": "2025-07-25T22:41:20.238Z",
       "status": "fresh"
     },
@@ -36,8 +36,8 @@
       ],
       "timestamp": "2025-07-25T22:44:08.288Z",
       "context": "Starting auth user posting error debug implementation",
-      "accessCount": 4,
-      "lastAccessed": "2025-07-27T03:57:16.872Z",
+      "accessCount": 5,
+      "lastAccessed": "2025-07-28T01:10:09.947Z",
       "lastVerified": "2025-07-25T22:44:08.288Z",
       "status": "fresh"
     },
@@ -58,8 +58,8 @@
       ],
       "timestamp": "2025-07-25T22:45:55.250Z",
       "context": "Debug analysis of auth posting system architecture",
-      "accessCount": 3,
-      "lastAccessed": "2025-07-27T03:57:16.872Z",
+      "accessCount": 4,
+      "lastAccessed": "2025-07-28T01:10:09.947Z",
       "lastVerified": "2025-07-25T22:45:55.250Z",
       "status": "fresh"
     },
@@ -79,8 +79,8 @@
       ],
       "timestamp": "2025-07-25T22:54:04.119Z",
       "context": "Comprehensive debug analysis of auth posting error",
-      "accessCount": 3,
-      "lastAccessed": "2025-07-27T03:57:16.872Z",
+      "accessCount": 4,
+      "lastAccessed": "2025-07-28T01:10:09.947Z",
       "lastVerified": "2025-07-25T22:54:04.119Z",
       "status": "fresh"
     },
@@ -99,8 +99,8 @@
       ],
       "timestamp": "2025-07-25T22:55:59.402Z",
       "context": "Auth user posting error fix implementation completed",
-      "accessCount": 3,
-      "lastAccessed": "2025-07-27T03:57:16.872Z",
+      "accessCount": 4,
+      "lastAccessed": "2025-07-28T01:10:09.947Z",
       "lastVerified": "2025-07-25T22:55:59.402Z",
       "status": "fresh"
     },
@@ -123,8 +123,8 @@
       ],
       "timestamp": "2025-07-25T23:00:22.627Z",
       "context": "Complete debug session summary for Byterover knowledge base",
-      "accessCount": 3,
-      "lastAccessed": "2025-07-27T03:57:16.872Z",
+      "accessCount": 4,
+      "lastAccessed": "2025-07-28T01:10:09.947Z",
       "lastVerified": "2025-07-25T23:00:22.627Z",
       "status": "fresh"
     },
@@ -147,8 +147,8 @@
       ],
       "timestamp": "2025-07-25T23:23:26.144Z",
       "context": "Critical authentication context issue reference for Byterover knowledge base",
-      "accessCount": 3,
-      "lastAccessed": "2025-07-27T03:57:16.872Z",
+      "accessCount": 4,
+      "lastAccessed": "2025-07-28T01:10:09.947Z",
       "lastVerified": "2025-07-25T23:23:26.144Z",
       "status": "fresh"
     },
@@ -165,8 +165,8 @@
         "debug"
       ],
       "timestamp": "2025-07-26T05:31:39.328Z",
-      "accessCount": 3,
-      "lastAccessed": "2025-07-27T03:57:16.872Z",
+      "accessCount": 4,
+      "lastAccessed": "2025-07-28T01:10:09.947Z",
       "lastVerified": "2025-07-26T05:31:39.328Z",
       "status": "fresh"
     },
@@ -184,8 +184,8 @@
         "supabase"
       ],
       "timestamp": "2025-07-26T05:32:34.536Z",
-      "accessCount": 3,
-      "lastAccessed": "2025-07-27T03:57:16.872Z",
+      "accessCount": 4,
+      "lastAccessed": "2025-07-28T01:10:09.947Z",
       "lastVerified": "2025-07-26T05:32:34.536Z",
       "status": "fresh"
     },
@@ -201,8 +201,8 @@
         "server-client"
       ],
       "timestamp": "2025-07-26T05:32:56.284Z",
-      "accessCount": 3,
-      "lastAccessed": "2025-07-27T03:57:16.872Z",
+      "accessCount": 4,
+      "lastAccessed": "2025-07-28T01:10:09.947Z",
       "lastVerified": "2025-07-26T05:32:56.284Z",
       "status": "fresh"
     },
@@ -604,7 +604,27 @@
       "lastAccessed": "2025-07-28T00:56:41.320Z",
       "lastVerified": "2025-07-28T00:56:41.320Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753665311557_ljwr8xlp1",
+      "content": "Community posting interface fixes completed successfully:\n\n**Issues Fixed:**\n1. **Dialog not closing after post creation** - Fixed by adding `onClose()` call in NewPostDialog.client.tsx success handler\n2. **Missing author names** - Fixed by adding user profile join in `getPostByIdWithLikeStatus` function in community.ts data layer\n3. **Missing delete button** - Added delete functionality to PostDetail component with proper authorization\n\n**Technical Details:**\n- NewPostDialog.client.tsx: Added `onClose()` call in optimistic update success handler (line 161)\n- lib/data/community.ts: Updated `getPostByIdWithLikeStatus` to include profiles join and format user display names\n- PostDetail.tsx: Added \"use client\" directive, delete button with dropdown menu, confirmation dialog, and proper owner authorization\n\n**Key Implementation:**\n- Delete button only shows for post owners (checks `user?.id === post.user_id`)\n- Uses existing `usePostActions` hook's `deletePost` function\n- Confirmation dialog prevents accidental deletions\n- Proper loading states and error handling\n\nAll fixes tested with successful build and lint checks.",
+      "type": "code",
+      "tags": [
+        "code",
+        "community",
+        "posting",
+        "ui-fixes",
+        "delete-functionality",
+        "user-profiles",
+        "dialog-management"
+      ],
+      "timestamp": "2025-07-28T01:15:11.557Z",
+      "context": "Community posting interface bug fixes",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-28T01:15:11.557Z",
+      "lastVerified": "2025-07-28T01:15:11.557Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-28T00:56:41.320Z"
+  "lastUpdated": "2025-07-28T01:15:11.557Z"
 }
