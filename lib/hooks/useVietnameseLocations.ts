@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   LocationSearchResult,
   UserLocation,
@@ -367,5 +367,215 @@ export function useLocationAutocomplete() {
     isLoading,
     getSuggestions,
     clearSuggestions,
+  };
+}
+
+// Hook for comprehensive apartment browsing
+export function useAllApartments(params: {
+  cityId?: string;
+  featured?: boolean;
+  withActivity?: boolean;
+  limit?: number;
+} = {}) {
+  const [apartments, setApartments] = useState<VietnameseApartment[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(0);
+
+  // Memoize params to avoid infinite re-renders
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const memoizedParams = useMemo(() => params, [
+    params.cityId,
+    params.featured,
+    params.withActivity,
+    params.limit,
+  ]);
+
+  const fetchApartments = useCallback(async (reset: boolean = false) => {
+    setIsLoading(true);
+    setError(null);
+
+    const currentOffset = reset ? 0 : offset;
+    const { cityId, featured, withActivity, limit = 20 } = memoizedParams;
+
+    try {
+      const searchParams = new URLSearchParams({
+        type: "apartment",
+        limit: limit.toString(),
+        offset: currentOffset.toString(),
+      });
+
+      if (cityId) searchParams.set("cityId", cityId);
+      if (featured !== undefined) searchParams.set("featured", featured.toString());
+      if (withActivity) searchParams.set("withActivity", "true");
+
+      const response = await fetch(`/api/community/locations?${searchParams}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch apartments");
+      }
+
+      const data = await response.json();
+      const newApartments = data.apartments || [];
+
+      if (reset) {
+        setApartments(newApartments);
+        setOffset(newApartments.length);
+      } else {
+        setApartments(prev => [...prev, ...newApartments]);
+        setOffset(prev => prev + newApartments.length);
+      }
+
+      setHasMore(newApartments.length === limit);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load apartments");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [memoizedParams, offset]);
+
+  const loadMore = useCallback(() => {
+    if (!isLoading && hasMore) {
+      fetchApartments(false);
+    }
+  }, [fetchApartments, isLoading, hasMore]);
+
+  const refresh = useCallback(() => {
+    setOffset(0);
+    fetchApartments(true);
+  }, [fetchApartments]);
+
+  // Initial load and reload when params change
+  useEffect(() => {
+    setOffset(0);
+    setApartments([]);
+    setHasMore(true);
+    
+    const initialFetch = async () => {
+      const { cityId, featured, withActivity, limit = 20 } = memoizedParams;
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const searchParams = new URLSearchParams({
+          type: "apartment",
+          limit: limit.toString(),
+          offset: "0",
+        });
+
+        if (cityId) searchParams.set("cityId", cityId);
+        if (featured !== undefined) searchParams.set("featured", featured.toString());
+        if (withActivity) searchParams.set("withActivity", "true");
+
+        const response = await fetch(`/api/community/locations?${searchParams}`);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch apartments");
+        }
+
+        const data = await response.json();
+        const newApartments = data.apartments || [];
+
+        setApartments(newApartments);
+        setOffset(newApartments.length);
+        setHasMore(newApartments.length === limit);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load apartments");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initialFetch();
+  }, [memoizedParams]);
+
+  return {
+    apartments,
+    isLoading,
+    error,
+    hasMore,
+    loadMore,
+    refresh,
+  };
+}
+
+// Hook for apartments with recent activity
+export function useApartmentsWithActivity(limit: number = 20) {
+  const [apartments, setApartments] = useState<VietnameseApartment[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchActiveApartments = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/community/locations?sortBy=activity&limit=${limit}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch active apartments");
+      }
+
+      const data = await response.json();
+      setApartments(data.apartments || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load apartments");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [limit]);
+
+  useEffect(() => {
+    fetchActiveApartments();
+  }, [fetchActiveApartments]);
+
+  return {
+    apartments,
+    isLoading,
+    error,
+    refetch: fetchActiveApartments,
+  };
+}
+
+// Hook for apartments by user count
+export function useApartmentsByUsers(limit: number = 20) {
+  const [apartments, setApartments] = useState<VietnameseApartment[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchApartmentsByUsers = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/community/locations?sortBy=users&limit=${limit}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch apartments by users");
+      }
+
+      const data = await response.json();
+      setApartments(data.apartments || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load apartments");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [limit]);
+
+  useEffect(() => {
+    fetchApartmentsByUsers();
+  }, [fetchApartmentsByUsers]);
+
+  return {
+    apartments,
+    isLoading,
+    error,
+    refetch: fetchApartmentsByUsers,
   };
 }

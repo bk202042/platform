@@ -4,6 +4,9 @@ import {
   getVietnameseCities,
   getApartmentsByCity,
   getPopularVietnameseLocations,
+  getApartmentsWithRecentActivity,
+  getApartmentsByUserCount,
+  getAllVietnameseApartments,
 } from "@/lib/data/vietnamese-locations";
 
 // GET /api/community/locations - Search and get Vietnamese locations
@@ -18,7 +21,11 @@ export async function GET(request: NextRequest) {
       | null;
     const cityId = searchParams.get("cityId");
     const popular = searchParams.get("popular") === "true";
+    const withActivity = searchParams.get("withActivity") === "true";
+    const featured = searchParams.get("featured");
+    const sortBy = searchParams.get("sortBy") as "activity" | "users" | "name" | null;
     const limit = parseInt(searchParams.get("limit") || "10");
+    const offset = parseInt(searchParams.get("offset") || "0");
 
     // Return popular locations if requested
     if (popular) {
@@ -36,9 +43,31 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ locations });
     }
 
+    // Get apartments with specific sorting/filtering
+    if (sortBy === "activity") {
+      const apartments = await getApartmentsWithRecentActivity(limit);
+      return NextResponse.json({ apartments });
+    }
+
+    if (sortBy === "users") {
+      const apartments = await getApartmentsByUserCount(limit);
+      return NextResponse.json({ apartments });
+    }
+
     // Get apartments by city if cityId provided
     if (cityId) {
       const apartments = await getApartmentsByCity(cityId);
+      return NextResponse.json({ apartments });
+    }
+
+    // Get all apartments with comprehensive filtering
+    if (type === "apartment" || searchParams.has("all")) {
+      const apartments = await getAllVietnameseApartments({
+        featured: featured ? featured === "true" : undefined,
+        withActivity,
+        limit,
+        offset,
+      });
       return NextResponse.json({ apartments });
     }
 

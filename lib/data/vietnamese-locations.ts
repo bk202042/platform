@@ -26,6 +26,23 @@ export interface VietnameseApartment {
   is_featured: boolean;
 }
 
+// Extended interface for apartment data with joined city information
+interface ApartmentWithCity extends VietnameseApartment {
+  cities: { name: string; name_ko?: string; country: string } | { name: string; name_ko?: string; country: string }[];
+}
+
+// Interface for processed apartment data in getPopularVietnameseLocations
+interface ProcessedApartment {
+  id: string;
+  name: string;
+  name_ko?: string;
+  name_en?: string;
+  district?: string;
+  district_ko?: string;
+  cities: { name: string; name_ko?: string; country: string };
+  priority: number;
+}
+
 export interface LocationSearchResult {
   id: string;
   type: "city" | "apartment";
@@ -326,7 +343,193 @@ export function formatLocationDisplay(
 }
 
 /**
+ * Get apartments with recent community activity (last 30 days)
+ */
+export async function getApartmentsWithRecentActivity(
+  limit: number = 20
+): Promise<VietnameseApartment[]> {
+  const supabase = await createClient();
+
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const { data: activeApartments, error } = await supabase
+      .from("community_posts")
+      .select(
+        `
+        apartment_id,
+        apartments!inner(
+          id, name, name_ko, name_en, district, district_ko, address, address_ko,
+          city_id, latitude, longitude, is_featured
+        )
+      `
+      )
+      .eq("is_deleted", false)
+      .eq("status", "published")
+      .gte("created_at", thirtyDaysAgo.toISOString())
+      .limit(limit * 2); // Get more to account for duplicates
+
+    if (error) throw error;
+
+    // Group by apartment and count posts
+    const apartmentPostCounts: Record<string, { apartment: VietnameseApartment; count: number }> = {};
+    
+    activeApartments?.forEach((post) => {
+      const apt = Array.isArray(post.apartments) ? post.apartments[0] : post.apartments;
+      if (apt) {
+        if (!apartmentPostCounts[apt.id]) {
+          apartmentPostCounts[apt.id] = {
+            apartment: apt as unknown as VietnameseApartment,
+            count: 0,
+          };
+        }
+        apartmentPostCounts[apt.id].count++;
+      }
+    });
+
+    // Return apartments sorted by activity
+    return Object.values(apartmentPostCounts)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, limit)
+      .map(({ apartment }) => apartment);
+  } catch (error) {
+    console.error("Error getting apartments with recent activity:", error);
+    return [];
+  }
+}
+
+/**
+ * Get apartments by user count (apartments with most active users)
+ */
+export async function getApartmentsByUserCount(
+  limit: number = 20
+): Promise<VietnameseApartment[]> {
+  const supabase = await createClient();
+
+  try {
+    const { data: userApartments, error } = await supabase
+      .from("user_locations")
+      .select(
+        `
+        apartment_id,
+        apartments!inner(
+          id, name, name_ko, name_en, district, district_ko, address, address_ko,
+          city_id, latitude, longitude, is_featured
+        )
+      `
+      )
+      .not("apartment_id", "is", null)
+      .limit(limit * 2); // Get more to account for duplicates
+
+    if (error) throw error;
+
+    // Group by apartment and count users
+    const apartmentUserCounts: Record<string, { apartment: VietnameseApartment; count: number }> = {};
+    
+    userApartments?.forEach((userLoc) => {
+      const apt = Array.isArray(userLoc.apartments) ? userLoc.apartments[0] : userLoc.apartments;
+      if (apt) {
+        if (!apartmentUserCounts[apt.id]) {
+          apartmentUserCounts[apt.id] = {
+            apartment: apt as unknown as VietnameseApartment,
+            count: 0,
+          };
+        }
+        apartmentUserCounts[apt.id].count++;
+      }
+    });
+
+    // Return apartments sorted by user count
+    return Object.values(apartmentUserCounts)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, limit)
+      .map(({ apartment }) => apartment);
+  } catch (error) {
+    console.error("Error getting apartments by user count:", error);
+    return [];
+  }
+}
+
+/**
+ * Get all apartments with comprehensive filtering options
+ */
+export async function getAllVietnameseApartments(params: {
+  cityId?: string;
+  featured?: boolean;
+  withActivity?: boolean;
+  limit?: number;
+  offset?: number;
+} = {}): Promise<VietnameseApartment[]> {
+  const supabase = await createClient();
+  const { cityId, featured, withActivity, limit = 50, offset = 0 } = params;
+
+  try {
+    let query = supabase
+      .from("apartments")
+      .select(
+        `
+        id, name, name_ko, name_en, district, district_ko, address, address_ko,
+        city_id, latitude, longitude, is_featured,
+        cities!inner(name, name_ko, country)
+      `
+      )
+      .eq("cities.country", "Vietnam");
+
+    if (cityId) {
+      query = query.eq("city_id", cityId);
+    }
+
+    if (featured !== undefined) {
+      query = query.eq("is_featured", featured);
+    }
+
+    // Apply pagination
+    query = query.range(offset, offset + limit - 1);
+
+    // Default ordering by name
+    query = query.order("name", { ascending: true });
+
+    const { data: apartments, error } = await query;
+
+    if (error) throw error;
+
+    // If withActivity is true, get activity data and sort by it
+    if (withActivity && apartments && apartments.length > 0) {
+      const apartmentIds = apartments.map(apt => apt.id);
+      
+      // Get recent activity counts
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      const { data: activityData } = await supabase
+        .from("community_posts")
+        .select("apartment_id")
+        .in("apartment_id", apartmentIds)
+        .eq("is_deleted", false)
+        .eq("status", "published")
+        .gte("created_at", thirtyDaysAgo.toISOString());
+
+      // Count posts per apartment
+      const activityCounts: Record<string, number> = {};
+      activityData?.forEach(post => {
+        activityCounts[post.apartment_id] = (activityCounts[post.apartment_id] || 0) + 1;
+      });
+
+      // Sort apartments by activity count
+      apartments.sort((a, b) => (activityCounts[b.id] || 0) - (activityCounts[a.id] || 0));
+    }
+
+    return apartments || [];
+  } catch (error) {
+    console.error("Error getting all Vietnamese apartments:", error);
+    return [];
+  }
+}
+
+/**
  * Get popular Vietnamese locations for suggestions
+ * Enhanced to include apartments with recent community activity, not just featured ones
  */
 export async function getPopularVietnameseLocations(): Promise<
   LocationSearchResult[]
@@ -344,8 +547,12 @@ export async function getPopularVietnameseLocations(): Promise<
 
     if (citiesError) throw citiesError;
 
-    // Get featured apartments
-    const { data: apartments, error: apartmentsError } = await supabase
+    // Get apartments with a multi-criteria approach
+    const apartmentIds = new Set<string>();
+    const allApartments: ProcessedApartment[] = [];
+
+    // 1. Get featured apartments (highest priority)
+    const { data: featuredApartments, error: featuredError } = await supabase
       .from("apartments")
       .select(
         `
@@ -356,9 +563,122 @@ export async function getPopularVietnameseLocations(): Promise<
       .eq("is_featured", true)
       .eq("cities.country", "Vietnam")
       .order("name")
-      .limit(10);
+      .limit(8);
 
-    if (apartmentsError) throw apartmentsError;
+    if (!featuredError && featuredApartments) {
+      featuredApartments.forEach((apt) => {
+        apartmentIds.add(apt.id);
+        allApartments.push({
+          ...apt,
+          cities: Array.isArray(apt.cities) ? apt.cities[0] : apt.cities,
+          priority: 3,
+        });
+      });
+    }
+
+    // 2. Get apartments with recent community activity (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const { data: activeApartments, error: activeError } = await supabase
+      .from("community_posts")
+      .select(
+        `
+        apartment_id,
+        apartments!inner(
+          id, name, name_ko, name_en, district, district_ko,
+          cities!inner(name, name_ko, country)
+        )
+      `
+      )
+      .eq("is_deleted", false)
+      .eq("status", "published")
+      .eq("apartments.cities.country", "Vietnam")
+      .gte("created_at", thirtyDaysAgo.toISOString())
+      .order("created_at", { ascending: false })
+      .limit(15);
+
+    if (!activeError && activeApartments) {
+      // Group by apartment and count posts
+      const apartmentPostCounts: Record<string, { apartment: VietnameseApartment; count: number }> = {};
+      
+      activeApartments.forEach((post) => {
+        const apt = Array.isArray(post.apartments) ? post.apartments[0] : post.apartments;
+        if (apt && !apartmentIds.has(apt.id)) {
+          if (!apartmentPostCounts[apt.id]) {
+            apartmentPostCounts[apt.id] = {
+              apartment: apt as unknown as VietnameseApartment,
+              count: 0,
+            };
+          }
+          apartmentPostCounts[apt.id].count++;
+        }
+      });
+
+      // Add apartments with most recent activity
+      Object.values(apartmentPostCounts)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 8)
+        .forEach(({ apartment }) => {
+          apartmentIds.add(apartment.id);
+          const cities = (apartment as ApartmentWithCity).cities;
+          allApartments.push({
+            ...apartment,
+            cities: Array.isArray(cities) ? cities[0] : cities,
+            priority: 2,
+          });
+        });
+    }
+
+    // 3. Get apartments with active users (fallback if we need more)
+    if (allApartments.length < 12) {
+      const { data: userApartments, error: userError } = await supabase
+        .from("user_locations")
+        .select(
+          `
+          apartment_id,
+          apartments!inner(
+            id, name, name_ko, name_en, district, district_ko,
+            cities!inner(name, name_ko, country)
+          )
+        `
+        )
+        .eq("apartments.cities.country", "Vietnam")
+        .not("apartment_id", "is", null)
+        .limit(10);
+
+      if (!userError && userApartments) {
+        // Group by apartment and count users
+        const apartmentUserCounts: Record<string, { apartment: VietnameseApartment; count: number }> = {};
+        
+        userApartments.forEach((userLoc) => {
+          const apt = Array.isArray(userLoc.apartments) ? userLoc.apartments[0] : userLoc.apartments;
+          if (apt && !apartmentIds.has(apt.id)) {
+            if (!apartmentUserCounts[apt.id]) {
+              apartmentUserCounts[apt.id] = {
+                apartment: apt as unknown as VietnameseApartment,
+                count: 0,
+              };
+            }
+            apartmentUserCounts[apt.id].count++;
+          }
+        });
+
+        // Add apartments with most users
+        Object.values(apartmentUserCounts)
+          .sort((a, b) => b.count - a.count)
+          .slice(0, Math.max(0, 12 - allApartments.length))
+          .forEach(({ apartment }) => {
+            apartmentIds.add(apartment.id);
+            const cities = (apartment as ApartmentWithCity).cities;
+            allApartments.push({
+              ...apartment,
+              cities: Array.isArray(cities) ? cities[0] : cities,
+              priority: 1,
+            });
+          });
+      }
+    }
 
     const results: LocationSearchResult[] = [];
 
@@ -378,36 +698,37 @@ export async function getPopularVietnameseLocations(): Promise<
       });
     });
 
-    // Add featured apartments
-    apartments?.forEach((apartment) => {
-      const city = Array.isArray(apartment.cities)
-        ? apartment.cities[0]
-        : apartment.cities;
-      const fullAddress = apartment.district
-        ? `${city.name}, ${apartment.district}, ${apartment.name}`
-        : `${city.name}, ${apartment.name}`;
-      const fullAddressKo =
-        apartment.district_ko && city.name_ko && apartment.name_ko
-          ? `${city.name_ko}, ${apartment.district_ko}, ${apartment.name_ko}`
-          : city.name_ko && apartment.name_ko
-            ? `${city.name_ko}, ${apartment.name_ko}`
-            : fullAddress;
+    // Add apartments sorted by priority (featured first, then by activity)
+    allApartments
+      .sort((a, b) => b.priority - a.priority)
+      .slice(0, 15) // Limit total apartments
+      .forEach((apartment) => {
+        const city = (apartment as ProcessedApartment).cities;
+        const fullAddress = apartment.district
+          ? `${city.name}, ${apartment.district}, ${apartment.name}`
+          : `${city.name}, ${apartment.name}`;
+        const fullAddressKo =
+          apartment.district_ko && city.name_ko && apartment.name_ko
+            ? `${city.name_ko}, ${apartment.district_ko}, ${apartment.name_ko}`
+            : city.name_ko && apartment.name_ko
+              ? `${city.name_ko}, ${apartment.name_ko}`
+              : fullAddress;
 
-      results.push({
-        id: apartment.id,
-        type: "apartment",
-        name: apartment.name,
-        name_ko: apartment.name_ko,
-        name_en: apartment.name_en,
-        full_address: fullAddress,
-        full_address_ko: fullAddressKo,
-        city_name: city.name,
-        city_name_ko: city.name_ko,
-        district: apartment.district,
-        district_ko: apartment.district_ko,
-        similarity_score: 0.9,
+        results.push({
+          id: apartment.id,
+          type: "apartment",
+          name: apartment.name,
+          name_ko: apartment.name_ko,
+          name_en: apartment.name_en,
+          full_address: fullAddress,
+          full_address_ko: fullAddressKo,
+          city_name: city.name,
+          city_name_ko: city.name_ko,
+          district: apartment.district,
+          district_ko: apartment.district_ko,
+          similarity_score: apartment.priority === 3 ? 0.9 : apartment.priority === 2 ? 0.8 : 0.7,
+        });
       });
-    });
 
     return results;
   } catch (error) {
