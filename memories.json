@@ -746,7 +746,24 @@
       "lastAccessed": "2025-07-28T04:52:37.182Z",
       "lastVerified": "2025-07-28T04:52:37.182Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1753679254310_cantyxsn3",
+      "content": "REFACTORING REQUEST: Clean up community folder after UnifiedSearchInterface implementation\n\nCONTEXT: We successfully implemented UnifiedSearchInterface system that replaced:\n- Old SearchBar component (dual-purpose search)\n- Old LocationSelectorModal component (separate modal)\n- Dual search system causing user confusion\n\nNEW COMPONENTS CREATED:\n- UnifiedSearchInterface (main integration)\n- LocationContextHeader (location context display)\n- UnifiedSearchBar (intelligent search)\n- QuickLocationSwitcher (location chips)\n\nTASK: Identify and safely remove obsolete TSX files while preserving all functionality\n\nRISK LEVEL: LEVEL 4 (High Risk) - Removing files could break imports/references\nAPPROACH: Behavior-preserving refactoring with zero tolerance for functionality changes",
+      "type": "general",
+      "tags": [
+        "general",
+        "refactoring",
+        "cleanup",
+        "community-folder",
+        "obsolete-files"
+      ],
+      "timestamp": "2025-07-28T05:07:34.309Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-28T05:07:34.309Z",
+      "lastVerified": "2025-07-28T05:07:34.309Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-28T04:52:37.182Z"
+  "lastUpdated": "2025-07-28T05:07:34.309Z"
 }
