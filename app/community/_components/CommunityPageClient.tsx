@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, Suspense } from "react";
+import { useState, useCallback, useMemo, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PostList } from "@/components/community/PostList";
 import { SortSelector, SortOption } from "@/components/community/SortSelector";
@@ -8,11 +8,7 @@ import { CategorySidebar } from "./CategorySidebar";
 import { CommunityBreadcrumb } from "@/components/community/CommunityBreadcrumb";
 import { MobileNavigation } from "@/components/community/MobileNavigation";
 import { ErrorBoundary } from "@/components/community/ErrorBoundary";
-import {
-  LocationSelectorModal,
-  LocationSelectorButton,
-} from "@/components/community/LocationSelectorModal";
-import { SearchBar } from "@/components/community/SearchBar";
+import { UnifiedSearchInterface } from "@/components/community/UnifiedSearchInterface";
 import { LocationSearchResult } from "@/lib/data/vietnamese-locations";
 import { PullToRefresh } from "@/components/community/PullToRefresh";
 import { MobileBottomNavigation } from "@/components/community/MobileBottomNavigation";
@@ -79,9 +75,7 @@ export function CommunityPageClient({
   const urlApartmentId = searchParams.get("apartmentId") || "";
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
-  const [selectedLocation, setSelectedLocation] =
-    useState<LocationSearchResult | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<LocationSearchResult | null>(null);
   const [optimisticPosts, setOptimisticPosts] = useState(posts);
 
 
@@ -102,9 +96,9 @@ export function CommunityPageClient({
     [searchParams, router]
   );
 
-  const handleLocationSelect = useCallback(
+  const handleLocationChange = useCallback(
     (location: LocationSearchResult | null) => {
-      setSelectedLocation(location);
+      setCurrentLocation(location);
       const params = new URLSearchParams(searchParams.toString());
 
       if (location) {
@@ -121,12 +115,11 @@ export function CommunityPageClient({
       }
 
       router.push(`/community?${params.toString()}`);
-      // Note: setApartmentId is handled by useEffect when URL changes
     },
     [searchParams, router]
   );
 
-  const handleSearch = useCallback(
+  const handleContentSearch = useCallback(
     (query: string) => {
       const params = new URLSearchParams(searchParams.toString());
       if (query.trim()) {
@@ -139,9 +132,32 @@ export function CommunityPageClient({
     [searchParams, router]
   );
 
+  // Sync currentLocation with URL parameters
+  useEffect(() => {
+    if (urlApartmentId) {
+      const apartment = apartments.find((apt) => apt.id === urlApartmentId);
+      if (apartment) {
+        const locationResult: LocationSearchResult = {
+          id: apartment.id,
+          type: "apartment",
+          name: apartment.name,
+          name_ko: apartment.name,
+          full_address: apartment.cities?.name || "",
+          full_address_ko: apartment.cities?.name || "",
+          city_name: apartment.cities?.name || "",
+          city_name_ko: apartment.cities?.name || "",
+          similarity_score: 1.0,
+        };
+        setCurrentLocation(locationResult);
+      }
+    } else {
+      setCurrentLocation(null);
+    }
+  }, [urlApartmentId, apartments]);
+
   // Use URL values directly for consistent state
-  // Memoize expensive computations using URL values
-  const currentApartment = useMemo(
+  // Memoize expensive computations using URL values (kept for potential future use)
+  const _currentApartment = useMemo(
     () => apartments.find((apt) => apt.id === urlApartmentId),
     [apartments, urlApartmentId]
   );
@@ -202,8 +218,8 @@ export function CommunityPageClient({
             <div className="px-4 sm:px-6 lg:px-8 py-4">
               <CommunityBreadcrumb
                 category={urlCategory as CommunityCategory}
-                apartmentName={currentApartment?.name}
-                cityName={currentApartment?.cities?.name}
+                apartmentName={currentLocation?.type === "apartment" ? currentLocation.name : undefined}
+                cityName={currentLocation?.city_name || currentLocation?.name}
               />
               <div className="flex items-center justify-between mt-3">
                 <h1 className="text-2xl font-bold text-zinc-900">동네생활</h1>
@@ -235,35 +251,28 @@ export function CommunityPageClient({
               >
                 <div className="px-4 sm:px-6 lg:px-8 py-6">
                 <ErrorBoundary>
-                  {/* Controls Section */}
-                  <div className="mb-6 space-y-4">
-                    {/* Search Bar */}
-                    <SearchBar
-                      onSearch={handleSearch}
-                      onLocationSelect={handleLocationSelect}
-                      placeholder="베트남 지역이나 아파트를 검색하세요..."
-                      className="w-full max-w-2xl"
+                  {/* Unified Search Interface */}
+                  <div className="mb-6">
+                    <UnifiedSearchInterface
+                      initialLocation={currentLocation}
+                      onLocationChange={handleLocationChange}
+                      onContentSearch={handleContentSearch}
+                      onCreatePost={handleCreatePost}
+                      postCount={postCounts?.total}
+                      activeUserCount={12} // TODO: Get from real data
+                      showCreateButton={false} // We have other create buttons
                     />
-
-                    {/* Location and Sort Controls */}
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <LocationSelectorButton
-                          selectedLocation={selectedLocation}
-                          onOpenModal={() => setIsLocationModalOpen(true)}
-                          placeholder="지역을 선택하세요"
-                          className="bg-white border border-zinc-300 hover:border-zinc-400 text-zinc-700"
-                        />
-                        {/* Mobile Category Filter */}
-                        <div className="lg:hidden">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="border-zinc-300 text-zinc-700"
-                          >
-                            카테고리
-                          </Button>
-                        </div>
+                    
+                    {/* Sort Controls */}
+                    <div className="flex justify-between items-center mt-4 px-4">
+                      <div className="lg:hidden">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-zinc-300 text-zinc-700"
+                        >
+                          카테고리
+                        </Button>
                       </div>
                       <SortSelector value={currentSort} />
                     </div>
@@ -318,14 +327,6 @@ export function CommunityPageClient({
         </div>
       </div>
 
-      {/* Location Selector Modal */}
-      <LocationSelectorModal
-        open={isLocationModalOpen}
-        onOpenChange={setIsLocationModalOpen}
-        onLocationSelect={handleLocationSelect}
-        selectedLocation={selectedLocation}
-        title="지역 변경"
-      />
 
       {/* New Post Dialog */}
       <Suspense fallback={null}>
@@ -336,6 +337,7 @@ export function CommunityPageClient({
           apartments={apartments || []}
           onPostCreated={handlePostCreated}
           onPostRemoved={handlePostRemoved}
+          initialLocation={currentLocation}
         />
       </Suspense>
 

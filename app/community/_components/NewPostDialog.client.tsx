@@ -11,6 +11,7 @@ import { Post } from "./CommunityPageClient";
 import { useOptimisticUpdate } from "@/lib/hooks/useOptimisticUpdate";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { EnhancedError, ActionResult } from "@/lib/types/community";
+import { LocationSearchResult } from "@/lib/data/vietnamese-locations";
 
 interface City {
   id: string;
@@ -29,6 +30,7 @@ interface NewPostDialogClientProps {
   apartments: Apartment[];
   onPostCreated: (post: Post) => void;
   onPostRemoved: (postId: string) => void;
+  initialLocation?: LocationSearchResult | null;
 }
 
 export function NewPostDialogClient({
@@ -38,6 +40,7 @@ export function NewPostDialogClient({
   apartments,
   onPostCreated,
   onPostRemoved,
+  initialLocation,
 }: NewPostDialogClientProps) {
   const { executeOptimistic, isLoading } = useOptimisticUpdate();
   const [error, setError] = useState<string | undefined>();
@@ -45,9 +48,15 @@ export function NewPostDialogClient({
   const searchParams = useSearchParams();
 
   const defaultValues = useMemo(() => {
+    // Prioritize initialLocation over URL params for better UX
+    if (initialLocation?.type === "apartment") {
+      return { apartment_id: initialLocation.id };
+    }
+    
+    // Fallback to URL params if no initialLocation
     const apartmentId = searchParams.get("apartmentId");
     return apartmentId ? { apartment_id: apartmentId } : {};
-  }, [searchParams]);
+  }, [initialLocation, searchParams]);
 
   const handleSubmit = async (values: z.infer<typeof createPostSchema>) => {
     // Enhanced authentication validation with logging
