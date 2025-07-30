@@ -41,7 +41,7 @@ export async function generateMetadata({
       title: `${title} - 커뮤니티`,
       description: `${description}... ${apartmentInfo}`,
       type: "article",
-      images: post.images?.slice(0, 1) || [],
+      images: post.images?.slice(0, 1).map((img: { public_url: string }) => img.public_url) || [],
     },
   };
 }

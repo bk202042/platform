@@ -28,7 +28,16 @@ export interface PostDetailProps {
     id: string;
     title?: string;
     body: string;
-    images?: string[];
+    images?: Array<{
+      id: string;
+      storage_path: string;
+      display_order: number;
+      alt_text?: string;
+      metadata?: Record<string, unknown>;
+      created_at: string;
+      post_id: string;
+      public_url: string;
+    }>;
     user?: { name?: string };
     user_id?: string;
     created_at: string;
@@ -185,10 +194,10 @@ export function PostDetail({ post }: PostDetailProps) {
         {post.images && post.images.length > 0 && (
           <div className="mb-4 xs:mb-5 sm:mb-6">
             <ImageGallery
-              images={post.images.map((src, index) => ({
-                id: `${post.id}-image-${index}`,
-                src: src,
-                alt: `게시글 이미지 ${index + 1}`,
+              images={post.images.map((image, index) => ({
+                id: image.id || `${post.id}-image-${index}`,
+                src: image.public_url,
+                alt: image.alt_text || `게시글 이미지 ${index + 1}`,
               }))}
               layout="grid"
               className="w-full"
