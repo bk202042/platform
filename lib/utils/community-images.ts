@@ -45,8 +45,26 @@ export function extractStoragePath(publicUrl: string): string {
  * @returns True if the path is valid for community images
  */
 export function isValidCommunityImagePath(storagePath: string): boolean {
-  return storagePath.startsWith('community-images/') && 
-         /\.(jpg|jpeg|png|webp|gif)$/i.test(storagePath);
+  // Check if it matches the database constraint regex
+  const dbConstraintRegex = /^community-images\/[a-zA-Z0-9_\-]+\.(jpg|jpeg|png|webp|gif)$/i;
+  return dbConstraintRegex.test(storagePath);
+}
+
+/**
+ * Sanitizes a filename to match the database constraint
+ * @param filename - The original filename
+ * @returns Sanitized filename that matches the constraint
+ */
+export function sanitizeFilename(filename: string): string {
+  // Extract the file extension
+  const lastDotIndex = filename.lastIndexOf('.');
+  const extension = lastDotIndex > -1 ? filename.slice(lastDotIndex) : '';
+  const nameWithoutExt = lastDotIndex > -1 ? filename.slice(0, lastDotIndex) : filename;
+  
+  // Replace any characters not allowed by the regex with underscores
+  const sanitizedName = nameWithoutExt.replace(/[^a-zA-Z0-9_\-]/g, '_');
+  
+  return sanitizedName + extension;
 }
 
 /**
@@ -56,10 +74,35 @@ export function isValidCommunityImagePath(storagePath: string): boolean {
  */
 export function convertUrlsToImageData(imageUrls: string[]): CreatePostImageData[] {
   return imageUrls.map((url, index) => {
-    const storagePath = extractStoragePath(url);
+    let storagePath: string;
     
+    try {
+      storagePath = extractStoragePath(url);
+    } catch (error) {
+      console.error(`Failed to extract storage path from URL: ${url}`, error);
+      throw new Error(`Invalid image URL format: ${url}`);
+    }
+    
+    // If the path doesn't match the constraint, try to fix it
     if (!isValidCommunityImagePath(storagePath)) {
-      throw new Error(`Invalid community image path: ${storagePath}`);
+      console.warn(`Storage path doesn't match constraint: ${storagePath}, attempting to fix...`);
+      
+      // Extract the filename part and sanitize it
+      const pathParts = storagePath.split('/');
+      if (pathParts.length >= 2 && pathParts[0] === 'community-images') {
+        const filename = pathParts.slice(1).join('/');
+        const sanitizedFilename = sanitizeFilename(filename);
+        storagePath = `community-images/${sanitizedFilename}`;
+        
+        console.log(`Fixed storage path: ${storagePath}`);
+        
+        // Check if the fixed path is now valid
+        if (!isValidCommunityImagePath(storagePath)) {
+          throw new Error(`Cannot fix invalid community image path: ${storagePath}`);
+        }
+      } else {
+        throw new Error(`Invalid community image path structure: ${storagePath}`);
+      }
     }
     
     return {
@@ -67,7 +110,7 @@ export function convertUrlsToImageData(imageUrls: string[]): CreatePostImageData
       display_order: index,
       alt_text: undefined,
       metadata: {
-        // We'll extract this from the file name or use defaults
+        original_url: url,
         original_name: extractOriginalFileName(storagePath),
       },
     };

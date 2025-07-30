@@ -141,7 +141,9 @@ export function useSupabaseUpload({
       (fileWrapper) =>
         new Promise<{ name: string; url: string }>((resolve, reject) => {
           const file = fileWrapper.file;
-          const fileName = `${path ? `${path}/` : ""}${Date.now()}-${file.name}`;
+          // Sanitize filename to match database constraint: only alphanumeric, underscore, hyphen
+          const sanitizedName = file.name.replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+          const fileName = `${path ? `${path}/` : ""}${Date.now()}-${sanitizedName}`;
 
           const upload = new tus.Upload(file, {
             endpoint: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/upload/resumable`,

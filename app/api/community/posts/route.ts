@@ -267,7 +267,11 @@ export async function POST(request: NextRequest) {
     // Process and insert images if provided
     if (result.data.images && result.data.images.length > 0) {
       try {
+        console.log(`INFO|/api/community/posts|POST|processing_images|post_id=${post.id}|image_count=${result.data.images.length}`);
+        console.log('Raw image URLs:', result.data.images);
+        
         const imageData = processUploadedImages(result.data.images);
+        console.log('Processed image data:', imageData);
         
         // Insert image records
         const imageRecords = imageData.map(image => ({
@@ -277,19 +281,45 @@ export async function POST(request: NextRequest) {
           alt_text: image.alt_text || undefined,
           metadata: image.metadata || {},
         }));
+        
+        console.log('Image records for insertion:', imageRecords);
 
         const { error: imageInsertError } = await serviceSupabase
           .from("community_post_images")
           .insert(imageRecords);
 
         if (imageInsertError) {
-          console.error("Failed to insert images for post", post.id, imageInsertError);
+          // Enhanced error logging for image insertion failures
+          const errorCode = imageInsertError.code || 'unknown';
+          const errorMessage = imageInsertError.message || 'Unknown error';
+          const errorDetails = imageInsertError.details || 'No details available';
+          
+          console.error(`ERROR|/api/community/posts|POST|image_insert_failed|${errorCode}|${errorMessage}|${errorDetails}|post_id=${post.id}`);
+          console.error("Full image insertion error object:", JSON.stringify(imageInsertError, null, 2));
+          console.error("Image records that failed:", JSON.stringify(imageRecords, null, 2));
+          
+          // Categorize image-specific errors
+          if (errorCode === '23514') { // Check constraint violation
+            console.error(`ERROR|IMAGE_CONSTRAINT_VIOLATION|storage_paths=${imageRecords.map(r => r.storage_path).join(',')}`);
+          } else if (errorCode === '23503') { // Foreign key violation
+            console.error(`ERROR|IMAGE_FK_VIOLATION|post_id=${post.id}|might_be_deleted`);
+          }
+          
           // Note: We don't fail the entire request if images fail to insert
-          // The post was already created successfully
+          // The post was already created successfully, but we should log this prominently
+          console.warn(`WARNING|/api/community/posts|POST|post_created_without_images|post_id=${post.id}|reason=image_insertion_failed`);
+        } else {
+          console.log(`SUCCESS|/api/community/posts|POST|images_inserted|post_id=${post.id}|image_count=${imageRecords.length}`);
         }
       } catch (imageError) {
-        console.error("Image processing failed for post", post.id, imageError);
-        // Continue without failing the request
+        // Enhanced error logging for image processing failures
+        const errorMessage = imageError instanceof Error ? imageError.message : String(imageError);
+        console.error(`ERROR|/api/community/posts|POST|image_processing_failed|${errorMessage}|post_id=${post.id}`);
+        console.error("Full image processing error:", imageError);
+        console.error("Raw image URLs that failed processing:", result.data.images);
+        
+        // Continue without failing the request but log prominently
+        console.warn(`WARNING|/api/community/posts|POST|post_created_without_images|post_id=${post.id}|reason=image_processing_failed`);
       }
     }
 

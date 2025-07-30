@@ -103,3 +103,4 @@ NEVER proactively create documentation files (*.md) or README files. Only create
 - **Vietnamese location data**: Comprehensive apartment/city data for major Vietnamese cities
 - **Performance**: Optimized with caching, lazy loading, and proper image handling
 - **Security**: RLS policies on all tables, proper authentication checks
+
