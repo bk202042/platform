@@ -125,6 +125,7 @@ export function useSupabaseUpload({
   const uploadFiles = useCallback(async () => {
     if (files.length === 0) return;
 
+    console.log(`🔄 Starting upload of ${files.length} files to bucket: ${bucketName}${path ? `/${path}` : ''}`);
     setLoading(true);
     setErrors([]);
 
@@ -132,10 +133,13 @@ export function useSupabaseUpload({
       data: { session },
     } = await supabase.auth.getSession();
     if (!session) {
+      console.error("❌ Upload failed: No authentication session");
       setErrors(["Authentication required to upload files."]);
       setLoading(false);
       return;
     }
+
+    console.log(`✅ Authentication session valid, token expires at: ${new Date(session.expires_at! * 1000).toISOString()}`);
 
     const uploadPromises = files.map(
       (fileWrapper) =>
@@ -145,8 +149,14 @@ export function useSupabaseUpload({
           const sanitizedName = file.name.replace(/[^a-zA-Z0-9_\-\.]/g, '_');
           const fileName = `${path ? `${path}/` : ""}${Date.now()}-${sanitizedName}`;
 
+          console.log(`📁 Preparing upload for file: ${file.name} -> ${fileName}`);
+          console.log(`📊 File details: ${file.type}, ${Math.round(file.size / 1024)}KB`);
+
+          const tusEndpoint = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/upload/resumable`;
+          console.log(`🔗 TUS endpoint: ${tusEndpoint}`);
+
           const upload = new tus.Upload(file, {
-            endpoint: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/upload/resumable`,
+            endpoint: tusEndpoint,
             retryDelays: [0, 3000, 5000, 10000, 20000],
             headers: {
               authorization: `Bearer ${session.access_token}`,
@@ -160,7 +170,9 @@ export function useSupabaseUpload({
               contentType: file.type,
             },
             onError: (error) => {
-              console.error("Failed because: " + error);
+              console.error(`❌ TUS Upload failed for ${file.name}:`, error);
+              console.error("📋 Upload metadata:", { bucketName, fileName, contentType: file.type });
+              console.error("🔍 Error details:", { message: error.message, name: error.name, stack: error.stack });
               setErrors((prev) => [...prev, `Upload failed for ${file.name}: ${error.message}`]);
               reject(error);
             },
@@ -174,21 +186,27 @@ export function useSupabaseUpload({
             },
             onSuccess: () => {
               const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucketName}/${fileName}`;
+              console.log(`✅ TUS Upload successful for ${file.name}`);
+              console.log(`🔗 Public URL: ${publicUrl}`);
               resolve({ name: file.name, url: publicUrl });
             },
           });
 
           fileWrapper.upload = upload;
+          console.log(`🚀 Starting TUS upload for ${file.name}`);
           upload.start();
         }),
     );
 
     try {
+      console.log(`⏳ Waiting for ${uploadPromises.length} uploads to complete...`);
       const results = await Promise.all(uploadPromises);
+      console.log(`🎉 All uploads completed successfully:`, results);
       setUploadedFiles((prev) => [...prev, ...results]);
       setFiles([]); // Clear files that have been uploaded
       onUploadComplete?.(results);
     } catch (error) {
+      console.error(`💥 Upload batch failed:`, error);
       onUploadError?.(error as Error);
     } finally {
       setLoading(false);

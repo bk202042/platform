@@ -100,7 +100,7 @@ export function ImageUploadManager({
 
   const supabaseUpload = useSupabaseUpload({
     bucketName: dropzoneConfig.bucket,
-    path: dropzoneConfig.folder,
+    path: dropzoneConfig.folder, // This already matches the bucket name for path
     allowedMimeTypes: dropzoneConfig.acceptedTypes,
     maxFileSize: dropzoneConfig.maxFileSize,
     maxFiles: dropzoneConfig.maxFiles - savedImages.length, // Adjust for existing images

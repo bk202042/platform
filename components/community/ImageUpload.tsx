@@ -24,9 +24,16 @@ export function ImageUpload({
 }: ImageUploadProps) {
   const uploadProps = useSupabaseUpload({
     bucketName: "community-images",
+    path: "community-images", // Add path to match database constraint
     maxFiles,
     maxFileSize,
     allowedMimeTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
+    onUploadComplete: (files) => {
+      console.log("✅ Images uploaded successfully:", files);
+    },
+    onUploadError: (error) => {
+      console.error("❌ Image upload failed:", error);
+    },
   });
 
   const {
@@ -36,10 +43,20 @@ export function ImageUpload({
     isDragReject,
     getRootProps,
     getInputProps,
+    uploadFiles,
+    loading,
   } = uploadProps;
 
   // Initialize with existing images
   const [existingImages, setExistingImages] = React.useState<string[]>(initialImages);
+
+  // Auto-upload files when they are selected
+  React.useEffect(() => {
+    if (files.length > 0 && !loading) {
+      console.log("🚀 Auto-uploading", files.length, "files to storage bucket");
+      uploadFiles();
+    }
+  }, [files.length, loading, uploadFiles]);
 
   // Update parent when images change
   React.useEffect(() => {
