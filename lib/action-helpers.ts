@@ -47,6 +47,13 @@ export function validatedActionWithUser<S extends z.ZodType<unknown, z.ZodTypeDe
     
     // Convert FormData to object, handling arrays properly
     const formDataObject: Record<string, unknown> = {};
+    
+    // Debug: Log all FormData entries
+    console.log("DEBUG: FormData entries:");
+    for (const [key, value] of formData.entries()) {
+      console.log(`  ${key}: ${value} (type: ${typeof value})`);
+    }
+    
     for (const [key, value] of formData.entries()) {
       if (formDataObject[key]) {
         // If key already exists, convert to array or append to existing array
@@ -59,6 +66,9 @@ export function validatedActionWithUser<S extends z.ZodType<unknown, z.ZodTypeDe
         formDataObject[key] = value;
       }
     }
+    
+    // Debug: Log the final object structure
+    console.log("DEBUG: Final formDataObject:", JSON.stringify(formDataObject, null, 2));
     
     const parsed = schema.safeParse(formDataObject);
     if (!parsed.success) {

@@ -891,7 +891,80 @@
       "lastAccessed": "2025-07-28T07:51:14.088Z",
       "lastVerified": "2025-07-28T07:51:14.088Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1754004394537_jo9jnemvz",
+      "content": "User reports that the \"Expected array, received string\" error is still occurring after the previous FormData fix. The error appears in the post creation dialog when uploading images. Need to investigate why the fix didn't resolve the issue completely.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "bug",
+        "image-upload",
+        "formdata",
+        "validation"
+      ],
+      "timestamp": "2025-07-31T23:26:34.537Z",
+      "context": "Community post image upload bug investigation",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-31T23:26:34.537Z",
+      "lastVerified": "2025-07-31T23:26:34.537Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754005310919_obtxkca2v",
+      "content": "Added debug logging to the validatedActionWithUser function in action-helpers.ts to investigate the FormData parsing issue. The logs will show the actual FormData entries and the final parsed object structure when the user tries to create a post with images. This will help identify why the \"Expected array, received string\" error persists despite the array handling fix.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "debug",
+        "formdata",
+        "image-upload",
+        "validation"
+      ],
+      "timestamp": "2025-07-31T23:41:50.919Z",
+      "context": "Debugging image upload FormData validation issue",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-31T23:41:50.919Z",
+      "lastVerified": "2025-07-31T23:41:50.919Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754005843437_wdfd51sf6",
+      "content": "Found the root cause of the \"Expected array, received string\" error. The issue is in NewPostDialog.client.tsx lines 120-124 where FormData is being prepared. When there's an array (like images), it's being appended multiple times to FormData, but on the server side in action-helpers.ts, this creates an array even when there's only one value. However, the createPostSchema expects images to be an optional array of strings, but the form processing might be sending a single string instead of an array.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "bug-fix",
+        "form-data",
+        "arrays",
+        "validation"
+      ],
+      "timestamp": "2025-07-31T23:50:43.436Z",
+      "context": "Debugging NewPostDialog image array processing issue",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-31T23:50:43.436Z",
+      "lastVerified": "2025-07-31T23:50:43.436Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754005906387_wydp8v3ph",
+      "content": "Fixed the \"Expected array, received string\" error in NewPostDialog. The issue was in the FormData preparation where empty arrays needed to be handled properly. The fix was to check if arrays have length > 0 before appending to FormData, allowing optional arrays to remain undefined instead of creating invalid data structures. Build and lint both pass successfully.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "bug-fix",
+        "form-data",
+        "arrays",
+        "validation",
+        "completed"
+      ],
+      "timestamp": "2025-07-31T23:51:46.386Z",
+      "context": "NewPostDialog fix completed successfully",
+      "accessCount": 0,
+      "lastAccessed": "2025-07-31T23:51:46.386Z",
+      "lastVerified": "2025-07-31T23:51:46.386Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-28T07:51:14.088Z"
+  "lastUpdated": "2025-07-31T23:51:46.386Z"
 }

@@ -116,9 +116,12 @@ export function NewPostDialogClient({
           
           const formData = new FormData();
           Object.entries(values).forEach(([key, value]) => {
-            if (value) {
+            if (value !== undefined && value !== null) {
               if (Array.isArray(value)) {
-                value.forEach((item) => formData.append(key, item));
+                // Handle empty arrays by not appending anything - this allows optional arrays to remain undefined
+                if (value.length > 0) {
+                  value.forEach((item) => formData.append(key, String(item)));
+                }
               } else {
                 formData.append(key, String(value));
               }
