@@ -28,6 +28,8 @@ interface PostListProps {
   showImages?: boolean;
   /** Whether to use compact layout */
   compact?: boolean;
+  /** Whether to use Daangn-style list layout */
+  listMode?: boolean;
 }
 
 export const PostList = memo(function PostList({
@@ -40,6 +42,7 @@ export const PostList = memo(function PostList({
   skeletonCount = 3,
   showImages = true,
   compact = false,
+  listMode = false,
 }: PostListProps) {
   // Always call hooks at the top
   const { error: networkError, handleError } = useNetworkError();
@@ -116,7 +119,8 @@ export const PostList = memo(function PostList({
     <div
       className={cn(
         "space-y-3 sm:space-y-4",
-        compact && "space-y-1 sm:space-y-2" // Reduced spacing for compact mode
+        compact && "space-y-1 sm:space-y-2", // Reduced spacing for compact mode
+        listMode && "space-y-0 bg-white rounded-lg border border-gray-200 overflow-hidden" // List mode styling
       )}
       role="feed"
       aria-label={`게시글 목록 (${posts.length}개)`}
@@ -129,6 +133,7 @@ export const PostList = memo(function PostList({
             onClick={() => handlePostClick(post.id)}
             showImages={showImages}
             compact={compact}
+            listMode={listMode}
             aria-posinset={index + 1}
             aria-setsize={posts.length}
           />
