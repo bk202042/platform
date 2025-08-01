@@ -91,7 +91,7 @@ export function useSupabaseUpload(options: UseSupabaseUploadOptions = {}) {
       try {
         const fileExt = file.name.split(".").pop();
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        const filePath = `community/${fileName}`;
+        const filePath = fileName; // Remove 'community/' prefix to match expected storage path
 
         const { error: uploadError } = await supabase.storage
           .from(bucket)

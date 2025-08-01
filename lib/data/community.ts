@@ -813,7 +813,8 @@ export async function uploadPostImages(
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 15);
     const fileName = `${postId || "temp"}_${timestamp}_${randomId}.${fileExt}`;
-    const filePath = `community-images/${fileName}`;
+    const filePath = fileName; // Upload with just filename to bucket
+    const storagePath = `community-images/${fileName}`; // Store full path in database
 
     // Upload to Supabase storage
     const { data, error } = await supabase.storage
@@ -834,7 +835,7 @@ export async function uploadPostImages(
     } = supabase.storage.from("community-images").getPublicUrl(data.path);
 
     return {
-      storage_path: data.path,
+      storage_path: storagePath, // Use the full path for database constraint
       public_url: publicUrl,
       metadata: {
         width: validation.metadata?.width,
