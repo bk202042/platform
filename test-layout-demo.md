@@ -6,10 +6,11 @@ The refined mobile layout structure has been successfully implemented with the f
 
 ### ✅ List Mode Layout (`listMode={true}`)
 - **Horizontal rows** with clean, forum-like appearance
-- **Right-aligned thumbnails** (80px) positioned consistently
-- **Typography hierarchy** with proper title and metadata styling
+- **Right-aligned thumbnails** (32px) positioned consistently - matching Daangn reference
+- **Typography hierarchy** with normal font weight titles and prominent location display
+- **Location focus** with medium font weight for better visibility
 - **Engagement metrics** positioned at bottom right like Daangn reference
-- **Spacing optimization** with `py-4 px-4` for better mobile touch targets
+- **Spacing optimization** with `py-3 px-4` for compact, efficient layout
 
 ### ✅ Layout Modes Available
 1. **Default Card Layout** - Visual social media style

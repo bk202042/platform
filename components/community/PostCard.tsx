@@ -119,7 +119,7 @@ export const PostCard = memo(function PostCard({
   if (listMode) {
     return (
       <article
-        className="group py-4 px-4 hover:bg-gray-50 border-b border-gray-100 cursor-pointer transition-colors duration-150"
+        className="group py-3 px-4 hover:bg-gray-50 border-b border-gray-100 cursor-pointer transition-colors duration-150"
         onClick={handleClick}
         tabIndex={0}
         role="button"
@@ -130,58 +130,60 @@ export const PostCard = memo(function PostCard({
           {/* Left content */}
           <div className="flex-1 min-w-0">
             {/* Title */}
-            <h3 className="text-base font-medium text-gray-900 leading-tight mb-1 line-clamp-2 group-hover:text-orange-600 transition-colors">
+            <h3 className="text-sm font-normal text-gray-900 leading-tight mb-1 line-clamp-2 group-hover:text-orange-600 transition-colors">
               {post.title || post.body}
             </h3>
             
-            {/* Metadata row */}
-            <div className="flex items-center text-xs text-gray-400 mb-2">
-              {/* Location */}
+            {/* Location and metadata row - prominently displayed */}
+            <div className="flex items-center text-xs text-gray-500 mb-2">
+              {/* Location - more prominent */}
               {post.apartments && (
-                <span className="truncate max-w-[120px]">
-                  {post.apartments.cities?.name}
-                </span>
+                <>
+                  <span className="font-medium text-gray-600">
+                    {post.apartments.cities?.name}
+                  </span>
+                  <span className="mx-1">·</span>
+                </>
               )}
               
               {/* Time */}
-              {post.apartments && <span className="mx-1">·</span>}
               <ClientTimeDisplay
                 dateString={post.created_at}
-                className="text-xs text-gray-400"
+                className="text-xs text-gray-500"
               />
             </div>
             
             {/* Engagement metrics - positioned at bottom right like Daangn */}
-            <div className="flex items-center justify-end text-xs text-gray-400 space-x-3 mt-2">
+            <div className="flex items-center justify-end text-xs text-gray-400 space-x-3 mt-1">
               {post.comments_count > 0 && (
                 <div className="flex items-center gap-1">
-                  <MessageCircle size={12} className="text-gray-400" />
+                  <MessageCircle size={11} className="text-gray-400" />
                   <span>{post.comments_count}</span>
                 </div>
               )}
               {post.likes_count > 0 && (
                 <div className="flex items-center gap-1">
-                  <Heart size={12} className="text-gray-400" />
+                  <Heart size={11} className="text-gray-400" />
                   <span>{post.likes_count}</span>
                 </div>
               )}
             </div>
           </div>
           
-          {/* Right thumbnail - larger and more prominent */}
+          {/* Right thumbnail - much smaller like Daangn */}
           {showImages && post.images && post.images.length > 0 && post.images[0].public_url && (
             <div className="flex-shrink-0">
-              <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+              <div className="relative w-8 h-8 rounded-md overflow-hidden bg-gray-100">
                 <Image
                   src={post.images[0].public_url}
                   alt={post.images[0].alt_text || "게시글 이미지"}
                   fill
                   className="object-cover"
-                  sizes="80px"
+                  sizes="32px"
                 />
                 {/* Multiple images indicator */}
                 {post.images.length > 1 && (
-                  <div className="absolute bottom-1 right-1 bg-black bg-opacity-70 text-white text-xs px-1.5 py-0.5 rounded-sm font-medium">
+                  <div className="absolute bottom-0 right-0 bg-black bg-opacity-70 text-white text-xs px-1 py-0.5 rounded-tl-sm text-xs leading-none">
                     +{post.images.length - 1}
                   </div>
                 )}

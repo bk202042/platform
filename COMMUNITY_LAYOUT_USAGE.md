@@ -124,15 +124,16 @@ import { PostCard } from "@/components/community/PostCard";
 
 ### Daangn-Style List Mode (`listMode={true}`)
 - **Horizontal Layout**: Each post is a single horizontal row (not cards)
-- **Right-aligned Thumbnails**: Small 64x64px square images positioned on the far right
+- **Right-aligned Thumbnails**: Small 32px square images positioned on the far right
 - **Clean Typography**: 
-  - Bold titles with hover effects (`text-base font-medium`)
+  - Normal weight titles with hover effects (`text-sm font-normal`)
+  - Prominent location display (`font-medium text-gray-600`)
   - Small gray metadata in single row (`text-xs text-gray-500`)
-  - Content preview shown only when both title and body exist
 - **Minimal Spacing**: Tight, forum-like appearance with thin borders
-- **Metadata Row**: Category · Location · Time · Engagement metrics in single line
-- **Multiple Images**: Shows "+N" indicator on thumbnail for additional images
-- **Container Styling**: White background with rounded borders and subtle shadows
+- **Location Focus**: Location prominently displayed before time
+- **Metadata Row**: Location · Time · Engagement metrics positioned at bottom right
+- **Multiple Images**: Shows "+N" indicator on small thumbnail for additional images
+- **Container Styling**: Clean rows with subtle hover effects
 
 ### Image Indicator in Text-Only Mode
 When images are hidden, a small visual indicator is shown:
@@ -178,7 +179,8 @@ When images are hidden, a small visual indicator is shown:
 ### Daangn-Style List Mode ⭐️ **NEW**
 - **Style**: Clean, horizontal rows matching Korean community standards
 - **Spacing**: Minimal, forum-like appearance
-- **Images**: Small 64px thumbnails aligned right
+- **Images**: Small 32px thumbnails aligned right
+- **Location**: Prominently displayed with medium font weight
 - **Best For**: High-density browsing, Korean user expectations, professional appearance
 
 ## Implementation Priority
