@@ -27,6 +27,8 @@ export interface PostCardProps {
     };
   };
   onClick?: () => void;
+  showImages?: boolean; // New prop to control image visibility
+  compact?: boolean; // New prop for compact layout
 }
 
 // Category badge configuration with Korean labels and Daangn-style colors
@@ -56,6 +58,8 @@ const CATEGORY_CONFIG = {
 export const PostCard = memo(function PostCard({
   post,
   onClick,
+  showImages = true,
+  compact = false,
 }: PostCardProps) {
   const [swipeAction, setSwipeAction] = useState<'like' | 'share' | null>(null);
   const categoryConfig = useMemo(
@@ -114,7 +118,8 @@ export const PostCard = memo(function PostCard({
       className={cn(
         "group relative bg-white border-b border-zinc-200 hover:bg-zinc-50 transition-all duration-200 cursor-pointer overflow-hidden touch-manipulation active:bg-zinc-100",
         gestureState.isActive && gestureState.direction === 'right' && "bg-red-50",
-        gestureState.isActive && gestureState.direction === 'left' && "bg-blue-50"
+        gestureState.isActive && gestureState.direction === 'left' && "bg-blue-50",
+        compact && "py-2" // Reduced padding for compact mode
       )}
       onClick={handleClick}
       tabIndex={0}
@@ -123,7 +128,10 @@ export const PostCard = memo(function PostCard({
       onKeyDown={handleKeyDown}
       {...gestureHandlers}
     >
-      <div className="p-4 sm:p-5">
+      <div className={cn(
+        "p-4 sm:p-5",
+        compact && "p-3 sm:p-4" // Reduced padding for compact mode
+      )}>
         {/* Header with category and location - enhanced Daangn style */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2 flex-wrap">
@@ -151,19 +159,28 @@ export const PostCard = memo(function PostCard({
         </div>
 
         {/* Content - enhanced Daangn-style layout */}
-        <div className="space-y-2">
+        <div className={cn(
+          "space-y-2",
+          compact && "space-y-1" // Reduced spacing for compact mode
+        )}>
           {post.title && (
-            <h3 className="text-base font-semibold text-zinc-900 line-clamp-1 group-hover:text-orange-600 transition-colors duration-200 group-active:text-orange-700">
+            <h3 className={cn(
+              "text-base font-semibold text-zinc-900 line-clamp-1 group-hover:text-orange-600 transition-colors duration-200 group-active:text-orange-700",
+              compact && "text-sm" // Smaller title for compact mode
+            )}>
               {post.title}
             </h3>
           )}
 
-          <p className="text-sm text-zinc-600 leading-normal line-clamp-2 group-hover:text-zinc-700 transition-colors duration-200">
+          <p className={cn(
+            "text-sm text-zinc-600 leading-normal line-clamp-2 group-hover:text-zinc-700 transition-colors duration-200",
+            compact && "text-xs line-clamp-1" // Smaller text and single line for compact mode
+          )}>
             {post.body}
           </p>
 
-          {/* Image display - enhanced with actual images */}
-          {post.images && post.images.length > 0 && (
+          {/* Image display - conditionally shown based on showImages prop */}
+          {showImages && post.images && post.images.length > 0 && (
             <div className="mt-3">
               {post.images.length === 1 ? (
                 /* Single image - full width */
@@ -237,10 +254,25 @@ export const PostCard = memo(function PostCard({
               </div>
             </div>
           )}
+
+          {/* Text-only image indicator for when images are hidden */}
+          {!showImages && post.images && post.images.length > 0 && (
+            <div className="flex items-center gap-1.5 mt-1">
+              <div className="w-3 h-2 bg-zinc-300 rounded-sm flex items-center justify-center">
+                <div className="w-1.5 h-1 bg-zinc-500 rounded-sm" />
+              </div>
+              <span className="text-xs text-zinc-400">
+                사진 {post.images.length}장
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Footer - enhanced engagement metrics */}
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-zinc-100 group-hover:border-zinc-200 transition-colors duration-200">
+        <div className={cn(
+          "flex items-center justify-between mt-4 pt-3 border-t border-zinc-100 group-hover:border-zinc-200 transition-colors duration-200",
+          compact && "mt-2 pt-2" // Reduced spacing for compact mode
+        )}>
           <div className="flex items-center gap-1 text-xs text-zinc-500">
             <User size={12} className="text-zinc-400" />
             <span className="font-medium group-hover:text-zinc-600 transition-colors duration-200">

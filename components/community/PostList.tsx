@@ -7,6 +7,7 @@ import { MobileLoadingState } from "./MobileLoadingState";
 import { MobileErrorState } from "./MobileErrorState";
 import { EmptyState } from "./EmptyState";
 import { NetworkError, useNetworkError } from "./NetworkError";
+import { cn } from "@/lib/utils";
 
 interface PostListProps {
   /** Array of posts to display */
@@ -23,6 +24,10 @@ interface PostListProps {
   onCreatePost?: () => void;
   /** Number of skeleton items to show during loading */
   skeletonCount?: number;
+  /** Whether to show images in posts */
+  showImages?: boolean;
+  /** Whether to use compact layout */
+  compact?: boolean;
 }
 
 export const PostList = memo(function PostList({
@@ -33,6 +38,8 @@ export const PostList = memo(function PostList({
   onPostClick,
   onCreatePost,
   skeletonCount = 3,
+  showImages = true,
+  compact = false,
 }: PostListProps) {
   // Always call hooks at the top
   const { error: networkError, handleError } = useNetworkError();
@@ -107,7 +114,10 @@ export const PostList = memo(function PostList({
   // Posts list
   return (
     <div
-      className="space-y-3 sm:space-y-4"
+      className={cn(
+        "space-y-3 sm:space-y-4",
+        compact && "space-y-1 sm:space-y-2" // Reduced spacing for compact mode
+      )}
       role="feed"
       aria-label={`게시글 목록 (${posts.length}개)`}
       aria-live="polite"
@@ -117,6 +127,8 @@ export const PostList = memo(function PostList({
           <PostCard
             post={post}
             onClick={() => handlePostClick(post.id)}
+            showImages={showImages}
+            compact={compact}
             aria-posinset={index + 1}
             aria-setsize={posts.length}
           />
