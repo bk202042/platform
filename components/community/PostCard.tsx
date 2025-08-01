@@ -3,7 +3,7 @@ import { MessageCircle, User, Eye, Heart, Share2 } from "lucide-react";
 import { CommunityCategory } from "@/lib/validation/community";
 import { PostImage } from "@/lib/types/community";
 import { LikeButton } from "./LikeButton";
-import { formatKoreanTime, getTimeTooltip } from "@/lib/utils/time";
+import { ClientTimeDisplay } from "@/components/common/ClientTimeDisplay";
 import { useMobileGestures } from "@/lib/hooks/useMobileGestures";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -63,16 +63,7 @@ export const PostCard = memo(function PostCard({
     [post.category]
   );
 
-  // Format date using Korean Daangn-style formatting
-  const timeAgo = useMemo(() => {
-    if (!post.created_at) return "";
-    return formatKoreanTime(post.created_at);
-  }, [post.created_at]);
-
-  const timeTooltip = useMemo(() => {
-    if (!post.created_at) return "";
-    return getTimeTooltip(post.created_at);
-  }, [post.created_at]);
+  // Remove time formatting logic - now handled by ClientTimeDisplay
 
   const ariaLabel = useMemo(
     () =>
@@ -153,12 +144,10 @@ export const PostCard = memo(function PostCard({
               </span>
             )}
           </div>
-          <span
+          <ClientTimeDisplay
+            dateString={post.created_at}
             className="text-xs text-zinc-400 flex-shrink-0 group-hover:text-zinc-600 transition-colors duration-200"
-            title={timeTooltip}
-          >
-            {timeAgo}
-          </span>
+          />
         </div>
 
         {/* Content - enhanced Daangn-style layout */}
