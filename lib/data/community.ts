@@ -201,6 +201,7 @@ export async function getPostsWithLikeStatus(params: {
       `
       *,
       apartments(city_id, name, slug, cities(name)),
+      community_post_images(id, storage_path, display_order, alt_text, metadata, created_at),
       profiles!community_posts_user_id_fkey (
         id,
         first_name,
@@ -272,8 +273,36 @@ export async function getPostsWithLikeStatus(params: {
         "익명"
       : "익명";
 
+    // Transform images to include public URLs
+    let images: PostImage[] = [];
+    if (post.community_post_images && Array.isArray(post.community_post_images) && post.community_post_images.length > 0) {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+      interface RawImageData {
+        id: string;
+        display_order: number;
+        storage_path: string;
+        alt_text?: string;
+        metadata: Record<string, unknown>;
+        created_at: string;
+        [key: string]: unknown;
+      }
+      images = (post.community_post_images as RawImageData[])
+        .sort((a, b) => a.display_order - b.display_order)
+        .map((image) => ({
+          id: image.id,
+          post_id: post.id,
+          storage_path: image.storage_path,
+          display_order: image.display_order,
+          alt_text: image.alt_text,
+          metadata: image.metadata || {},
+          created_at: image.created_at,
+          public_url: createPublicUrl(image.storage_path, supabaseUrl),
+        }));
+    }
+
     return {
       ...post,
+      images,
       isLiked: likedPostIds.has(post.id),
       user: {
         name: displayName,
