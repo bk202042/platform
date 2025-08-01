@@ -3,6 +3,7 @@
 import { validatedActionWithUser } from "@/lib/action-helpers";
 import { createPostSchema } from "@/lib/validation/community";
 import { createPost } from "@/lib/data/community";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 export const createCommunityPost = validatedActionWithUser(
@@ -10,8 +11,35 @@ export const createCommunityPost = validatedActionWithUser(
   async (data, _, user) => {
     try {
       console.log(`INFO|server_action|createCommunityPost|user_id=${user.id}|apartment_id=${data.apartment_id}|category=${data.category}`);
+      console.log(`INFO|server_action|createCommunityPost|images_count=${data.images?.length || 0}|user_id=${user.id}`);
       
       const post = await createPost({ ...data, user_id: user.id });
+      
+      // Save images to database if provided
+      if (data.images && data.images.length > 0) {
+        console.log(`INFO|server_action|createCommunityPost|saving_images|count=${data.images.length}|post_id=${post.id}`);
+        
+        const supabase = await createClient();
+        const imageRecords = data.images.map((imageUrl, index) => ({
+          post_id: post.id,
+          storage_path: imageUrl,
+          display_order: index,
+          alt_text: `Image ${index + 1}`,
+          metadata: {},
+        }));
+        
+        const { error: imageError } = await supabase
+          .from("community_post_images")
+          .insert(imageRecords);
+          
+        if (imageError) {
+          console.error(`ERROR|server_action|createCommunityPost|image_save_failed|${imageError.message}|post_id=${post.id}`);
+          // Don't fail the entire operation if images fail to save
+        } else {
+          console.log(`SUCCESS|server_action|createCommunityPost|images_saved|count=${data.images.length}|post_id=${post.id}`);
+        }
+      }
+      
       revalidatePath("/community");
       
       console.log(`SUCCESS|server_action|createCommunityPost|post_id=${post.id}|user_id=${user.id}`);
