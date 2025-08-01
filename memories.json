@@ -984,7 +984,60 @@
       "lastAccessed": "2025-08-01T00:13:28.512Z",
       "lastVerified": "2025-08-01T00:13:28.512Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1754021050848_lijvedfsu",
+      "content": "DEBUG SESSION: Image upload not displaying after posting\n- Error: Images upload successfully but don't display in community posts\n- Context: User recently applied actions.ts changes for image saving\n- Need to test using Playwright to investigate root cause\n- Reference: IMAGE_UPLOAD_TEST_REPORT.md for test workflow examples\n- Environment: Next.js 15, Supabase, Community platform\n- Recent changes: Modified actions.ts to save images to database, updated PostCard to display images",
+      "type": "warning",
+      "tags": [
+        "warning",
+        "database",
+        "debug",
+        "image-upload",
+        "playwright",
+        "community-posts"
+      ],
+      "timestamp": "2025-08-01T04:04:10.848Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-01T04:04:10.848Z",
+      "lastVerified": "2025-08-01T04:04:10.848Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754021151695_5vhm45bff",
+      "content": "🔍 ROOT CAUSE IDENTIFIED: Image URL 400 Error\n- Found in dev.log line 37: \"upstream image response failed for https://khtcoztdkxhhrudwhhjv.supabase.co/storage/v1/object/public/community-images/test_image.jpg 400\"\n- Issue: Images are being saved to database but Supabase storage URLs are returning 400 errors\n- Observation: Posts show image indicators (\"사진 1장\") but actual images don't display\n- Problem: Storage path or public URL generation is incorrect\n\nVisual Evidence:\n- \"사진 업로드 테스트\" post shows: img \"Test image\" and \"사진 1장\" indicator\n- \"하이 질문 아무거나 테스트\" post shows: img \"게시글 이미지\" and \"사진 1장\" indicator\n- BUT images are not visually rendering due to 400 errors from Supabase",
+      "type": "warning",
+      "tags": [
+        "warning",
+        "database",
+        "root-cause",
+        "supabase-storage",
+        "400-error",
+        "image-urls"
+      ],
+      "timestamp": "2025-08-01T04:05:51.695Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-01T04:05:51.695Z",
+      "lastVerified": "2025-08-01T04:05:51.695Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754021209067_44ye9m3li",
+      "content": "🎯 FINAL ROOT CAUSE ANALYSIS:\n\n**The Problem:**\n1. Database records have WRONG storage paths: `community-images/test_image.jpg`\n2. Actual storage files exist but have DIFFERENT paths: `community-images/1754020759213-0106__________01.jpg`\n3. This mismatch causes 400/404 errors when Next.js tries to load images\n\n**Evidence:**\n- Dev log shows: \"upstream image response failed for https://khtcoztdkxhhrudwhhjv.supabase.co/storage/v1/object/public/community-images/test_image.jpg 400\"\n- Database has: `community-images/test_image.jpg` and `community-images/1734567890-test.jpg`\n- Storage actually has: `community-images/1754020759213-0106__________01.jpg`, etc.\n- UI shows image indicators but images fail to load\n\n**Fix Required:**\nThe actions.ts file is saving incorrect storage paths to database. Need to ensure the actual upload result paths are stored correctly.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "database",
+        "final-diagnosis",
+        "storage-path-mismatch",
+        "database-sync-issue"
+      ],
+      "timestamp": "2025-08-01T04:06:49.067Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-01T04:06:49.067Z",
+      "lastVerified": "2025-08-01T04:06:49.067Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-01T00:13:28.512Z"
+  "lastUpdated": "2025-08-01T04:06:49.067Z"
 }

@@ -5,6 +5,7 @@ import { createPostSchema } from "@/lib/validation/community";
 import { createPost } from "@/lib/data/community";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { extractStoragePath } from "@/lib/utils/community-images";
 
 export const createCommunityPost = validatedActionWithUser(
   createPostSchema,
@@ -20,13 +21,26 @@ export const createCommunityPost = validatedActionWithUser(
         console.log(`INFO|server_action|createCommunityPost|saving_images|count=${data.images.length}|post_id=${post.id}`);
         
         const supabase = await createClient();
-        const imageRecords = data.images.map((imageUrl, index) => ({
-          post_id: post.id,
-          storage_path: imageUrl,
-          display_order: index,
-          alt_text: `Image ${index + 1}`,
-          metadata: {},
-        }));
+        const imageRecords = data.images.map((imageUrl, index) => {
+          let storagePath: string;
+          try {
+            // Extract the actual storage path from the public URL
+            storagePath = extractStoragePath(imageUrl);
+            console.log(`INFO|server_action|createCommunityPost|extracted_path|${storagePath}|from_url|${imageUrl}`);
+          } catch (error) {
+            console.error(`ERROR|server_action|createCommunityPost|extract_path_failed|${error}|url=${imageUrl}`);
+            // Fallback: try to extract manually if the utility fails
+            storagePath = imageUrl.includes('/') ? imageUrl.split('/').slice(-2).join('/') : imageUrl;
+          }
+          
+          return {
+            post_id: post.id,
+            storage_path: storagePath,
+            display_order: index,
+            alt_text: `Image ${index + 1}`,
+            metadata: {},
+          };
+        });
         
         const { error: imageError } = await supabase
           .from("community_post_images")
