@@ -261,93 +261,43 @@ export const PostCard = memo(function PostCard({
             {post.body}
           </p>
 
-          {/* Image display - conditionally shown based on showImages prop */}
-          {showImages && post.images && post.images.length > 0 && (
-            <div className="mt-3">
-              {post.images.length === 1 ? (
-                /* Single image - full width */
-                post.images[0].public_url ? (
-                  <div className="relative rounded-lg overflow-hidden bg-zinc-100 aspect-[4/3]">
-                    <Image
-                      src={post.images[0].public_url}
-                      alt={post.images[0].alt_text || "게시글 이미지"}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
+          {/* Right thumbnail - Daangn style positioning */}
+          <div className="flex items-start gap-3 mt-2">
+            <div className="flex-1">
+              {/* Text-only image indicator for when images are hidden */}
+              {!showImages && post.images && post.images.length > 0 && (
+                <div className="flex items-center gap-1.5 mt-1">
+                  <div className="w-3 h-2 bg-zinc-300 rounded-sm flex items-center justify-center">
+                    <div className="w-1.5 h-1 bg-zinc-500 rounded-sm" />
                   </div>
-                ) : null
-              ) : post.images.length === 2 ? (
-                /* Two images - side by side */
-                <div className="grid grid-cols-2 gap-2">
-                  {post.images.slice(0, 2).map((image, index) => 
-                    image.public_url ? (
-                      <div key={image.id || index} className="relative rounded-lg overflow-hidden bg-zinc-100 aspect-square">
-                        <Image
-                          src={image.public_url}
-                          alt={image.alt_text || `게시글 이미지 ${index + 1}`}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 16vw"
-                        />
-                      </div>
-                    ) : null
-                  )}
-                </div>
-              ) : (
-                /* Multiple images - grid layout with counter */
-                <div className="grid grid-cols-2 gap-2">
-                  {post.images.slice(0, 3).map((image, index) => 
-                    image.public_url ? (
-                      <div 
-                        key={image.id || index} 
-                        className={`relative rounded-lg overflow-hidden bg-zinc-100 aspect-square ${
-                          index === 0 && post.images && post.images.length > 2 ? 'row-span-2' : ''
-                        }`}
-                      >
-                        <Image
-                          src={image.public_url}
-                          alt={image.alt_text || `게시글 이미지 ${index + 1}`}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 16vw"
-                        />
-                        {/* Show "+N more" overlay on last visible image if there are more */}
-                        {index === 2 && post.images && post.images.length > 3 && (
-                          <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
-                            <span className="text-white font-semibold text-sm">
-                              +{post.images.length - 3}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ) : null
-                  )}
+                  <span className="text-xs text-zinc-400">
+                    사진 {post.images.length}장
+                  </span>
                 </div>
               )}
-              {/* Image count indicator */}
-              <div className="flex items-center gap-1.5 mt-2">
-                <div className="w-4 h-3 bg-zinc-200 rounded-sm flex items-center justify-center group-hover:bg-zinc-300 transition-colors duration-200">
-                  <div className="w-2 h-1.5 bg-zinc-400 rounded-sm group-hover:bg-zinc-500 transition-colors duration-200" />
+            </div>
+            
+            {/* Right thumbnail - small and positioned like Daangn */}
+            {showImages && post.images && post.images.length > 0 && post.images[0].public_url && (
+              <div className="flex-shrink-0">
+                <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+                  <Image
+                    src={post.images[0].public_url}
+                    alt={post.images[0].alt_text || "게시글 이미지"}
+                    fill
+                    className="object-cover"
+                    sizes="64px"
+                  />
+                  {/* Multiple images indicator */}
+                  {post.images.length > 1 && (
+                    <div className="absolute bottom-1 right-1 bg-black bg-opacity-70 text-white text-xs px-1 py-0.5 rounded-sm text-xs leading-none">
+                      +{post.images.length - 1}
+                    </div>
+                  )}
                 </div>
-                <span className="text-xs text-zinc-500 group-hover:text-zinc-600 transition-colors duration-200">
-                  사진 {post.images.length}장
-                </span>
               </div>
-            </div>
-          )}
-
-          {/* Text-only image indicator for when images are hidden */}
-          {!showImages && post.images && post.images.length > 0 && (
-            <div className="flex items-center gap-1.5 mt-1">
-              <div className="w-3 h-2 bg-zinc-300 rounded-sm flex items-center justify-center">
-                <div className="w-1.5 h-1 bg-zinc-500 rounded-sm" />
-              </div>
-              <span className="text-xs text-zinc-400">
-                사진 {post.images.length}장
-              </span>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Footer - enhanced engagement metrics */}
