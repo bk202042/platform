@@ -964,7 +964,27 @@
       "lastAccessed": "2025-07-31T23:51:46.386Z",
       "lastVerified": "2025-07-31T23:51:46.386Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1754007208513_mvb7slmfb",
+      "content": "REAL FIX: The \"Expected array, received string\" error was in lib/action-helpers.ts FormData processing. When only 1 image was uploaded, the \"images\" field became a string instead of an array. Fixed by adding arrayFields Set to ensure fields like \"images\" are always arrays even with single values. This was the root cause - single images weren't being converted to arrays for Zod validation.",
+      "type": "tip",
+      "tags": [
+        "tip",
+        "bug-fix",
+        "form-data",
+        "arrays",
+        "validation",
+        "root-cause",
+        "completed"
+      ],
+      "timestamp": "2025-08-01T00:13:28.512Z",
+      "context": "Final solution for NewPostDialog image upload error",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-01T00:13:28.512Z",
+      "lastVerified": "2025-08-01T00:13:28.512Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-07-31T23:51:46.386Z"
+  "lastUpdated": "2025-08-01T00:13:28.512Z"
 }

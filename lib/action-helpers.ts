@@ -48,6 +48,9 @@ export function validatedActionWithUser<S extends z.ZodType<unknown, z.ZodTypeDe
     // Convert FormData to object, handling arrays properly
     const formDataObject: Record<string, unknown> = {};
     
+    // Fields that should always be arrays even with single values
+    const arrayFields = new Set(['images']);
+    
     // Debug: Log all FormData entries
     console.log("DEBUG: FormData entries:");
     for (const [key, value] of formData.entries()) {
@@ -63,7 +66,12 @@ export function validatedActionWithUser<S extends z.ZodType<unknown, z.ZodTypeDe
           formDataObject[key] = [formDataObject[key], value];
         }
       } else {
-        formDataObject[key] = value;
+        // For array fields, always initialize as array even with single value
+        if (arrayFields.has(key)) {
+          formDataObject[key] = [value];
+        } else {
+          formDataObject[key] = value;
+        }
       }
     }
     
