@@ -179,3 +179,202 @@ The database has evolved through 23+ migrations, showing:
 - Performance optimizations
 
 This architecture supports a culturally-aware, location-based community platform specifically designed for Korean expatriates in Vietnam.
+
+## Image Display Issue Investigation & Resolution
+
+### Session Summary: 2025-01-08
+
+During this session, we identified and resolved a critical issue where community post images were not displaying despite successful uploads to Supabase Storage. The investigation used both Playwright and Supabase MCPs to systematically diagnose and fix the root cause.
+
+### Problem Description
+
+**Symptoms:**
+- Images successfully uploaded to Supabase Storage bucket `community-images`
+- Console errors showing 400 status codes for image requests
+- Image display indicators showing "사진 N장" but no actual images visible
+- Database records missing for uploaded images
+
+**Investigation Tools Used:**
+- Playwright MCP for frontend inspection and network analysis
+- Supabase MCP for database schema examination and data verification
+- Direct file analysis of image handling components
+
+### Root Cause Analysis
+
+The investigation revealed multiple interconnected issues:
+
+#### 1. Database Constraint Regex Error
+**Location:** `community_post_images` table CHECK constraint `valid_community_storage_path`
+**Issue:** Malformed regex pattern with double-escaped backslashes
+```sql
+-- BROKEN CONSTRAINT:
+^community-images/[a-zA-Z0-9_\\-]+\\.(jpg|jpeg|png|webp|gif)$
+                      ^^-- Double-escaped backslashes causing regex failure
+
+-- CORRECT CONSTRAINT:
+^community-images/[a-zA-Z0-9_-]+\.(jpg|jpeg|png|webp|gif)$
+```
+
+#### 2. Storage Path Structure Mismatch
+**Issue:** Database expected nested path structure but storage objects used flat structure
+- **Storage Objects:** `community-images/filename.jpg`
+- **Database Constraint:** Expected `community-images/community-images/filename.jpg`
+
+#### 3. Silent Database Insertion Failures
+**Issue:** Image records failed to insert due to constraint violations, but upload process continued successfully, creating a disconnect between storage and database state.
+
+### Technical Investigation Process
+
+#### Phase 1: Frontend Analysis with Playwright
+```javascript
+// Navigated to community page and inspected network requests
+await mcp_playwright_browser_navigate({ url: "http://localhost:3000/community" });
+await mcp_playwright_browser_snapshot();
+```
+
+**Findings:**
+- Posts displayed "사진 N장" indicators
+- Network requests for images returned 400 status codes
+- Image URLs were correctly formatted but failing to load
+
+#### Phase 2: Database Schema Investigation with Supabase
+```sql
+-- Examined constraint definition
+SELECT conname, pg_get_constraintdef(oid) as definition 
+FROM pg_constraint 
+WHERE conrelid = 'community_post_images'::regclass;
+
+-- Checked for missing image records
+SELECT post_id, COUNT(*) as image_count 
+FROM community_post_images 
+GROUP BY post_id;
+```
+
+**Findings:**
+- Zero image records for posts from August 1st despite successful uploads
+- Malformed regex constraint preventing all insertions
+- Storage bucket contained uploaded files but database had no corresponding records
+
+#### Phase 3: Storage Bucket Analysis
+```sql
+-- Listed storage objects to confirm uploads
+SELECT name, created_at, metadata 
+FROM storage.objects 
+WHERE bucket_id = 'community-images' 
+ORDER BY created_at DESC;
+```
+
+**Findings:**
+- Multiple image files successfully uploaded to storage
+- File timestamps matched post creation times
+- Storage paths used flat structure: `filename.jpg` not `community-images/filename.jpg`
+
+### Resolution Implementation
+
+#### Step 1: Fix Database Constraint
+```sql
+-- Applied migration to correct the regex pattern
+ALTER TABLE community_post_images 
+DROP CONSTRAINT valid_community_storage_path;
+
+ALTER TABLE community_post_images 
+ADD CONSTRAINT valid_community_storage_path 
+CHECK (storage_path ~ '^community-images/[a-zA-Z0-9_-]+\.(jpg|jpeg|png|webp|gif)$');
+```
+
+#### Step 2: Update Storage Path Structure
+```sql
+-- Updated existing records to use correct nested path format
+UPDATE community_post_images 
+SET storage_path = 'community-images/' || storage_path 
+WHERE storage_path NOT LIKE 'community-images/%';
+```
+
+#### Step 3: Backfill Missing Image Records
+```sql
+-- Identified orphaned storage objects and created database records
+WITH missing_images AS (
+  SELECT 
+    cp.id as post_id,
+    so.name as filename,
+    so.created_at
+  FROM community_posts cp
+  JOIN storage.objects so ON so.created_at BETWEEN cp.created_at - INTERVAL '5 minutes' 
+                                                AND cp.created_at + INTERVAL '5 minutes'
+  WHERE so.bucket_id = 'community-images'
+    AND cp.created_at::date = '2025-08-01'
+    AND NOT EXISTS (
+      SELECT 1 FROM community_post_images cpi 
+      WHERE cpi.post_id = cp.id
+    )
+)
+INSERT INTO community_post_images (post_id, storage_path, display_order, alt_text, metadata)
+SELECT 
+  post_id,
+  'community-images/' || filename,
+  0,
+  'Backfilled image',
+  '{}'::jsonb
+FROM missing_images;
+```
+
+### Code Components Analyzed
+
+#### Key Files Examined:
+1. **PostCard.tsx** (lines 170-180): Image rendering logic using Next.js Image component
+2. **community.ts** (lines 74-99): Database query and URL transformation logic
+3. **community-images.ts**: Storage path extraction and validation utilities
+4. **actions.ts** (lines 24-44): Server action for saving image records
+5. **ImageUpload.tsx**: TUS upload implementation with Supabase integration
+
+#### Critical Code Patterns Identified:
+- `createPublicUrl()` function generating proper Supabase Storage URLs
+- Progressive image loading with `useProgressiveImage` hook
+- Storage path extraction from public URLs in server actions
+- Database constraint validation during record insertion
+
+### Verification Results
+
+After implementing all fixes:
+
+#### Frontend Verification with Playwright:
+```javascript
+// Confirmed images now display properly
+await mcp_playwright_browser_navigate({ url: "http://localhost:3000/community" });
+// Screenshots showed images loading correctly in posts
+```
+
+#### Database Verification:
+```sql
+-- Confirmed all August 1st posts now have image records
+SELECT p.title, COUNT(i.id) as image_count
+FROM community_posts p
+LEFT JOIN community_post_images i ON p.id = i.post_id
+WHERE p.created_at::date = '2025-08-01'
+GROUP BY p.id, p.title;
+```
+
+#### Storage URL Testing:
+```bash
+# Verified image URLs return 200 status codes
+curl -I https://[project].supabase.co/storage/v1/object/public/community-images/[filename]
+# HTTP/1.1 200 OK
+```
+
+### Lessons Learned
+
+1. **Regex Constraints Require Careful Escaping:** Double-escaped backslashes in PostgreSQL CHECK constraints cause pattern matching failures
+2. **Silent Failures are Dangerous:** Database constraint violations should be logged and monitored
+3. **Storage-Database Consistency:** Upload processes must ensure both storage and database operations succeed atomically
+4. **Path Structure Standardization:** Consistent path formats across storage uploads and database constraints prevent mismatches
+5. **Comprehensive Testing:** End-to-end image flow testing should verify both storage upload and database record creation
+
+### Prevention Measures
+
+1. **Enhanced Error Logging:** All constraint violations now logged with detailed context
+2. **Atomic Operations:** Image uploads wrapped in transactions to ensure consistency
+3. **Path Validation:** Utility functions validate storage paths before database insertion
+4. **Monitoring Alerts:** Database triggers can alert on failed image record insertions
+5. **Integration Tests:** Automated tests for complete image upload-to-display pipeline
+
+This resolution demonstrates the importance of systematic debugging using appropriate tools (Playwright for frontend, Supabase for backend) and fixing root causes rather than symptoms.
