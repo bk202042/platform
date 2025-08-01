@@ -119,87 +119,65 @@ export const PostCard = memo(function PostCard({
   if (listMode) {
     return (
       <article
-        className="group py-3 px-4 hover:bg-gray-50 border-b border-gray-100 cursor-pointer transition-colors duration-150"
+        className="group py-4 px-4 hover:bg-gray-50 border-b border-gray-100 cursor-pointer transition-colors duration-150"
         onClick={handleClick}
         tabIndex={0}
         role="button"
         aria-label={ariaLabel}
         onKeyDown={handleKeyDown}
       >
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3">
           {/* Left content */}
           <div className="flex-1 min-w-0">
             {/* Title */}
-            <h3 className="text-base font-medium text-gray-900 leading-tight mb-1 line-clamp-1 group-hover:text-orange-600 transition-colors">
-              {post.title || post.body.slice(0, 50) + "..."}
+            <h3 className="text-base font-medium text-gray-900 leading-tight mb-1 line-clamp-2 group-hover:text-orange-600 transition-colors">
+              {post.title || post.body}
             </h3>
             
-            {/* Content preview - only show if there's both title and body */}
-            {post.title && (
-              <p className="text-sm text-gray-600 leading-tight mb-2 line-clamp-1">
-                {post.body}
-              </p>
-            )}
-            
             {/* Metadata row */}
-            <div className="flex items-center text-xs text-gray-500 space-x-2">
-              {/* Category */}
-              {categoryConfig && (
-                <span className="text-gray-600 font-medium">
-                  {categoryConfig.label}
+            <div className="flex items-center text-xs text-gray-400 mb-2">
+              {/* Location */}
+              {post.apartments && (
+                <span className="truncate max-w-[120px]">
+                  {post.apartments.cities?.name}
                 </span>
               )}
               
-              {/* Location */}
-              {post.apartments && (
-                <>
-                  <span>·</span>
-                  <span className="truncate max-w-[120px]">
-                    {post.apartments.cities?.name} {post.apartments.name}
-                  </span>
-                </>
-              )}
-              
               {/* Time */}
-              <span>·</span>
+              {post.apartments && <span className="mx-1">·</span>}
               <ClientTimeDisplay
                 dateString={post.created_at}
-                className="text-xs text-gray-500"
+                className="text-xs text-gray-400"
               />
-              
-              {/* Engagement */}
-              {(post.comments_count > 0 || post.likes_count > 0) && (
-                <>
-                  <span>·</span>
-                  <div className="flex items-center space-x-3">
-                    {post.comments_count > 0 && (
-                      <div className="flex items-center gap-1">
-                        <MessageCircle size={12} className="text-gray-400" />
-                        <span>{post.comments_count}</span>
-                      </div>
-                    )}
-                    {post.likes_count > 0 && (
-                      <div className="flex items-center gap-1">
-                        <Heart size={12} className="text-gray-400" />
-                        <span>{post.likes_count}</span>
-                      </div>
-                    )}
-                  </div>
-                </>
+            </div>
+            
+            {/* Engagement metrics - positioned at bottom right like Daangn */}
+            <div className="flex items-center justify-end text-xs text-gray-400 space-x-3 mt-2">
+              {post.comments_count > 0 && (
+                <div className="flex items-center gap-1">
+                  <MessageCircle size={12} className="text-gray-400" />
+                  <span>{post.comments_count}</span>
+                </div>
+              )}
+              {post.likes_count > 0 && (
+                <div className="flex items-center gap-1">
+                  <Heart size={12} className="text-gray-400" />
+                  <span>{post.likes_count}</span>
+                </div>
               )}
             </div>
           </div>
           
-          {/* Right thumbnail */}
+          {/* Right thumbnail - larger and more prominent */}
           {showImages && post.images && post.images.length > 0 && post.images[0].public_url && (
             <div className="flex-shrink-0">
-              <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+              <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
                 <Image
                   src={post.images[0].public_url}
                   alt={post.images[0].alt_text || "게시글 이미지"}
                   fill
                   className="object-cover"
-                  sizes="64px"
+                  sizes="80px"
                 />
                 {/* Multiple images indicator */}
                 {post.images.length > 1 && (
