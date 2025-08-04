@@ -1,6 +1,6 @@
 // Service Worker for offline functionality and caching
 
-const CACHE_VERSION = '2.0.0';
+const CACHE_VERSION = '2.1.0';
 const CACHE_NAME = `vinahome-v${CACHE_VERSION}`;
 const STATIC_CACHE_NAME = `vinahome-static-v${CACHE_VERSION}`;
 const DYNAMIC_CACHE_NAME = `vinahome-dynamic-v${CACHE_VERSION}`;
@@ -12,6 +12,7 @@ const STATIC_ASSETS = [
   '/community',
   '/manifest.json',
   '/favicon.png',
+  '/favicon.ico',
   '/offline.html',
   // Add other critical assets
 ];
@@ -98,6 +99,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Skip Supabase auth requests to prevent token refresh issues
+  if (url.hostname.includes('supabase.co') && url.pathname.includes('/auth/')) {
+    return;
+  }
+
   // Handle different types of requests with appropriate strategies
   if (isStaticAsset(request)) {
     // Cache first strategy for static assets
@@ -126,9 +132,11 @@ function isStaticAsset(request) {
   const url = new URL(request.url);
   return url.pathname.startsWith('/_next/static/') ||
          url.pathname.endsWith('.js') ||
-         url.pathname.endsWith('.css') ||
+         // ❌ REMOVED: CSS files should not be cached by SW to prevent MIME type issues
+         // url.pathname.endsWith('.css') ||
          url.pathname === '/manifest.json' ||
-         url.pathname === '/favicon.png';
+         url.pathname === '/favicon.png' ||
+         url.pathname === '/favicon.ico';
 }
 
 function getAPIRequestConfig(request) {
