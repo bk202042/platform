@@ -54,7 +54,9 @@ const nextConfig = {
       config.optimization = {
         ...config.optimization,
         usedExports: true,
-        sideEffects: false,
+        // CRITICAL FIX: Removed sideEffects: false which was causing CSS files 
+        // to be treated as JavaScript modules, leading to MIME type errors
+        // CSS imports ARE side effects (they modify DOM)
         // Advanced splitting strategy
         splitChunks: {
           ...config.optimization.splitChunks,

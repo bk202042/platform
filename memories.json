@@ -1187,7 +1187,80 @@
       "lastAccessed": "2025-08-04T07:15:57.310Z",
       "lastVerified": "2025-08-04T07:15:57.310Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1754292123856_97umy5p98",
+      "content": "CRITICAL: Service worker fixes did not resolve the CSS MIME type error. Still getting \"Refused to execute script from CSS file\" error after deployment. This suggests the issue is deeper than service worker caching - possibly in Next.js webpack configuration or HTML generation. Need immediate escalation to debug specialist for advanced investigation.",
+      "type": "config",
+      "tags": [
+        "config",
+        "deployment",
+        "critical",
+        "production-bug",
+        "css-mime-error",
+        "service-worker-ineffective",
+        "next-js-config"
+      ],
+      "timestamp": "2025-08-04T07:22:03.855Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-04T07:22:03.855Z",
+      "lastVerified": "2025-08-04T07:22:03.855Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754292149331_ztz1xj2nd",
+      "content": "CRITICAL PRODUCTION BUG: CSS MIME type error persists after service worker fixes. Error: \"Refused to execute script from CSS file because MIME type 'text/css' is not executable\". This suggests CSS files are being referenced as <script> tags instead of <link> tags. Need to investigate Next.js config, HTML generation, and webpack configuration.",
+      "type": "config",
+      "tags": [
+        "config",
+        "critical-bug",
+        "css-mime-error",
+        "production-issue",
+        "nextjs-config"
+      ],
+      "timestamp": "2025-08-04T07:22:29.331Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-04T07:22:29.331Z",
+      "lastVerified": "2025-08-04T07:22:29.331Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754292193498_qqr2hdvlw",
+      "content": "CRITICAL ROOT CAUSE IDENTIFIED: The Next.js config has `sideEffects: false` in webpack optimization (line 57), which tells webpack that ALL modules are side-effect free. CSS imports ARE side effects (they modify DOM), so this causes webpack to treat CSS files as JavaScript modules, leading to the MIME type error. This is the root cause of the production bug.",
+      "type": "config",
+      "tags": [
+        "config",
+        "javascript",
+        "optimization",
+        "critical-bug",
+        "root-cause",
+        "webpack-config",
+        "css-sideEffects"
+      ],
+      "timestamp": "2025-08-04T07:23:13.498Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-04T07:23:13.498Z",
+      "lastVerified": "2025-08-04T07:23:13.498Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754292244738_8zkovlfl5",
+      "content": "CRITICAL BUG FIXED: Removed `sideEffects: false` from Next.js webpack config. This was causing CSS files to be treated as JavaScript modules, leading to MIME type errors. Build now successful, CSS file fd4e1b857c61f241.css properly processed as CSS asset. Production site should be functional again.",
+      "type": "tip",
+      "tags": [
+        "tip",
+        "javascript",
+        "critical-bug",
+        "fixed",
+        "production-ready",
+        "css-mime-resolved"
+      ],
+      "timestamp": "2025-08-04T07:24:04.738Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-04T07:24:04.738Z",
+      "lastVerified": "2025-08-04T07:24:04.738Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-04T07:15:57.310Z"
+  "lastUpdated": "2025-08-04T07:24:04.738Z"
 }
