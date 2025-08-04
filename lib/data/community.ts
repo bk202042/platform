@@ -1,5 +1,5 @@
 import { CommunityCategory } from "../validation/community";
-import { createClient } from "../supabase/server";
+import { createClient, createAnonClient } from "../supabase/server";
 import { Comment } from "@/components/community/CommentSection";
 import {
   PostImage,
@@ -27,7 +27,7 @@ const getCachedPosts = createDynamicDataCache(
   }) => {
     SimpleCacheMetrics.recordUsage('community-posts');
     
-    const supabase = await createClient();
+    const supabase = await createAnonClient();
     let query = supabase
       .from("community_posts")
       .select(`*, apartments(city_id, name, slug, cities(name))`) // join apartments for city filter
@@ -127,7 +127,7 @@ const getCachedPostByIdWithLikeStatus = createDynamicDataCache(
   async (params: { postId: string; userId?: string }) => {
     SimpleCacheMetrics.recordUsage('community-post-details');
     
-    const supabase = await createClient();
+    const supabase = await createAnonClient();
 
     // OPTIMIZATION: Single query with all relations including likes
     const { data: post, error: postError } = await supabase
@@ -222,7 +222,7 @@ const getCachedPostsWithLikeStatus = createDynamicDataCache(
     offset?: number;
   }) => {
     SimpleCacheMetrics.recordUsage('community-posts-with-likes');
-  const supabase = await createClient();
+    const supabase = await createAnonClient();
   
   // OPTIMIZATION: Single query with all relations to avoid N+1
   let query = supabase
