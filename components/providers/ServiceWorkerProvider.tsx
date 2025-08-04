@@ -18,6 +18,12 @@ export function ServiceWorkerProvider({
 
   // Register service worker on mount
   useEffect(() => {
+    // TEMPORARY: Disable service worker during production fix deployment
+    // to prevent CSS MIME type conflicts
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Service worker disabled during production fix deployment');
+      return;
+    }
     registerServiceWorker();
   }, []);
 

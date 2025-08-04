@@ -5,9 +5,35 @@ import { cookies } from "next/headers";
 const getSupabaseConfig = () => {
   const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   
-  // Use Supavisor Transaction Mode (Port 6543) for serverless optimization
-  // This provides connection pooling optimized for high-volume, short-lived connections
-  const pooledUrl = baseUrl.replace(':5432', ':6543');
+  // CRITICAL FIX: Properly construct Supavisor URL for connection pooling
+  // Supabase URLs don't contain explicit ports, so we need to construct the pooled URL correctly
+  let pooledUrl = baseUrl;
+  
+  // TEMPORARY FIX: Disable connection pooling during build process to prevent fetch failures
+  // Only use Supavisor in production runtime (not during build)
+  // Check if we're in Vercel runtime environment vs build environment
+  const isVercelRuntime = process.env.VERCEL && process.env.VERCEL_ENV;
+  const isRuntimeProduction = process.env.NODE_ENV === 'production' && isVercelRuntime;
+  
+  if (isRuntimeProduction && process.env.SUPABASE_POOLER_URL) {
+    // Use dedicated pooler URL if provided
+    pooledUrl = process.env.SUPABASE_POOLER_URL;
+  } else if (isRuntimeProduction) {
+    // Construct Supavisor URL for transaction mode (port 6543)
+    // Extract the project reference from the URL
+    const urlParts = baseUrl.match(/https:\/\/([^.]+)\.supabase\.co/);
+    if (urlParts && urlParts[1]) {
+      pooledUrl = `https://${urlParts[1]}.pooler.supabase.com:6543`;
+    }
+  }
+  
+  // During build, use standard Supabase URL to prevent connection issues
+  console.log('Supabase config:', { 
+    url: pooledUrl, 
+    isRuntimeProduction, 
+    nodeEnv: process.env.NODE_ENV,
+    isVercelRuntime
+  });
   
   return {
     url: pooledUrl,
