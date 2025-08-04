@@ -41,7 +41,7 @@ export interface PropertySearchResult {
 function processPropertyImages(
   property: PropertyListing,
   images: PropertyImage[], // Pass fetched images separately
-  supabase: SupabaseClient // Pass Supabase client instance
+  supabase: Pick<SupabaseClient, 'storage'> // Pass Supabase client instance with storage access
 ): ProcessedPropertyListing {
   const imagesWithPublicUrls = (images || []).map(
     (img): ProcessedPropertyImage => {

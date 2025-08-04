@@ -12,7 +12,6 @@ import {
 import { createPublicUrl } from "../utils/community-images";
 import { 
   createDynamicDataCache, 
-  createSearchCache, 
   CACHE_CONFIGS,
   SimpleCacheMetrics 
 } from "../cache/simple-cache";
@@ -173,11 +172,11 @@ const getCachedPostByIdWithLikeStatus = createDynamicDataCache(
       delete post.community_post_images;
     }
 
-  // OPTIMIZATION: Check like status from the main query results
-  let isLiked = false;
-  if (userId && post.community_likes) {
-    isLiked = post.community_likes.some((like: any) => like.user_id === userId);
-  }
+    // OPTIMIZATION: Check like status from the main query results
+    let isLiked = false;
+    if (params.userId && post.community_likes) {
+      isLiked = post.community_likes.some((like: { user_id: string }) => like.user_id === params.userId);
+    }
 
   // Format user profile data
   const profile = post.profiles;
@@ -295,7 +294,7 @@ const getCachedPostsWithLikeStatus = createDynamicDataCache(
   const likedPostIds = new Set<string>();
   if (params.userId) {
     posts.forEach(post => {
-      if (post.community_likes?.some((like: any) => like.user_id === params.userId)) {
+      if (post.community_likes?.some((like: { user_id: string }) => like.user_id === params.userId)) {
         likedPostIds.add(post.id);
       }
     });

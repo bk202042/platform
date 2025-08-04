@@ -16,15 +16,14 @@ const nextConfig = {
       'embla-carousel-react',
       'react-dropzone',
     ],
-    // Enable optimized server components
-    serverComponentsExternalPackages: ['sharp'],
-    // Turbo mode for faster builds
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
+  },
+
+  // PERFORMANCE: Turbopack configuration (stable in Next.js 15)
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
       },
     },
   },
@@ -34,8 +33,6 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
     // Remove React DevTools in production
     reactRemoveProperties: process.env.NODE_ENV === 'production',
-    // Emotion support for better CSS-in-JS performance
-    emotion: true,
   },
 
   // PERFORMANCE: Advanced webpack configuration
@@ -175,10 +172,6 @@ const nextConfig = {
     // Security settings
     dangerouslyAllowSVG: false,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    // Quality settings for different formats
-    quality: 85,
-    // Enable blur placeholder
-    placeholder: 'blur',
     // Optimize loading
     loader: 'default',
     // Unoptimized for development speed

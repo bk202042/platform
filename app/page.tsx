@@ -31,7 +31,7 @@ const FeatureHighlightsSection = dynamic(
   () => import("@/components/sections/FeatureHighlightsSection").then(mod => ({ default: mod.FeatureHighlightsSection })),
   {
     loading: () => <div className="h-32 animate-pulse bg-gray-100 rounded-lg" />,
-    ssr: false, // Client-only for interactive features
+    ssr: true, // SSR enabled for better performance
   }
 );
 

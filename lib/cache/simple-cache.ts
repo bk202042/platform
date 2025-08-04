@@ -12,24 +12,24 @@ export const CACHE_CONFIGS = {
   cities: {
     ttl: 86400,
     revalidate: 86400,
-    tags: ['cities', 'locations'],
+    tags: ['cities', 'locations'] as string[],
   },
   properties: {
     ttl: 300,
     revalidate: 300,
-    tags: ['properties', 'listings'],
+    tags: ['properties', 'listings'] as string[],
   },
   communityPosts: {
     ttl: 60,
     revalidate: 60,
-    tags: ['community', 'posts'],
+    tags: ['community', 'posts'] as string[],
   },
   searchResults: {
     ttl: 180,
     revalidate: 180,
-    tags: ['search', 'results'],
+    tags: ['search', 'results'] as string[],
   },
-} as const;
+};
 
 // Simple cache key generation
 export function generateCacheKey(prefix: string, params: Record<string, unknown>): string {
