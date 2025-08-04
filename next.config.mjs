@@ -37,16 +37,8 @@ const nextConfig = {
 
   // PERFORMANCE: Advanced webpack configuration
   webpack: (config, { dev }) => {
-    // Bundle analyzer (enable with ANALYZE=true)
-    if (process.env.ANALYZE === 'true') {
-      import('@next/bundle-analyzer').then(({ default: withBundleAnalyzer }) => {
-        const analyzer = withBundleAnalyzer({
-          enabled: true,
-          openAnalyzer: false,
-        });
-        config.plugins.push(...(analyzer.webpack?.(config, { dev })?.plugins || []));
-      });
-    }
+    // Bundle analyzer removed - the dynamic import was causing CSS files 
+    // to be treated as JavaScript modules, leading to MIME type errors
 
     // PERFORMANCE: Production optimizations
     if (!dev) {
