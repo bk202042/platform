@@ -1339,7 +1339,25 @@
       "lastAccessed": "2025-08-04T10:19:18.095Z",
       "lastVerified": "2025-08-04T10:19:18.095Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1754303653199_9d7tqptif",
+      "content": "CRITICAL: Supavisor connection pooling is FAILING in production Vercel:\n- Error: \"getaddrinfo ENOTFOUND khtcoztdkxhhrudwhhjv.pooler.supabase.com\"\n- The pooler URL is not resolving in Vercel's production environment\n- Community page failing with digest '3727174589'\n- Auth sign-in failing due to JWT fetch errors\n- Supavisor pooler.supabase.com domain not accessible from Vercel\n- Need to disable Supavisor and use direct Supabase URLs in production",
+      "type": "config",
+      "tags": [
+        "config",
+        "critical",
+        "supavisor-failure",
+        "vercel-production",
+        "dns-not-found",
+        "pooler-domain-issue"
+      ],
+      "timestamp": "2025-08-04T10:34:13.199Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-04T10:34:13.199Z",
+      "lastVerified": "2025-08-04T10:34:13.199Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-04T10:19:18.095Z"
+  "lastUpdated": "2025-08-04T10:34:13.199Z"
 }

@@ -7,32 +7,20 @@ const getSupabaseConfig = () => {
   
   // CRITICAL FIX: Properly construct Supavisor URL for connection pooling
   // Supabase URLs don't contain explicit ports, so we need to construct the pooled URL correctly
-  let pooledUrl = baseUrl;
+  const pooledUrl = baseUrl;
   
-  // TEMPORARY FIX: Disable connection pooling during build process to prevent fetch failures
-  // Only use Supavisor in production runtime (not during build)
-  // Check if we're in Vercel runtime environment vs build environment
-  const isVercelRuntime = process.env.VERCEL && process.env.VERCEL_ENV;
-  const isRuntimeProduction = process.env.NODE_ENV === 'production' && isVercelRuntime;
+  // CRITICAL FIX: Disable Supavisor connection pooling due to DNS resolution issues in Vercel
+  // The pooler.supabase.com domain is not accessible from Vercel's production environment
+  // Falling back to direct Supabase URLs for now
+  // TODO: Re-enable once Vercel network access to pooler domain is resolved
   
-  if (isRuntimeProduction && process.env.SUPABASE_POOLER_URL) {
-    // Use dedicated pooler URL if provided
-    pooledUrl = process.env.SUPABASE_POOLER_URL;
-  } else if (isRuntimeProduction) {
-    // Construct Supavisor URL for transaction mode (port 6543)
-    // Extract the project reference from the URL
-    const urlParts = baseUrl.match(/https:\/\/([^.]+)\.supabase\.co/);
-    if (urlParts && urlParts[1]) {
-      pooledUrl = `https://${urlParts[1]}.pooler.supabase.com:6543`;
-    }
-  }
+  console.log('SUPAVISOR DISABLED: Using direct Supabase URLs due to Vercel DNS issues');
   
-  // During build, use standard Supabase URL to prevent connection issues
+  // Always use direct Supabase URL (pooledUrl = baseUrl at this point)
   console.log('Supabase config:', { 
     url: pooledUrl, 
-    isRuntimeProduction, 
     nodeEnv: process.env.NODE_ENV,
-    isVercelRuntime
+    vercel: process.env.VERCEL || 'false'
   });
   
   return {
