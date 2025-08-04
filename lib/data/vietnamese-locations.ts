@@ -1,4 +1,5 @@
 import { createClient } from "../supabase/server";
+import { unstable_cache } from "next/cache";
 
 // Types for Vietnamese location system
 export interface VietnameseCity {
@@ -117,25 +118,37 @@ export async function searchVietnameseLocations(
   return data || [];
 }
 
+// PERFORMANCE: Cached Vietnamese cities with ISR
+const getCachedVietnameseCities = unstable_cache(
+  async (): Promise<VietnameseCity[]> => {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("cities")
+      .select("*")
+      .eq("country", "Vietnam")
+      .order("is_major_city", { ascending: false })
+      .order("name", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching Vietnamese cities:", error);
+      throw error;
+    }
+
+    return data || [];
+  },
+  ['vietnamese-cities'],
+  {
+    tags: ['cities', 'vietnamese-locations'],
+    revalidate: 86400, // 24 hours - cities rarely change
+  }
+);
+
 /**
- * Get all Vietnamese cities with Korean localization
+ * Get all Vietnamese cities with Korean localization - CACHED
  */
 export async function getVietnameseCities(): Promise<VietnameseCity[]> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("cities")
-    .select("*")
-    .eq("country", "Vietnam")
-    .order("is_major_city", { ascending: false })
-    .order("name", { ascending: true });
-
-  if (error) {
-    console.error("Error fetching Vietnamese cities:", error);
-    throw error;
-  }
-
-  return data || [];
+  return getCachedVietnameseCities();
 }
 
 /**
@@ -527,14 +540,10 @@ export async function getAllVietnameseApartments(params: {
   }
 }
 
-/**
- * Get popular Vietnamese locations for suggestions
- * Enhanced to include apartments with recent community activity, not just featured ones
- */
-export async function getPopularVietnameseLocations(): Promise<
-  LocationSearchResult[]
-> {
-  const supabase = await createClient();
+// PERFORMANCE: Cached popular Vietnamese locations with ISR
+const getCachedPopularVietnameseLocations = unstable_cache(
+  async (): Promise<LocationSearchResult[]> => {
+    const supabase = await createClient();
 
   try {
     // Get major cities first
@@ -735,4 +744,20 @@ export async function getPopularVietnameseLocations(): Promise<
     console.error("Error getting popular Vietnamese locations:", error);
     return [];
   }
+  },
+  ['popular-vietnamese-locations'],
+  {
+    tags: ['vietnamese-locations', 'popular-locations'],
+    revalidate: 3600, // 1 hour - balances freshness with performance
+  }
+);
+
+/**
+ * Get popular Vietnamese locations for suggestions - CACHED
+ * Enhanced to include apartments with recent community activity, not just featured ones
+ */
+export async function getPopularVietnameseLocations(): Promise<
+  LocationSearchResult[]
+> {
+  return getCachedPopularVietnameseLocations();
 }

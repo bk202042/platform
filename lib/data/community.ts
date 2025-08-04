@@ -10,46 +10,70 @@ import {
   EnhancedError,
 } from "../types/community";
 import { createPublicUrl } from "../utils/community-images";
+import { 
+  createDynamicDataCache, 
+  createSearchCache, 
+  CACHE_CONFIGS,
+  SimpleCacheMetrics 
+} from "../cache/simple-cache";
 
-// 게시글 목록 조회
+// CACHED: 게시글 목록 조회 - OPTIMIZED with advanced caching
+const getCachedPosts = createDynamicDataCache(
+  'community-posts',
+  async (params: {
+    city?: string;
+    apartmentId?: string;
+    category?: CommunityCategory;
+    sort?: "popular" | "latest";
+  }) => {
+    SimpleCacheMetrics.recordUsage('community-posts');
+    
+    const supabase = await createClient();
+    let query = supabase
+      .from("community_posts")
+      .select(`*, apartments(city_id, name, slug, cities(name))`) // join apartments for city filter
+      .eq("is_deleted", false);
+
+    if (params.apartmentId) {
+      query = query.eq("apartment_id", params.apartmentId);
+    }
+    if (params.category) {
+      query = query.eq("category", params.category);
+    }
+    if (params.city) {
+      query = query.eq("apartments.city_id", params.city);
+    }
+
+    // 인기글: 7일 내 좋아요순 상단, 나머지 최신순
+    if (params.sort === "popular") {
+      // 7일 내 글 중 좋아요순 정렬
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      query = query
+        .gte("created_at", sevenDaysAgo.toISOString())
+        .order("likes_count", { ascending: false });
+    } else {
+      // 최신순
+      query = query.order("created_at", { ascending: false });
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  },
+  {
+    ...CACHE_CONFIGS.communityPosts,
+    tags: ['community', 'posts', 'listings'],
+  }
+);
+
 export async function getPosts(params: {
   city?: string;
   apartmentId?: string;
   category?: CommunityCategory;
   sort?: "popular" | "latest";
 }) {
-  const supabase = await createClient();
-  let query = supabase
-    .from("community_posts")
-    .select(`*, apartments(city_id, name, slug, cities(name))`) // join apartments for city filter
-    .eq("is_deleted", false);
-
-  if (params.apartmentId) {
-    query = query.eq("apartment_id", params.apartmentId);
-  }
-  if (params.category) {
-    query = query.eq("category", params.category);
-  }
-  if (params.city) {
-    query = query.eq("apartments.city_id", params.city);
-  }
-
-  // 인기글: 7일 내 좋아요순 상단, 나머지 최신순
-  if (params.sort === "popular") {
-    // 7일 내 글 중 좋아요순 정렬
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    query = query
-      .gte("created_at", sevenDaysAgo.toISOString())
-      .order("likes_count", { ascending: false });
-  } else {
-    // 최신순
-    query = query.order("created_at", { ascending: false });
-  }
-
-  const { data, error } = await query;
-  if (error) throw error;
-  return data;
+  return getCachedPosts(params);
 }
 
 // 게시글 상세 조회
@@ -98,72 +122,61 @@ export async function getPostById(postId: string) {
   return data;
 }
 
-// 게시글 상세 조회 (사용자 좋아요 상태 포함)
-export async function getPostByIdWithLikeStatus(
-  postId: string,
-  userId?: string
-) {
-  const supabase = await createClient();
+// CACHED: 게시글 상세 조회 (사용자 좋아요 상태 포함) - ADVANCED CACHING
+const getCachedPostByIdWithLikeStatus = createDynamicDataCache(
+  'community-post-details',
+  async (params: { postId: string; userId?: string }) => {
+    SimpleCacheMetrics.recordUsage('community-post-details');
+    
+    const supabase = await createClient();
 
-  // Get post data with images and user profile
-  const { data: post, error: postError } = await supabase
-    .from("community_posts")
-    .select(`
-      *, 
-      apartments(city_id, name, slug, cities(name)),
-      community_post_images(id, storage_path, display_order, alt_text, metadata, created_at),
-      profiles!community_posts_user_id_fkey (
-        id,
-        first_name,
-        last_name,
-        avatar_url,
-        email
-      )
-    `)
-    .eq("id", postId)
-    .eq("is_deleted", false)
-    .single();
-
-  if (postError) {
-    console.error("getPostByIdWithLikeStatus error:", postError);
-    return null;
-  }
-
-  // Transform images to include public URLs
-  if (post) {
-    if (post.community_post_images && Array.isArray(post.community_post_images) && post.community_post_images.length > 0) {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-      interface RawImageData {
-        display_order: number;
-        storage_path: string;
-        [key: string]: unknown;
-      }
-      post.images = (post.community_post_images as RawImageData[])
-        .sort((a, b) => a.display_order - b.display_order)
-        .map((image) => ({
-          ...image,
-          post_id: post.id,
-          public_url: createPublicUrl(image.storage_path, supabaseUrl),
-        }));
-    } else {
-      // Ensure images is always an empty array when no images exist
-      post.images = [];
-    }
-    // Remove the raw data
-    delete post.community_post_images;
-  }
-
-  // Get user's like status if user is provided
-  let isLiked = false;
-  if (userId) {
-    const { data: likeData } = await supabase
-      .from("community_likes")
-      .select("id")
-      .eq("post_id", postId)
-      .eq("user_id", userId)
+    // OPTIMIZATION: Single query with all relations including likes
+    const { data: post, error: postError } = await supabase
+      .from("community_posts")
+      .select(`
+        *, 
+        apartments(city_id, name, slug, cities(name)),
+        community_post_images(id, storage_path, display_order, alt_text, metadata, created_at),
+        profiles!community_posts_user_id_fkey (
+          id, first_name, last_name, avatar_url, email
+        ),
+        community_likes(user_id)
+      `)
+      .eq("id", params.postId)
+      .eq("is_deleted", false)
       .single();
 
-    isLiked = !!likeData;
+    if (postError) {
+      console.error("getPostByIdWithLikeStatus error:", postError);
+      return null;
+    }
+
+    // Transform images to include public URLs
+    if (post) {
+      if (post.community_post_images && Array.isArray(post.community_post_images) && post.community_post_images.length > 0) {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+        interface RawImageData {
+          display_order: number;
+          storage_path: string;
+          [key: string]: unknown;
+        }
+        post.images = (post.community_post_images as RawImageData[])
+          .sort((a, b) => a.display_order - b.display_order)
+          .map((image) => ({
+            ...image,
+            post_id: post.id,
+            public_url: createPublicUrl(image.storage_path, supabaseUrl),
+          }));
+      } else {
+        post.images = [];
+      }
+      delete post.community_post_images;
+    }
+
+  // OPTIMIZATION: Check like status from the main query results
+  let isLiked = false;
+  if (userId && post.community_likes) {
+    isLiked = post.community_likes.some((like: any) => like.user_id === userId);
   }
 
   // Format user profile data
@@ -174,46 +187,67 @@ export async function getPostByIdWithLikeStatus(
       "익명"
     : "익명";
 
-  return {
-    ...post,
-    isLiked,
-    user: {
-      name: displayName,
-      avatar_url: profile?.avatar_url,
-    },
-  };
+    return {
+      ...post,
+      isLiked,
+      user: {
+        name: displayName,
+        avatar_url: profile?.avatar_url,
+      },
+    };
+  },
+  {
+    ...CACHE_CONFIGS.communityPosts,
+    tags: ['community', 'post-details', 'likes'],
+  }
+);
+
+// Public function that uses the cached version
+export async function getPostByIdWithLikeStatus(
+  postId: string,
+  userId?: string
+) {
+  return getCachedPostByIdWithLikeStatus({ postId, userId });
 }
 
-// 게시글 목록 조회 (사용자 좋아요 상태 및 작성자 정보 포함)
-export async function getPostsWithLikeStatus(params: {
-  city?: string;
-  apartmentId?: string;
-  category?: CommunityCategory;
-  sort?: "popular" | "latest";
-  userId?: string;
-  limit?: number;
-  offset?: number;
-}) {
+// CACHED: 게시글 목록 조회 (사용자 좋아요 상태 및 작성자 정보 포함) - ADVANCED CACHING
+const getCachedPostsWithLikeStatus = createDynamicDataCache(
+  'community-posts-with-likes',
+  async (params: {
+    city?: string;
+    apartmentId?: string;
+    category?: CommunityCategory;
+    sort?: "popular" | "latest";
+    userId?: string;
+    limit?: number;
+    offset?: number;
+  }) => {
+    SimpleCacheMetrics.recordUsage('community-posts-with-likes');
   const supabase = await createClient();
+  
+  // OPTIMIZATION: Single query with all relations to avoid N+1
   let query = supabase
     .from("community_posts")
-    .select(
-      `
+    .select(`
       *,
-      apartments(city_id, name, slug, cities(name)),
-      community_post_images(id, storage_path, display_order, alt_text, metadata, created_at),
-      profiles!community_posts_user_id_fkey (
-        id,
-        first_name,
-        last_name,
-        avatar_url,
-        email
+      apartments!inner(
+        id, name, slug, city_id,
+        cities!inner(id, name)
+      ),
+      community_post_images(
+        id, storage_path, display_order, alt_text, metadata, created_at
+      ),
+      profiles!community_posts_user_id_fkey(
+        id, first_name, last_name, avatar_url, email
+      ),
+      community_likes(
+        user_id
       )
-    `
-    )
+    `)
     .eq("is_deleted", false)
     .eq("status", "published");
 
+  // Apply filters with optimized joins
   if (params.apartmentId) {
     query = query.eq("apartment_id", params.apartmentId);
   }
@@ -224,7 +258,12 @@ export async function getPostsWithLikeStatus(params: {
     query = query.eq("apartments.city_id", params.city);
   }
 
-  // 페이지네이션
+  // Filter likes by user in the main query to avoid separate fetch
+  if (params.userId) {
+    query = query.or(`community_likes.user_id.eq.${params.userId},community_likes.user_id.is.null`);
+  }
+
+  // Pagination
   if (params.limit) {
     query = query.limit(params.limit);
   }
@@ -235,7 +274,7 @@ export async function getPostsWithLikeStatus(params: {
     );
   }
 
-  // 정렬
+  // Sorting with index-optimized queries
   if (params.sort === "popular") {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -252,17 +291,14 @@ export async function getPostsWithLikeStatus(params: {
 
   if (!posts) return [];
 
-  // Get user's like status for all posts if user is provided
-  let likedPostIds = new Set<string>();
-  if (params.userId && posts.length > 0) {
-    const postIds = posts.map((post) => post.id);
-    const { data: likes } = await supabase
-      .from("community_likes")
-      .select("post_id")
-      .eq("user_id", params.userId)
-      .in("post_id", postIds);
-
-    likedPostIds = new Set(likes?.map((like) => like.post_id) || []);
+  // OPTIMIZATION: Process liked posts from the main query results
+  const likedPostIds = new Set<string>();
+  if (params.userId) {
+    posts.forEach(post => {
+      if (post.community_likes?.some((like: any) => like.user_id === params.userId)) {
+        likedPostIds.add(post.id);
+      }
+    });
   }
 
   return posts.map((post) => {
@@ -309,7 +345,25 @@ export async function getPostsWithLikeStatus(params: {
         avatar_url: profile?.avatar_url,
       },
     };
-  });
+    });
+  },
+  {
+    ...CACHE_CONFIGS.communityPosts,
+    tags: ['community', 'posts', 'likes', 'user-content'],
+  }
+);
+
+// Public function that uses the cached version
+export async function getPostsWithLikeStatus(params: {
+  city?: string;
+  apartmentId?: string;
+  category?: CommunityCategory;
+  sort?: "popular" | "latest";
+  userId?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  return getCachedPostsWithLikeStatus(params);
 }
 
 // 게시글 생성

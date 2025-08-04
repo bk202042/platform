@@ -1,12 +1,36 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+// PERFORMANCE: Supavisor connection pooling configuration
+const getSupabaseConfig = () => {
+  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  
+  // Use Supavisor Transaction Mode (Port 6543) for serverless optimization
+  // This provides connection pooling optimized for high-volume, short-lived connections
+  const pooledUrl = baseUrl.replace(':5432', ':6543');
+  
+  return {
+    url: pooledUrl,
+    anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    // Connection pool optimization settings
+    db: {
+      schema: 'public',
+    },
+    global: {
+      headers: {
+        'Connection': 'keep-alive',
+      },
+    },
+  };
+};
+
 export async function createClient() {
   const cookieStore = await cookies();
+  const config = getSupabaseConfig();
 
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    config.url,
+    config.anonKey,
     {
       cookies: {
         getAll() {
@@ -24,14 +48,18 @@ export async function createClient() {
           }
         },
       },
+      db: config.db,
+      global: config.global,
     }
   );
 }
 
 export async function createAnonClient() {
+  const config = getSupabaseConfig();
+  
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    config.url,
+    config.anonKey,
     {
       cookies: {
         getAll() {
@@ -41,6 +69,8 @@ export async function createAnonClient() {
           // No-op for anonymous client
         },
       },
+      db: config.db,
+      global: config.global,
     }
   );
 }

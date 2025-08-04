@@ -1,15 +1,37 @@
 import { getPropertyListings } from "@/lib/data/property";
-import { KoreanExpatriatesSection } from "@/components/sections/KoreanExpatriatesSection";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { ExploreSection } from "@/components/sections/ExploreSection";
-import { FeaturedPropertiesClient } from "@/components/featured/FeaturedPropertiesClient";
 import dynamic from "next/dynamic";
+import { Suspense } from "react";
 
-// Dynamic import for heavy components
+// PERFORMANCE: Dynamic imports for heavy components with optimized loading
+const KoreanExpatriatesSection = dynamic(
+  () => import("@/components/sections/KoreanExpatriatesSection").then(mod => ({ default: mod.KoreanExpatriatesSection })),
+  {
+    loading: () => <div className="h-64 animate-pulse bg-gray-100 rounded-lg" />,
+    ssr: true, // Enable SSR for SEO
+  }
+);
+
+const FeaturedPropertiesClient = dynamic(
+  () => import("@/components/featured/FeaturedPropertiesClient").then(mod => ({ default: mod.FeaturedPropertiesClient })),
+  {
+    loading: () => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="h-80 animate-pulse bg-gray-100 rounded-lg" />
+        ))}
+      </div>
+    ),
+    ssr: true,
+  }
+);
+
 const FeatureHighlightsSection = dynamic(
   () => import("@/components/sections/FeatureHighlightsSection").then(mod => ({ default: mod.FeatureHighlightsSection })),
   {
     loading: () => <div className="h-32 animate-pulse bg-gray-100 rounded-lg" />,
+    ssr: false, // Client-only for interactive features
   }
 );
 
@@ -30,24 +52,36 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col w-full">
-      {/* Hero Section (Server Component) */}
+      {/* Hero Section (Server Component) - Critical, render immediately */}
       <HeroSection />
 
-      {/* Explore Section (Server Component) */}
+      {/* Explore Section (Server Component) - Critical, render immediately */}
       <ExploreSection />
 
-      {/* Featured Properties Section (Client Component, receives server-fetched data) */}
-      <FeaturedPropertiesClient
-        rentProperties={rentResult.data || []}
-        buyProperties={buyResult.data || []}
-        totalProperties={allPropertiesResult.total || 0}
-      />
+      {/* PERFORMANCE: Suspense boundaries for progressive loading */}
+      <Suspense fallback={
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="h-80 animate-pulse bg-gray-100 rounded-lg" />
+          ))}
+        </div>
+      }>
+        <FeaturedPropertiesClient
+          rentProperties={rentResult.data || []}
+          buyProperties={buyResult.data || []}
+          totalProperties={allPropertiesResult.total || 0}
+        />
+      </Suspense>
 
-      {/* Feature Highlights Section (Client Component) */}
-      <FeatureHighlightsSection />
+      {/* PERFORMANCE: Defer non-critical interactive components */}
+      <Suspense fallback={<div className="h-32 animate-pulse bg-gray-100 rounded-lg" />}>
+        <FeatureHighlightsSection />
+      </Suspense>
 
-      {/* For Korean Expatriates Section (Server Component) */}
-      <KoreanExpatriatesSection />
+      {/* PERFORMANCE: Defer informational content */}
+      <Suspense fallback={<div className="h-64 animate-pulse bg-gray-100 rounded-lg" />}>
+        <KoreanExpatriatesSection />
+      </Suspense>
     </div>
   );
 }

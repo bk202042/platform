@@ -7,10 +7,13 @@
     "build": "next build",
     "build:analyze": "ANALYZE=true next build",
     "analyze": "node scripts/analyze-bundle.js",
-
     "start": "next start",
     "lint": "next lint",
-    "load-data": "tsx scripts/load-property-data.ts"
+    "load-data": "tsx scripts/load-property-data.ts",
+    "performance:test": "node scripts/performance-test.js",
+    "performance:audit": "lighthouse --only-categories=performance --chrome-flags=\"--headless\" http://localhost:3000",
+    "cache:clear": "next build --no-cache",
+    "bundle:visualize": "npx @next/bundle-analyzer"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",

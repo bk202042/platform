@@ -16,12 +16,21 @@ const STATIC_ASSETS = [
   // Add other critical assets
 ];
 
-// API endpoints to cache with different strategies
+// PERFORMANCE: Enhanced API endpoints caching with optimized strategies
 const API_CACHE_PATTERNS = [
+  // Community posts - frequently updated, network first with short TTL
   { pattern: /^\/api\/community\/posts/, strategy: 'networkFirst', ttl: 5 * 60 * 1000 },
-  { pattern: /^\/api\/cities/, strategy: 'cacheFirst', ttl: 24 * 60 * 60 * 1000 },
-  { pattern: /^\/api\/apartments/, strategy: 'cacheFirst', ttl: 24 * 60 * 60 * 1000 },
   { pattern: /^\/api\/community\/posts\/\d+$/, strategy: 'networkFirst', ttl: 2 * 60 * 1000 },
+  // Static location data - rarely changes, cache first with long TTL
+  { pattern: /^\/api\/cities/, strategy: 'cacheFirst', ttl: 7 * 24 * 60 * 60 * 1000 }, // 7 days
+  { pattern: /^\/api\/apartments/, strategy: 'cacheFirst', ttl: 7 * 24 * 60 * 60 * 1000 },
+  // Property listings - moderate update frequency, stale-while-revalidate
+  { pattern: /^\/api\/properties/, strategy: 'staleWhileRevalidate', ttl: 30 * 60 * 1000 }, // 30 mins
+  { pattern: /^\/api\/properties\/\d+$/, strategy: 'staleWhileRevalidate', ttl: 60 * 60 * 1000 }, // 1 hour
+  // User data - always fresh, network first with backup
+  { pattern: /^\/api\/user/, strategy: 'networkFirst', ttl: 2 * 60 * 1000 },
+  // Search results - cache for quick repeated searches
+  { pattern: /^\/api\/search/, strategy: 'networkFirst', ttl: 10 * 60 * 1000 }, // 10 mins
 ];
 
 // Image optimization patterns
@@ -98,6 +107,8 @@ self.addEventListener('fetch', (event) => {
     const config = getAPIRequestConfig(request);
     if (config.strategy === 'networkFirst') {
       event.respondWith(networkFirstWithTTL(request, DYNAMIC_CACHE_NAME, config.ttl));
+    } else if (config.strategy === 'staleWhileRevalidate') {
+      event.respondWith(staleWhileRevalidateWithTTL(request, DYNAMIC_CACHE_NAME, config.ttl));
     } else {
       event.respondWith(cacheFirstWithTTL(request, DYNAMIC_CACHE_NAME, config.ttl));
     }
@@ -337,6 +348,42 @@ async function networkFirstWithTTL(request, cacheName, ttl) {
     }
 
     return new Response('Offline', { status: 503 });
+  }
+}
+
+// PERFORMANCE: Stale-while-revalidate strategy with TTL
+async function staleWhileRevalidateWithTTL(request, cacheName, ttl) {
+  const cache = await caches.open(cacheName);
+  const cachedResponse = await cache.match(request);
+
+  // Start network request in background
+  const networkPromise = fetch(request)
+    .then(async (networkResponse) => {
+      if (networkResponse.ok) {
+        const responseWithHeaders = addCacheHeaders(networkResponse, ttl);
+        await cache.put(request, responseWithHeaders.clone());
+        return responseWithHeaders;
+      }
+      return networkResponse;
+    })
+    .catch((error) => {
+      console.log('Network request failed in stale-while-revalidate:', error);
+      return null;
+    });
+
+  // Return cached response immediately if available and not expired
+  if (cachedResponse && !isExpired(cachedResponse)) {
+    // Network request continues in background
+    networkPromise;
+    return cachedResponse;
+  }
+
+  // If no cache or expired, wait for network
+  try {
+    const networkResponse = await networkPromise;
+    return networkResponse || cachedResponse || new Response('Offline', { status: 503 });
+  } catch (error) {
+    return cachedResponse || new Response('Offline', { status: 503 });
   }
 }
 

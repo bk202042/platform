@@ -80,7 +80,7 @@ function processPropertyImages(
   };
 }
 
-// Cache the property listings for 1 minute
+// PERFORMANCE: ISR-optimized property listings cache
 const getCachedPropertyListings = unstable_cache(
   async (params: PropertySearchParams = {}): Promise<PropertySearchResult> => {
     const supabaseClient = await createAnonClient();
@@ -234,11 +234,11 @@ const getCachedPropertyListings = unstable_cache(
       hasMore: totalCount > offset + limit,
     };
   },
-  // Corrected cache key: Static base key array. Args (params) are automatically included by Next.js.
+  // PERFORMANCE: ISR cache key with proper tagging
   [`property-listings`],
   {
-    tags: ["property-listings"], // Static tag for general revalidation
-    revalidate: 60,
+    tags: ["property-listings", "properties"], 
+    revalidate: 300, // 5 minutes - balance between freshness and performance
   }
 );
 
@@ -296,12 +296,11 @@ const getCachedPropertyById = unstable_cache(
 
     return processedData;
   },
-  // Corrected cache key: Base key array. Args (id) are automatically included.
-  [`property-by-id`], // Static base key
+  // PERFORMANCE: ISR cache key for property details
+  [`property-by-id`],
   {
-    // Corrected tags: Static array of strings. Dynamic invalidation relies on args.
-    tags: [`property-details`],
-    revalidate: 300,
+    tags: [`property-details`, `properties`],
+    revalidate: 600, // 10 minutes - property details change less frequently
   }
 );
 
