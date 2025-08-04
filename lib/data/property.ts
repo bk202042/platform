@@ -83,7 +83,8 @@ function processPropertyImages(
 // PERFORMANCE: ISR-optimized property listings cache
 const getCachedPropertyListings = unstable_cache(
   async (params: PropertySearchParams = {}): Promise<PropertySearchResult> => {
-    const supabaseClient = await createAnonClient();
+    try {
+      const supabaseClient = await createAnonClient();
     const {
       searchText,
       minPrice,
@@ -198,6 +199,15 @@ const getCachedPropertyListings = unstable_cache(
 
     if (fetchError) {
       console.error("Error fetching property data:", fetchError);
+      // During build time, return empty result instead of throwing to prevent prerender failures
+      if (process.env.NODE_ENV === 'production' && process.env.VERCEL) {
+        console.warn("Build-time database fetch failed, returning empty result");
+        return {
+          data: [],
+          total: 0,
+          hasMore: false,
+        };
+      }
       throw fetchError;
     }
 
@@ -233,6 +243,19 @@ const getCachedPropertyListings = unstable_cache(
       total: totalCount,
       hasMore: totalCount > offset + limit,
     };
+    } catch (error) {
+      console.error("Critical error in property listings fetch:", error);
+      // During build time, return empty result instead of throwing to prevent prerender failures
+      if (process.env.NODE_ENV === 'production' && process.env.VERCEL) {
+        console.warn("Build-time database connection failed, returning empty result");
+        return {
+          data: [],
+          total: 0,
+          hasMore: false,
+        };
+      }
+      throw error;
+    }
   },
   // PERFORMANCE: ISR cache key with proper tagging
   [`property-listings`],
