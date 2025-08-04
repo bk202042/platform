@@ -257,10 +257,10 @@ const getCachedPostsWithLikeStatus = createDynamicDataCache(
     query = query.eq("apartments.city_id", params.city);
   }
 
-  // Filter likes by user in the main query to avoid separate fetch
-  if (params.userId) {
-    query = query.or(`community_likes.user_id.eq.${params.userId},community_likes.user_id.is.null`);
-  }
+  // CRITICAL FIX: Remove problematic OR filter on nested relation
+  // The community_likes nested relation will return all likes for each post
+  // We'll determine like status in the processing logic below
+  // Removed: query.or() on community_likes.user_id - caused PostgREST PGRST100 error
 
   // Pagination
   if (params.limit) {
