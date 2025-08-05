@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createApiClient } from "@/lib/supabase/server-api";
 
+export const runtime = 'nodejs';
+
 /**
  * GET handler for property statistics
  * Returns counts by property type, price ranges, etc.

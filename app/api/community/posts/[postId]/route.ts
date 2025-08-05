@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server-api";
 
+export const runtime = 'nodejs';
+
 // 게시글 삭제 API
 export async function DELETE(request: NextRequest) {
   // URL에서 postId 추출

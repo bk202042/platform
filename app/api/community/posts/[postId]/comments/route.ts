@@ -3,6 +3,8 @@ import { createComment } from "@/lib/data/community";
 import { createCommentSchema } from "@/lib/validation/community";
 import { createClient } from "@/lib/supabase/server";
 
+export const runtime = 'nodejs';
+
 // POST: 댓글/대댓글 작성
 export async function POST(
   req: NextRequest,

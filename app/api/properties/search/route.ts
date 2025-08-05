@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createApiClient } from "@/lib/supabase/server-api";
 
+export const runtime = 'nodejs';
+
 /**
  * POST handler for advanced property search
  * Supports searching by features and other complex criteria

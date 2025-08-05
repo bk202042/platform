@@ -7,6 +7,8 @@ import {
   removeUserLocationPreference,
 } from "@/lib/data/vietnamese-locations";
 
+export const runtime = 'nodejs';
+
 // GET /api/community/user-locations - Get user's preferred locations
 export async function GET(_request: NextRequest) {
   try {

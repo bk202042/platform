@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createApiClient } from "@/lib/supabase/server-api";
 
+export const runtime = 'nodejs';
+
 /**
  * GET handler for finding properties near a specific location
  */

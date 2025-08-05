@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server-api";
 
+export const runtime = 'nodejs';
+
 // 좋아요 토글 API
 export async function POST(request: NextRequest) {
   // URL에서 postId 추출

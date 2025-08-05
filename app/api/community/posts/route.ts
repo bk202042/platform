@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server-api";
 import { createPostSchema } from "@/lib/validation/community";
 import { createServerClient } from "@supabase/ssr";
 import { processUploadedImages, createPublicUrl } from "@/lib/utils/community-images";
+
+export const runtime = 'nodejs';
 import { PostImage } from "@/lib/types/community";
 
 /**

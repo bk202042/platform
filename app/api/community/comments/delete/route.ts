@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { validateCommentDeletion } from "@/lib/validation/community";
 
+export const runtime = 'nodejs';
+
 // POST: 댓글 삭제 (중첩 동적 라우트 대신 쿼리 파라미터 사용)
 export async function POST(req: NextRequest) {
   try {

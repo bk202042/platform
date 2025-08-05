@@ -14,14 +14,22 @@ const nextConfig = {
     ],
   },
 
-  // Compiler optimizations
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
-  },
+  // Webpack configuration for Edge Runtime compatibility
+  webpack: (config, { isServer, nextRuntime }) => {
+    // Handle Supabase compatibility with Edge Runtime
+    if (nextRuntime === 'edge') {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        // Prevent Node.js modules from being bundled in Edge Runtime
+        'process': false,
+        'fs': false,
+        'path': false,
+        'os': false,
+      };
+    }
 
-  // Bundle analyzer (enable with ANALYZE=true)
-  ...(process.env.ANALYZE === 'true' && {
-    webpack: (config) => {
+    // Bundle analyzer (enable with ANALYZE=true)
+    if (process.env.ANALYZE === 'true') {
       const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
       config.plugins.push(
         new BundleAnalyzerPlugin({
@@ -29,9 +37,15 @@ const nextConfig = {
           openAnalyzer: false,
         })
       );
-      return config;
-    },
-  }),
+    }
+
+    return config;
+  },
+
+  // Compiler optimizations
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
 
   async headers() {
     return [
