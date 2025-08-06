@@ -32,26 +32,26 @@ export interface PostCardProps {
   listMode?: boolean; // New prop for Daangn-style list layout
 }
 
-// Category badge configuration with Korean labels and ultra-subtle Daangn-style colors
+// Category badge configuration with Korean labels and Daangn-style colors
 const CATEGORY_CONFIG = {
   QNA: {
-    label: "Q&A",
-    color: "bg-blue-25 text-blue-600 border border-blue-50",
-    icon: "💬"
+    label: "질문답변",
+    color: "bg-blue-50 text-blue-700 border border-blue-100",
+    icon: "❓"
   },
   RECOMMEND: {
-    label: "추천",
-    color: "bg-green-25 text-green-600 border border-green-50",
+    label: "추천정보",
+    color: "bg-green-50 text-green-700 border border-green-100",
     icon: "👍"
   },
   SECONDHAND: {
     label: "중고거래",
-    color: "bg-orange-25 text-orange-600 border border-orange-50",
+    color: "bg-carrot-50 text-carrot-700 border border-carrot-100",
     icon: "🛍️"
   },
   FREE: {
     label: "나눔",
-    color: "bg-purple-25 text-purple-600 border border-purple-50",
+    color: "bg-purple-50 text-purple-700 border border-purple-100",
     icon: "🎁"
   },
 } as const;
@@ -119,7 +119,7 @@ export const PostCard = memo(function PostCard({
   if (listMode) {
     return (
       <article
-        className="group py-2.5 px-4 hover:bg-gray-25 border-b border-gray-50 cursor-pointer transition-colors duration-200"
+        className="group py-3 px-4 hover:bg-gray-50 border-b border-gray-100 cursor-pointer transition-daangn touch-target"
         onClick={handleClick}
         tabIndex={0}
         role="button"
@@ -130,7 +130,7 @@ export const PostCard = memo(function PostCard({
           {/* Left content */}
           <div className="flex-1 min-w-0">
             {/* Title */}
-            <h3 className="text-sm font-semibold text-gray-900 leading-snug mb-1 line-clamp-2 group-hover:text-orange-600 transition-colors">
+            <h3 className="text-sm font-medium text-gray-900 leading-snug mb-1.5 line-clamp-2 group-hover:text-carrot-600 transition-daangn">
               {post.title || post.body}
             </h3>
             
@@ -142,14 +142,14 @@ export const PostCard = memo(function PostCard({
                   <span className="font-medium text-gray-700">
                     {post.apartments.cities?.name}
                   </span>
-                  <span className="mx-1 text-gray-400">·</span>
+                  <span className="mx-1.5 text-gray-300">•</span>
                 </>
               )}
               
               {/* Time */}
               <ClientTimeDisplay
                 dateString={post.created_at}
-                className="text-xs font-light text-gray-400"
+                className="text-xs text-gray-400"
               />
             </div>
             
@@ -198,9 +198,9 @@ export const PostCard = memo(function PostCard({
   return (
     <article
       className={cn(
-        "group relative bg-white border-b border-gray-100 hover:bg-gray-25 transition-all duration-200 cursor-pointer overflow-hidden touch-manipulation active:bg-gray-50",
-        gestureState.isActive && gestureState.direction === 'right' && "bg-red-25",
-        gestureState.isActive && gestureState.direction === 'left' && "bg-blue-25",
+        "group relative bg-white border border-gray-100 rounded-lg hover:bg-gray-50 hover:border-gray-200 hover:shadow-daangn-md transition-daangn cursor-pointer overflow-hidden touch-manipulation active:bg-gray-100",
+        gestureState.isActive && gestureState.direction === 'right' && "bg-red-25 border-red-200",
+        gestureState.isActive && gestureState.direction === 'left' && "bg-blue-25 border-blue-200",
         compact && "py-2" // Reduced padding for compact mode
       )}
       onClick={handleClick}
@@ -214,29 +214,29 @@ export const PostCard = memo(function PostCard({
         "p-4 sm:p-5",
         compact && "p-3 sm:p-4" // Reduced padding for compact mode
       )}>
-        {/* Header with category and location - ultra-minimal Daangn style */}
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-1.5 flex-wrap">
+        {/* Header with category and location - Daangn style */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2 flex-wrap">
             {categoryConfig && (
               <span
-                className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-xs font-normal ${categoryConfig.color} transition-colors duration-200`}
+                className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium ${categoryConfig.color} transition-daangn`}
               >
                 <span className="text-xs">{categoryConfig.icon}</span>
                 {categoryConfig.label}
               </span>
             )}
             {post.apartments && (
-              <span className="text-xs text-gray-400 flex items-center gap-1">
-                <span className="w-1 h-1 bg-gray-200 rounded-full"></span>
-                <span className="truncate max-w-[120px] sm:max-w-none font-semibold text-gray-700">
-                  {post.apartments.cities?.name} {post.apartments.name}
+              <span className="text-xs text-gray-500 flex items-center gap-1.5">
+                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                <span className="truncate max-w-[120px] sm:max-w-none font-medium text-gray-600">
+                  {post.apartments.cities?.name}
                 </span>
               </span>
             )}
           </div>
           <ClientTimeDisplay
             dateString={post.created_at}
-            className="text-xs text-gray-400 flex-shrink-0 font-normal"
+            className="text-xs text-gray-400 flex-shrink-0"
           />
         </div>
 
@@ -247,7 +247,7 @@ export const PostCard = memo(function PostCard({
         )}>
           {post.title && (
             <h3 className={cn(
-              "text-base font-medium text-gray-900 line-clamp-1 group-hover:text-orange-600 transition-colors duration-200",
+              "text-base font-semibold text-gray-900 line-clamp-2 group-hover:text-carrot-600 transition-daangn leading-tight",
               compact && "text-sm" // Smaller title for compact mode
             )}>
               {post.title}
@@ -255,7 +255,7 @@ export const PostCard = memo(function PostCard({
           )}
 
           <p className={cn(
-            "text-sm text-gray-600 leading-relaxed line-clamp-2 font-normal transition-colors duration-200",
+            "text-sm text-gray-600 leading-normal line-clamp-2 group-hover:text-gray-700 transition-daangn",
             compact && "text-xs line-clamp-1" // Smaller text and single line for compact mode
           )}>
             {post.body}
@@ -300,30 +300,30 @@ export const PostCard = memo(function PostCard({
           </div>
         </div>
 
-        {/* Footer - ultra-subtle engagement metrics */}
+        {/* Footer - Daangn-style engagement metrics */}
         <div className={cn(
-          "flex items-center justify-between mt-2 pt-2 border-t border-gray-50",
-          compact && "mt-1.5 pt-1.5" // Reduced spacing for compact mode
+          "flex items-center justify-between mt-3 pt-3 border-t border-gray-100",
+          compact && "mt-2 pt-2" // Reduced spacing for compact mode
         )}>
-          <div className="flex items-center gap-0.5 text-xs text-gray-400">
-            <User size={10} className="text-gray-300" />
-            <span className="font-normal">
+          <div className="flex items-center gap-1 text-xs text-gray-500">
+            <User size={12} className="text-gray-400" />
+            <span className="font-medium">
               {post.user?.name || "익명"}
             </span>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             {/* Views count */}
             {post.views_count !== undefined && post.views_count > 0 && (
-              <div className="flex items-center gap-0.5 text-gray-300">
-                <Eye size={10} className="text-gray-300" aria-label="조회수" />
-                <span className="text-xs font-normal">
+              <div className="flex items-center gap-1 text-gray-400 hover:text-gray-600 transition-daangn">
+                <Eye size={12} className="text-gray-400" aria-label="조회수" />
+                <span className="text-xs font-medium">
                   {post.views_count > 999 ? `${Math.floor(post.views_count / 1000)}k` : post.views_count}
                 </span>
               </div>
             )}
 
-            {/* Like button with ultra-subtle styling */}
+            {/* Like button with Daangn styling */}
             <LikeButton
               postId={post.id}
               initialLiked={post.isLiked || false}
@@ -332,10 +332,10 @@ export const PostCard = memo(function PostCard({
               showCount={true}
             />
 
-            {/* Comments with ultra-subtle styling */}
-            <div className="flex items-center gap-0.5 text-gray-300">
-              <MessageCircle size={10} className="text-gray-300" aria-label="댓글" />
-              <span className="text-xs font-normal">
+            {/* Comments with Daangn styling */}
+            <div className="flex items-center gap-1 text-gray-400 hover:text-gray-600 transition-daangn">
+              <MessageCircle size={12} className="text-gray-400" aria-label="댓글" />
+              <span className="text-xs font-medium">
                 {post.comments_count}
               </span>
             </div>

@@ -1,0 +1,447 @@
+{
+  "designSystem": {
+    "name": "Seed Design System (당근마켓)",
+    "version": "v3",
+    "description": "Design system for Daangn (당근마켓), Korea's leading local community platform focused on creating warm neighborhood connections",
+    "brandPhilosophy": "이웃과 더 가까워지는 따뜻한 동네를 만들어요 (Creating warm neighborhoods where neighbors get closer)",
+    "primaryColor": "#FF8A3D",
+    "repository": "https://github.com/daangn/seed-design"
+  },
+  "colorPalette": {
+    "primary": {
+      "carrot": {
+        "50": "#FFF7F0",
+        "100": "#FFEDD6",
+        "200": "#FFD9AD",
+        "300": "#FFC085",
+        "400": "#FFA85C",
+        "500": "#FF8A3D",
+        "600": "#E6742A",
+        "700": "#CC5E1A",
+        "800": "#B3480D",
+        "900": "#993302"
+      }
+    },
+    "semantic": {
+      "background": {
+        "primary": "#FFFFFF",
+        "secondary": "#F8F9FA",
+        "tertiary": "#F1F3F4"
+      },
+      "text": {
+        "primary": "#212529",
+        "secondary": "#6C757D",
+        "tertiary": "#ADB5BD",
+        "inverse": "#FFFFFF"
+      },
+      "border": {
+        "primary": "#DEE2E6",
+        "secondary": "#E9ECEF",
+        "focus": "#FF8A3D"
+      },
+      "status": {
+        "success": "#28A745",
+        "warning": "#FFC107",
+        "error": "#DC3545",
+        "info": "#17A2B8"
+      }
+    },
+    "scale": {
+      "gray": {
+        "50": "#F8F9FA",
+        "100": "#F1F3F4",
+        "200": "#E9ECEF",
+        "300": "#DEE2E6",
+        "400": "#CED4DA",
+        "500": "#ADB5BD",
+        "600": "#6C757D",
+        "700": "#495057",
+        "800": "#343A40",
+        "900": "#212529"
+      }
+    }
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif",
+      "korean": "'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', dotum, '돋움', sans-serif"
+    },
+    "fontSizes": {
+      "xs": "12px",
+      "sm": "14px",
+      "base": "16px",
+      "lg": "18px",
+      "xl": "20px",
+      "2xl": "24px",
+      "3xl": "30px",
+      "4xl": "36px",
+      "5xl": "48px"
+    },
+    "fontWeights": {
+      "light": 300,
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    },
+    "lineHeights": {
+      "tight": 1.25,
+      "normal": 1.5,
+      "relaxed": 1.75
+    }
+  },
+  "spacing": {
+    "scale": {
+      "0": "0px",
+      "1": "4px",
+      "2": "8px",
+      "3": "12px",
+      "4": "16px",
+      "5": "20px",
+      "6": "24px",
+      "8": "32px",
+      "10": "40px",
+      "12": "48px",
+      "16": "64px",
+      "20": "80px",
+      "24": "96px",
+      "32": "128px"
+    }
+  },
+  "borderRadius": {
+    "none": "0px",
+    "sm": "4px",
+    "md": "8px",
+    "lg": "12px",
+    "xl": "16px",
+    "2xl": "20px",
+    "full": "9999px"
+  },
+  "shadows": {
+    "sm": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+    "md": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+    "lg": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    "xl": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+  },
+  "components": {
+    "button": {
+      "variants": {
+        "primary": {
+          "backgroundColor": "#FF8A3D",
+          "color": "#FFFFFF",
+          "border": "none",
+          "borderRadius": "8px",
+          "padding": "12px 24px",
+          "fontSize": "16px",
+          "fontWeight": 600,
+          "cursor": "pointer",
+          "transition": "all 0.2s ease",
+          "hover": {
+            "backgroundColor": "#E6742A",
+            "transform": "translateY(-1px)"
+          },
+          "active": {
+            "backgroundColor": "#CC5E1A",
+            "transform": "translateY(0)"
+          },
+          "disabled": {
+            "backgroundColor": "#ADB5BD",
+            "cursor": "not-allowed",
+            "transform": "none"
+          }
+        },
+        "secondary": {
+          "backgroundColor": "transparent",
+          "color": "#FF8A3D",
+          "border": "1px solid #FF8A3D",
+          "borderRadius": "8px",
+          "padding": "12px 24px",
+          "fontSize": "16px",
+          "fontWeight": 600,
+          "cursor": "pointer",
+          "transition": "all 0.2s ease",
+          "hover": {
+            "backgroundColor": "#FF8A3D",
+            "color": "#FFFFFF"
+          }
+        },
+        "ghost": {
+          "backgroundColor": "transparent",
+          "color": "#6C757D",
+          "border": "none",
+          "borderRadius": "8px",
+          "padding": "12px 24px",
+          "fontSize": "16px",
+          "fontWeight": 500,
+          "cursor": "pointer",
+          "transition": "all 0.2s ease",
+          "hover": {
+            "backgroundColor": "#F8F9FA",
+            "color": "#495057"
+          }
+        }
+      },
+      "sizes": {
+        "sm": {
+          "padding": "8px 16px",
+          "fontSize": "14px"
+        },
+        "md": {
+          "padding": "12px 24px",
+          "fontSize": "16px"
+        },
+        "lg": {
+          "padding": "16px 32px",
+          "fontSize": "18px"
+        }
+      }
+    },
+    "card": {
+      "base": {
+        "backgroundColor": "#FFFFFF",
+        "border": "1px solid #E9ECEF",
+        "borderRadius": "12px",
+        "padding": "20px",
+        "boxShadow": "0 2px 4px rgba(0, 0, 0, 0.04)",
+        "transition": "all 0.2s ease"
+      },
+      "hover": {
+        "boxShadow": "0 4px 12px rgba(0, 0, 0, 0.08)",
+        "transform": "translateY(-2px)"
+      },
+      "variants": {
+        "elevated": {
+          "boxShadow": "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+        },
+        "outlined": {
+          "border": "1px solid #DEE2E6",
+          "boxShadow": "none"
+        }
+      }
+    },
+    "input": {
+      "base": {
+        "border": "1px solid #DEE2E6",
+        "borderRadius": "8px",
+        "padding": "12px 16px",
+        "fontSize": "16px",
+        "fontFamily": "inherit",
+        "backgroundColor": "#FFFFFF",
+        "color": "#212529",
+        "transition": "all 0.2s ease",
+        "outline": "none"
+      },
+      "focus": {
+        "borderColor": "#FF8A3D",
+        "boxShadow": "0 0 0 3px rgba(255, 138, 61, 0.1)"
+      },
+      "error": {
+        "borderColor": "#DC3545",
+        "boxShadow": "0 0 0 3px rgba(220, 53, 69, 0.1)"
+      },
+      "disabled": {
+        "backgroundColor": "#F8F9FA",
+        "color": "#6C757D",
+        "cursor": "not-allowed"
+      }
+    },
+    "badge": {
+      "base": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "padding": "4px 8px",
+        "borderRadius": "6px",
+        "fontSize": "12px",
+        "fontWeight": 600,
+        "textTransform": "uppercase",
+        "letterSpacing": "0.025em"
+      },
+      "variants": {
+        "default": {
+          "backgroundColor": "#E9ECEF",
+          "color": "#495057"
+        },
+        "primary": {
+          "backgroundColor": "#FF8A3D",
+          "color": "#FFFFFF"
+        },
+        "success": {
+          "backgroundColor": "#28A745",
+          "color": "#FFFFFF"
+        },
+        "warning": {
+          "backgroundColor": "#FFC107",
+          "color": "#212529"
+        },
+        "error": {
+          "backgroundColor": "#DC3545",
+          "color": "#FFFFFF"
+        }
+      }
+    },
+    "avatar": {
+      "base": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "backgroundColor": "#E9ECEF",
+        "color": "#495057",
+        "fontWeight": 600,
+        "borderRadius": "50%",
+        "overflow": "hidden"
+      },
+      "sizes": {
+        "sm": {
+          "width": "32px",
+          "height": "32px",
+          "fontSize": "14px"
+        },
+        "md": {
+          "width": "40px",
+          "height": "40px",
+          "fontSize": "16px"
+        },
+        "lg": {
+          "width": "48px",
+          "height": "48px",
+          "fontSize": "18px"
+        },
+        "xl": {
+          "width": "64px",
+          "height": "64px",
+          "fontSize": "24px"
+        }
+      }
+    }
+  },
+  "layout": {
+    "container": {
+      "maxWidth": "1200px",
+      "margin": "0 auto",
+      "padding": "0 20px"
+    },
+    "breakpoints": {
+      "mobile": "320px",
+      "tablet": "768px",
+      "desktop": "1024px",
+      "wide": "1200px"
+    },
+    "grid": {
+      "columns": 12,
+      "gap": "20px"
+    }
+  },
+  "animations": {
+    "transitions": {
+      "fast": "0.15s ease",
+      "base": "0.2s ease",
+      "slow": "0.3s ease"
+    },
+    "easings": {
+      "easeInOut": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "easeOut": "cubic-bezier(0, 0, 0.2, 1)",
+      "easeIn": "cubic-bezier(0.4, 0, 1, 1)"
+    }
+  },
+  "patterns": {
+    "communityPost": {
+      "structure": {
+        "container": "card with hover effects",
+        "header": "location badge + timestamp + category tag",
+        "content": "title + description with line clamps",
+        "footer": "engagement metrics (likes, comments) + user avatar",
+        "interactions": "subtle hover animations, click feedback"
+      },
+      "styling": {
+        "padding": "20px",
+        "borderRadius": "12px",
+        "backgroundColor": "#FFFFFF",
+        "border": "1px solid #E9ECEF",
+        "marginBottom": "16px"
+      }
+    },
+    "navigation": {
+      "structure": {
+        "type": "horizontal tab-based navigation",
+        "items": ["중고거래", "알바", "부동산", "중고차", "동네업체", "동네생활", "모임"],
+        "activeState": "orange underline indicator",
+        "mobilePattern": "hamburger menu with slide-out drawer"
+      },
+      "styling": {
+        "backgroundColor": "#FFFFFF",
+        "borderBottom": "1px solid #E9ECEF",
+        "padding": "12px 0"
+      }
+    },
+    "searchInterface": {
+      "structure": {
+        "locationSelector": "dropdown with current location",
+        "searchInput": "prominent search bar with placeholder",
+        "popularKeywords": "tag-based trending searches",
+        "categories": "icon-based category grid"
+      },
+      "styling": {
+        "searchBar": {
+          "borderRadius": "24px",
+          "padding": "12px 20px",
+          "fontSize": "16px",
+          "border": "1px solid #DEE2E6"
+        }
+      }
+    }
+  },
+  "contentStrategy": {
+    "tone": "warm, friendly, community-focused",
+    "language": {
+      "primary": "Korean",
+      "fallback": "English for international users"
+    },
+    "microcopy": {
+      "ctaPatterns": ["찾고 계신가요?", "이웃과 함께해요", "근처의"],
+      "emptyStates": "encouraging messages to post content",
+      "errors": "helpful, non-technical language"
+    }
+  },
+  "accessibility": {
+    "colorContrast": {
+      "minimum": "AA standard (4.5:1)",
+      "preferred": "AAA standard (7:1)"
+    },
+    "focusIndicators": "visible focus rings with brand color",
+    "semanticMarkup": "proper heading hierarchy, landmark regions",
+    "screenReader": "descriptive alt text, ARIA labels in Korean"
+  },
+  "implementations": {
+    "packages": [
+      "@seed-design/css",
+      "@seed-design/react",
+      "@seed-design/react-headless",
+      "@seed-design/stackflow"
+    ],
+    "integrations": [
+      "@seed-design/figma",
+      "@seed-design/mcp"
+    ],
+    "documentation": "@seed-design/docs"
+  },
+  "brandGuidelines": {
+    "logo": {
+      "usage": "Non-commercial use only without prior agreement",
+      "guidelines": "https://www.notion.so/daangn/e10010519eb9465aa703a6551c05eb63"
+    },
+    "carrotIcon": {
+      "significance": "Community connection, warmth, local neighborhood",
+      "usage": "Primary brand identifier, consistent across all touchpoints"
+    }
+  },
+  "mobileFirst": {
+    "philosophy": "Mobile-first design approach",
+    "keyPrinciples": [
+      "Touch-friendly interactions (44px minimum touch targets)",
+      "Thumb-friendly navigation placement",
+      "Optimized content hierarchy for small screens",
+      "Fast loading and smooth scrolling",
+      "Location-aware features"
+    ]
+  }
+}

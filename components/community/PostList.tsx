@@ -118,9 +118,10 @@ export const PostList = memo(function PostList({
   return (
     <div
       className={cn(
-        "space-y-1 sm:space-y-2",
-        compact && "space-y-0.5 sm:space-y-1", // Reduced spacing for compact mode
-        listMode && "space-y-0 bg-white overflow-hidden" // List mode styling - minimal
+        "space-y-2",
+        compact && "space-y-1", // Reduced spacing for compact mode
+        listMode && "space-y-0 bg-white rounded-lg border border-gray-100 overflow-hidden", // List mode styling with Daangn container
+        !listMode && "space-y-3" // Card mode with more spacing
       )}
       role="feed"
       aria-label={`게시글 목록 (${posts.length}개)`}

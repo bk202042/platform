@@ -63,7 +63,7 @@ export function UnifiedSearchInterface({
   };
 
   return (
-    <div className={cn("bg-white shadow-sm border-b border-zinc-200", className)}>
+    <div className={cn("bg-white shadow-daangn-sm border-b border-gray-200", className)}>
       {/* Location Context Header */}
       <LocationContextHeader
         currentLocation={currentLocation}
@@ -73,7 +73,7 @@ export function UnifiedSearchInterface({
       />
 
       {/* Main Search Interface */}
-      <div className="px-4 py-3 space-y-3">
+      <div className="px-4 py-4 space-y-4">
         {/* Unified Search Bar */}
         <UnifiedSearchBar
           currentLocation={currentLocation}
@@ -86,11 +86,11 @@ export function UnifiedSearchInterface({
         {/* Action Buttons */}
         {showCreateButton && (
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 text-sm text-zinc-600">
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
               {currentLocation ? (
                 <span>
-                  <span className="font-medium">{currentLocation.name_ko || currentLocation.name}</span>
-                  지역의 커뮤니티
+                  <span className="font-semibold text-gray-900">{currentLocation.name_ko || currentLocation.name}</span>
+                  <span className="ml-1">지역의 커뮤니티</span>
                 </span>
               ) : (
                 <span>전체 베트남 커뮤니티</span>
@@ -99,9 +99,9 @@ export function UnifiedSearchInterface({
             
             <Button
               onClick={handleCreatePost}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 h-9 text-sm font-medium rounded-lg shadow-sm"
+              className="bg-carrot-500 hover:bg-carrot-600 text-white px-4 py-2 h-9 text-sm font-semibold rounded-lg shadow-daangn-sm transition-daangn touch-target"
             >
-              <Plus className="h-4 w-4 mr-1.5" />
+              <Plus className="h-4 w-4 mr-1.5" strokeWidth={2.5} />
               글쓰기
             </Button>
           </div>
@@ -154,26 +154,26 @@ export function CompactUnifiedSearchInterface({
   };
 
   return (
-    <div className={cn("bg-white shadow-sm border-b border-zinc-200", className)}>
+    <div className={cn("bg-white shadow-daangn-sm border-b border-gray-200", className)}>
       {/* Compact Location Context */}
-      <div className="px-3 py-2 bg-zinc-50 border-b border-zinc-200">
+      <div className="px-3 py-2 bg-gray-50 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2 flex-1 min-w-0">
             {currentLocation ? (
               <>
                 {currentLocation.type === "city" ? (
-                  <div className="h-3 w-3 rounded-full bg-orange-500 flex-shrink-0" />
+                  <div className="h-3 w-3 rounded-full bg-carrot-500 flex-shrink-0" />
                 ) : (
-                  <div className="h-3 w-3 rounded bg-orange-500 flex-shrink-0" />
+                  <div className="h-3 w-3 rounded bg-carrot-500 flex-shrink-0" />
                 )}
-                <span className="text-sm font-medium text-zinc-900 truncate">
+                <span className="text-sm font-semibold text-gray-900 truncate">
                   {currentLocation.name_ko || currentLocation.name}
                 </span>
               </>
             ) : (
               <>
-                <div className="h-3 w-3 rounded-full bg-zinc-400 flex-shrink-0" />
-                <span className="text-sm font-medium text-zinc-500">전체 지역</span>
+                <div className="h-3 w-3 rounded-full bg-gray-400 flex-shrink-0" />
+                <span className="text-sm font-medium text-gray-600">전체 지역</span>
               </>
             )}
           </div>
@@ -182,9 +182,9 @@ export function CompactUnifiedSearchInterface({
             <Button
               onClick={onCreatePost}
               size="sm"
-              className="bg-orange-500 hover:bg-orange-600 text-white h-7 px-3 text-xs rounded-md ml-2 flex-shrink-0"
+              className="bg-carrot-500 hover:bg-carrot-600 text-white h-8 px-3 text-xs font-semibold rounded-md ml-2 flex-shrink-0 transition-daangn touch-target"
             >
-              <Edit3 className="h-3 w-3 mr-1" />
+              <Edit3 className="h-3 w-3 mr-1" strokeWidth={2.5} />
               글쓰기
             </Button>
           )}
@@ -204,11 +204,11 @@ export function CompactUnifiedSearchInterface({
       </div>
 
       {/* Quick Locations */}
-      <div className="px-3 py-2 border-t border-zinc-100">
-        <div className="flex items-center space-x-1.5 overflow-x-auto scrollbar-hide">
+      <div className="px-3 py-2 border-t border-gray-100">
+        <div className="flex items-center space-x-2 overflow-x-auto scrollbar-hide">
           {locationsLoading ? (
             [...Array(4)].map((_, i) => (
-              <div key={i} className="h-6 w-14 bg-zinc-200 rounded-full flex-shrink-0 animate-pulse" />
+              <div key={i} className="h-7 w-16 bg-gray-200 rounded-full flex-shrink-0 animate-pulse" />
             ))
           ) : (
             popularLocations.slice(0, 6).map((location) => {
@@ -218,10 +218,10 @@ export function CompactUnifiedSearchInterface({
                   key={location.id}
                   onClick={() => handleLocationSelect(location)}
                   className={cn(
-                    "px-2 py-1 text-xs font-medium rounded-full flex-shrink-0 transition-colors whitespace-nowrap",
+                    "px-3 py-1.5 text-xs font-medium rounded-full flex-shrink-0 transition-daangn whitespace-nowrap touch-target",
                     isSelected
-                      ? "bg-orange-100 text-orange-700 border border-orange-200"
-                      : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+                      ? "bg-carrot-100 text-carrot-700 border border-carrot-200"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800"
                   )}
                 >
                   {location.name_ko || location.name}

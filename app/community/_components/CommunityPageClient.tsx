@@ -211,10 +211,10 @@ export function CommunityPageClient({
       </MobileNavigation>
 
       {/* Daangn-style layout with proper spacing */}
-      <div className="min-h-screen bg-zinc-50">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-6xl mx-auto">
           {/* Header Section - Daangn style */}
-          <div className="bg-white border-b border-zinc-200 sticky top-0 z-40">
+          <div className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
             <div className="px-4 sm:px-6 lg:px-8 py-4">
               <CommunityBreadcrumb
                 category={urlCategory as CommunityCategory}
@@ -222,10 +222,10 @@ export function CommunityPageClient({
                 cityName={currentLocation?.city_name || currentLocation?.name}
               />
               <div className="flex items-center justify-between mt-3">
-                <h1 className="text-2xl font-bold text-zinc-900">동네생활</h1>
+                <h1 className="text-2xl font-bold text-gray-900">동네생활</h1>
                 <Button
                   onClick={handleCreatePost}
-                  className="hidden sm:flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium"
+                  className="hidden sm:flex items-center gap-2 bg-carrot-500 hover:bg-carrot-600 text-white px-4 py-2 rounded-lg font-semibold transition-daangn touch-target"
                 >
                   <Plus size={18} />
                   글쓰기
@@ -237,7 +237,7 @@ export function CommunityPageClient({
           {/* Main Content Area */}
           <div className="flex">
             {/* Left Sidebar - Desktop only */}
-            <aside className="hidden lg:block w-64 bg-white border-r border-zinc-200 min-h-screen sticky top-[73px]">
+            <aside className="hidden lg:block w-64 bg-white border-r border-gray-200 min-h-screen sticky top-[77px]">
               <ErrorBoundary>
                 <CategorySidebar postCounts={postCounts} />
               </ErrorBoundary>
@@ -252,7 +252,7 @@ export function CommunityPageClient({
                 <div className="px-3 sm:px-4 lg:px-6 py-4">
                 <ErrorBoundary>
                   {/* Search Interface and Controls Section - Daangn style */}
-                  <div className="mb-4 bg-white rounded-lg border border-zinc-200 overflow-hidden">
+                  <div className="mb-4 bg-white rounded-lg border border-gray-200 shadow-daangn-sm overflow-hidden">
                     {/* Unified Search Interface */}
                     <UnifiedSearchInterface
                       initialLocation={currentLocation}
@@ -265,12 +265,12 @@ export function CommunityPageClient({
                     />
                     
                     {/* Sort Controls - positioned below search like Daangn */}
-                    <div className="flex justify-between items-center py-2.5 px-4 border-t border-zinc-100 bg-zinc-25">
+                    <div className="flex justify-between items-center py-3 px-4 border-t border-gray-100 bg-gray-50">
                       <div className="lg:hidden">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-zinc-300 text-zinc-600 bg-white h-8 px-3 text-xs"
+                          className="border-gray-300 text-gray-600 bg-white h-8 px-3 text-xs font-medium rounded-md touch-target"
                         >
                           카테고리
                         </Button>
@@ -280,7 +280,7 @@ export function CommunityPageClient({
                   </div>
 
                   {/* Posts Feed */}
-                  <div className="bg-white rounded-lg border border-zinc-200 overflow-hidden">
+                  <div className="bg-white rounded-lg border border-gray-200 shadow-daangn-sm overflow-hidden">
                     {optimisticPosts && optimisticPosts.length > 0 ? (
                       <PostList
                         posts={optimisticPosts}
@@ -289,20 +289,20 @@ export function CommunityPageClient({
                         onRetry={handleRetry}
                       />
                     ) : (
-                      <div className="text-center py-16 px-4">
+                      <div className="text-center py-20 px-4">
                         <div className="max-w-sm mx-auto">
-                          <div className="w-16 h-16 bg-zinc-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                            <Plus className="w-8 h-8 text-zinc-400" />
+                          <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-6 flex items-center justify-center">
+                            <Plus className="w-8 h-8 text-gray-400" />
                           </div>
-                          <h3 className="text-lg font-semibold text-zinc-900 mb-2">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-2 leading-tight">
                             아직 게시글이 없어요
                           </h3>
-                          <p className="text-sm text-zinc-500 mb-6">
+                          <p className="text-sm text-gray-500 mb-8 leading-relaxed">
                             우리 동네의 첫 번째 이야기를 들려주세요!
                           </p>
                           <Button
                             onClick={handleCreatePost}
-                            className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2"
+                            className="bg-carrot-500 hover:bg-carrot-600 text-white px-6 py-3 font-semibold rounded-lg transition-daangn touch-target"
                           >
                             첫 글 쓰기
                           </Button>
@@ -321,10 +321,9 @@ export function CommunityPageClient({
         <div className="fixed bottom-6 right-6 sm:hidden z-50">
           <Button
             onClick={handleCreatePost}
-            className="w-16 h-16 rounded-full bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white shadow-lg hover:shadow-xl active:shadow-md transition-all duration-200 touch-manipulation"
-            style={{ minHeight: '44px', minWidth: '44px' }}
+            className="w-16 h-16 rounded-full bg-carrot-500 hover:bg-carrot-600 active:bg-carrot-700 text-white shadow-daangn-xl hover:shadow-daangn-xl hover:scale-105 active:scale-95 transition-daangn touch-target"
           >
-            <Plus size={26} />
+            <Plus size={24} strokeWidth={2.5} />
           </Button>
         </div>
       </div>

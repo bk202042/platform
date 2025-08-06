@@ -4,6 +4,8 @@ const nextConfig = {
   experimental: {
     // PPR requires Next.js canary - disabled for stable version
     // ppr: true,
+    // Enable Node.js runtime support for middleware
+    nodeMiddleware: true,
     optimizePackageImports: [
       'lucide-react',
       'date-fns',

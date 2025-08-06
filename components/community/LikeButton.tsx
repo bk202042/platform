@@ -83,16 +83,16 @@ export function LikeButton({
     <button
       type="button"
       className={`
-        flex items-center gap-0.5 rounded-md transition-all duration-200 select-none group/like
-        focus:outline-none focus-visible:ring-1 focus-visible:ring-orange-400 focus:ring-offset-0
-        disabled:opacity-50 disabled:cursor-not-allowed
+        flex items-center gap-1 rounded-lg transition-daangn select-none group/like touch-target
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-carrot-400 focus:ring-offset-0
+        disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 active:scale-95
         ${config.padding}
         ${
           liked
-            ? "text-orange-500 hover:text-orange-600"
-            : "text-gray-300 hover:text-orange-500"
+            ? "text-carrot-500 hover:text-carrot-600"
+            : "text-gray-400 hover:text-carrot-500"
         }
-        ${isAnimating ? "animate-pulse" : ""}
+        ${isAnimating ? "animate-bounce" : ""}
         ${isLoading ? "cursor-wait" : "cursor-pointer"}
       `}
       aria-label={liked ? "좋아요 취소하기" : "좋아요 누르기"}
@@ -103,15 +103,15 @@ export function LikeButton({
       {isLoading ? (
         <Loader2
           size={config.icon}
-          className="animate-spin text-orange-500"
+          className="animate-spin text-carrot-500"
           aria-hidden="true"
         />
       ) : (
         <Heart
           size={config.icon}
-          fill={liked ? "#ea580c" : "none"}
-          strokeWidth={2}
-          className={`transition-all duration-200 ${isAnimating ? "animate-pulse scale-110" : ""} group-hover/like:scale-110`}
+          fill={liked ? "#FF8A3D" : "none"}
+          strokeWidth={2.5}
+          className={`transition-daangn ${isAnimating ? "animate-bounce scale-125" : ""} group-hover/like:scale-110`}
           aria-hidden="true"
         />
       )}
@@ -119,7 +119,7 @@ export function LikeButton({
       {showCount && (
         <span
           id={`like-count-${postId}`}
-          className={`text-xs font-medium transition-all duration-200 ${liked ? "text-orange-600" : "text-zinc-500"} group-hover/like:text-orange-600`}
+          className={`text-xs font-medium transition-daangn ${liked ? "text-carrot-600" : "text-gray-500"} group-hover/like:text-carrot-600`}
           aria-label={`좋아요 ${count}개`}
           aria-live="polite"
         >
