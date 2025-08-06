@@ -130,7 +130,7 @@ export const PostCard = memo(function PostCard({
           {/* Left content */}
           <div className="flex-1 min-w-0">
             {/* Title */}
-            <h3 className="text-sm font-medium text-gray-900 leading-snug mb-1 line-clamp-2 group-hover:text-orange-600 transition-colors">
+            <h3 className="text-sm font-semibold text-gray-900 leading-snug mb-1 line-clamp-2 group-hover:text-orange-600 transition-colors">
               {post.title || post.body}
             </h3>
             
@@ -139,7 +139,7 @@ export const PostCard = memo(function PostCard({
               {/* Location - more prominent */}
               {post.apartments && (
                 <>
-                  <span className="font-medium text-gray-600">
+                  <span className="font-medium text-gray-700">
                     {post.apartments.cities?.name}
                   </span>
                   <span className="mx-1 text-gray-400">·</span>
@@ -149,21 +149,21 @@ export const PostCard = memo(function PostCard({
               {/* Time */}
               <ClientTimeDisplay
                 dateString={post.created_at}
-                className="text-xs font-normal text-gray-500"
+                className="text-xs font-light text-gray-400"
               />
             </div>
             
             {/* Engagement metrics - positioned at bottom right like Daangn */}
-            <div className="flex items-center justify-end text-xs text-gray-400 space-x-2 mt-0.5">
+            <div className="flex items-center justify-end text-xs text-gray-300 space-x-1.5 mt-0.5">
               {post.comments_count > 0 && (
                 <div className="flex items-center gap-0.5">
-                  <MessageCircle size={10} className="text-gray-400" />
+                  <MessageCircle size={9} className="text-gray-300" />
                   <span className="font-normal">{post.comments_count}</span>
                 </div>
               )}
               {post.likes_count > 0 && (
                 <div className="flex items-center gap-0.5">
-                  <Heart size={10} className="text-gray-400" />
+                  <Heart size={9} className="text-gray-300" />
                   <span className="font-normal">{post.likes_count}</span>
                 </div>
               )}

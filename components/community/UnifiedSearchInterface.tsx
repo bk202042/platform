@@ -73,7 +73,7 @@ export function UnifiedSearchInterface({
       />
 
       {/* Main Search Interface */}
-      <div className="px-4 py-4 space-y-4">
+      <div className="px-4 py-3 space-y-3">
         {/* Unified Search Bar */}
         <UnifiedSearchBar
           currentLocation={currentLocation}
@@ -192,7 +192,7 @@ export function CompactUnifiedSearchInterface({
       </div>
 
       {/* Compact Search */}
-      <div className="px-3 py-3">
+      <div className="px-3 py-2.5">
         <UnifiedSearchBar
           currentLocation={currentLocation}
           onLocationSelect={handleLocationSelect}

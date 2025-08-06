@@ -249,10 +249,11 @@ export function CommunityPageClient({
                 onRefresh={handleRefresh}
                 className="h-screen md:h-auto"
               >
-                <div className="px-4 sm:px-6 lg:px-8 py-6">
+                <div className="px-3 sm:px-4 lg:px-6 py-4">
                 <ErrorBoundary>
-                  {/* Unified Search Interface */}
-                  <div className="mb-6">
+                  {/* Search Interface and Controls Section - Daangn style */}
+                  <div className="mb-4 bg-white rounded-lg border border-zinc-200 overflow-hidden">
+                    {/* Unified Search Interface */}
                     <UnifiedSearchInterface
                       initialLocation={currentLocation}
                       onLocationChange={handleLocationChange}
@@ -263,13 +264,13 @@ export function CommunityPageClient({
                       showCreateButton={false} // We have other create buttons
                     />
                     
-                    {/* Sort Controls */}
-                    <div className="flex justify-between items-center mt-4 px-4">
+                    {/* Sort Controls - positioned below search like Daangn */}
+                    <div className="flex justify-between items-center py-2.5 px-4 border-t border-zinc-100 bg-zinc-25">
                       <div className="lg:hidden">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-zinc-300 text-zinc-700"
+                          className="border-zinc-300 text-zinc-600 bg-white h-8 px-3 text-xs"
                         >
                           카테고리
                         </Button>
@@ -316,13 +317,14 @@ export function CommunityPageClient({
           </div>
         </div>
 
-        {/* Floating Action Button - Mobile */}
+        {/* Floating Action Button - Mobile with enhanced touch target */}
         <div className="fixed bottom-6 right-6 sm:hidden z-50">
           <Button
             onClick={handleCreatePost}
-            className="w-14 h-14 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+            className="w-16 h-16 rounded-full bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white shadow-lg hover:shadow-xl active:shadow-md transition-all duration-200 touch-manipulation"
+            style={{ minHeight: '44px', minWidth: '44px' }}
           >
-            <Plus size={24} />
+            <Plus size={26} />
           </Button>
         </div>
       </div>
