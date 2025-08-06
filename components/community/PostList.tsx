@@ -74,7 +74,7 @@ export const PostList = memo(function PostList({
 
         {/* Desktop loading state */}
         <div
-          className="hidden md:block space-y-4"
+          className="hidden md:block space-y-2 sm:space-y-3"
           role="status"
           aria-label="게시글 목록 로딩 중"
           aria-live="polite"
@@ -118,26 +118,23 @@ export const PostList = memo(function PostList({
   return (
     <div
       className={cn(
-        "space-y-3 sm:space-y-4",
-        compact && "space-y-1 sm:space-y-2", // Reduced spacing for compact mode
-        listMode && "space-y-0 bg-white rounded-lg border border-gray-200 overflow-hidden" // List mode styling
+        "space-y-2 sm:space-y-3",
+        compact && "space-y-1 sm:space-y-1.5", // Reduced spacing for compact mode
+        listMode && "space-y-0 bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm" // List mode styling
       )}
       role="feed"
       aria-label={`게시글 목록 (${posts.length}개)`}
       aria-live="polite"
     >
-      {posts.map((post, index) => (
-        <div role="article" key={post.id}>
-          <PostCard
-            post={post}
-            onClick={() => handlePostClick(post.id)}
-            showImages={showImages}
-            compact={compact}
-            listMode={listMode}
-            aria-posinset={index + 1}
-            aria-setsize={posts.length}
-          />
-        </div>
+      {posts.map((post) => (
+        <PostCard
+          key={post.id}
+          post={post}
+          onClick={() => handlePostClick(post.id)}
+          showImages={showImages}
+          compact={compact}
+          listMode={listMode}
+        />
       ))}
     </div>
   );
