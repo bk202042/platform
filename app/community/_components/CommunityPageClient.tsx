@@ -77,6 +77,7 @@ export function CommunityPageClient({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<LocationSearchResult | null>(null);
   const [optimisticPosts, setOptimisticPosts] = useState(posts);
+  const [listMode, setListMode] = useState(true); // Default to Daangn-style compact layout
 
 
   // Get current sort from URL params
@@ -249,10 +250,10 @@ export function CommunityPageClient({
                 onRefresh={handleRefresh}
                 className="h-screen md:h-auto"
               >
-                <div className="px-3 sm:px-4 lg:px-6 py-4">
+                <div className="px-2 sm:px-3 lg:px-4 py-2">
                 <ErrorBoundary>
                   {/* Search Interface and Controls Section - Daangn style */}
-                  <div className="mb-4 bg-white rounded-lg border border-gray-200 shadow-daangn-sm overflow-hidden">
+                  <div className="mb-2 bg-white rounded-lg border border-gray-200 shadow-daangn-sm overflow-hidden">
                     {/* Unified Search Interface */}
                     <UnifiedSearchInterface
                       initialLocation={currentLocation}
@@ -266,27 +267,45 @@ export function CommunityPageClient({
                     
                     {/* Sort Controls - positioned below search like Daangn */}
                     <div className="flex justify-between items-center py-3 px-4 border-t border-gray-100 bg-gray-50">
-                      <div className="lg:hidden">
+                      <div className="flex items-center gap-2">
+                        <div className="lg:hidden">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-gray-300 text-gray-600 bg-white h-8 px-3 text-xs font-medium rounded-md touch-target"
+                          >
+                            카테고리
+                          </Button>
+                        </div>
+                        
+                        {/* View Toggle - Daangn style */}
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-gray-300 text-gray-600 bg-white h-8 px-3 text-xs font-medium rounded-md touch-target"
+                          onClick={() => setListMode(!listMode)}
+                          className={`h-8 px-3 text-xs font-medium rounded-md touch-target transition-colors ${
+                            listMode 
+                              ? 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100' 
+                              : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                          }`}
                         >
-                          카테고리
+                          {listMode ? '목록' : '카드'}
                         </Button>
                       </div>
+                      
                       <SortSelector value={currentSort} />
                     </div>
                   </div>
 
                   {/* Posts Feed */}
-                  <div className="bg-white rounded-lg border border-gray-200 shadow-daangn-sm overflow-hidden">
+                  <div>
                     {optimisticPosts && optimisticPosts.length > 0 ? (
                       <PostList
                         posts={optimisticPosts}
                         onPostClick={handlePostClick}
                         onCreatePost={handleCreatePost}
                         onRetry={handleRetry}
+                        listMode={listMode}
                       />
                     ) : (
                       <div className="text-center py-20 px-4">
