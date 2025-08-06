@@ -32,26 +32,26 @@ export interface PostCardProps {
   listMode?: boolean; // New prop for Daangn-style list layout
 }
 
-// Category badge configuration with Korean labels and Daangn-style colors
+// Category badge configuration with Korean labels and ultra-subtle Daangn-style colors
 const CATEGORY_CONFIG = {
   QNA: {
     label: "Q&A",
-    color: "bg-blue-25 text-blue-700 border border-blue-100",
+    color: "bg-blue-25 text-blue-600 border border-blue-50",
     icon: "💬"
   },
   RECOMMEND: {
     label: "추천",
-    color: "bg-green-25 text-green-700 border border-green-100",
+    color: "bg-green-25 text-green-600 border border-green-50",
     icon: "👍"
   },
   SECONDHAND: {
     label: "중고거래",
-    color: "bg-orange-25 text-orange-700 border border-orange-100",
+    color: "bg-orange-25 text-orange-600 border border-orange-50",
     icon: "🛍️"
   },
   FREE: {
     label: "나눔",
-    color: "bg-purple-25 text-purple-700 border border-purple-100",
+    color: "bg-purple-25 text-purple-600 border border-purple-50",
     icon: "🎁"
   },
 } as const;
@@ -126,7 +126,7 @@ export const PostCard = memo(function PostCard({
         aria-label={ariaLabel}
         onKeyDown={handleKeyDown}
       >
-        <div className="flex items-start gap-2.5">
+        <div className="flex items-start gap-2">
           {/* Left content */}
           <div className="flex-1 min-w-0">
             {/* Title */}
@@ -173,17 +173,17 @@ export const PostCard = memo(function PostCard({
           {/* Right thumbnail - much smaller like Daangn */}
           {showImages && post.images && post.images.length > 0 && post.images[0].public_url && (
             <div className="flex-shrink-0">
-              <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-gray-50">
+              <div className="relative w-6 h-6 rounded-md overflow-hidden bg-gray-50">
                 <Image
                   src={post.images[0].public_url}
                   alt={post.images[0].alt_text || "게시글 이미지"}
                   fill
                   className="object-cover"
-                  sizes="32px"
+                  sizes="24px"
                 />
                 {/* Multiple images indicator */}
                 {post.images.length > 1 && (
-                  <div className="absolute bottom-0 right-0 bg-black bg-opacity-75 text-white text-xs px-1 py-0.5 rounded-tl-sm font-normal leading-none">
+                  <div className="absolute bottom-0 right-0 bg-black bg-opacity-80 text-white text-xs px-0.5 py-0.5 rounded-tl-sm font-normal leading-none">
                     +{post.images.length - 1}
                   </div>
                 )}
@@ -214,21 +214,21 @@ export const PostCard = memo(function PostCard({
         "p-4 sm:p-5",
         compact && "p-3 sm:p-4" // Reduced padding for compact mode
       )}>
-        {/* Header with category and location - enhanced Daangn style */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2 flex-wrap">
+        {/* Header with category and location - ultra-minimal Daangn style */}
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-1.5 flex-wrap">
             {categoryConfig && (
               <span
-                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium ${categoryConfig.color} transition-colors duration-200`}
+                className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-xs font-normal ${categoryConfig.color} transition-colors duration-200`}
               >
                 <span className="text-xs">{categoryConfig.icon}</span>
                 {categoryConfig.label}
               </span>
             )}
             {post.apartments && (
-              <span className="text-xs text-gray-500 flex items-center gap-1">
-                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                <span className="truncate max-w-[120px] sm:max-w-none font-medium text-gray-600">
+              <span className="text-xs text-gray-400 flex items-center gap-1">
+                <span className="w-1 h-1 bg-gray-200 rounded-full"></span>
+                <span className="truncate max-w-[120px] sm:max-w-none font-semibold text-gray-700">
                   {post.apartments.cities?.name} {post.apartments.name}
                 </span>
               </span>
@@ -236,7 +236,7 @@ export const PostCard = memo(function PostCard({
           </div>
           <ClientTimeDisplay
             dateString={post.created_at}
-            className="text-xs text-gray-500 flex-shrink-0 font-normal transition-colors duration-200"
+            className="text-xs text-gray-400 flex-shrink-0 font-normal"
           />
         </div>
 
@@ -277,20 +277,20 @@ export const PostCard = memo(function PostCard({
               )}
             </div>
             
-            {/* Right thumbnail - small and positioned like Daangn */}
+            {/* Right thumbnail - ultra-compact like live Daangn */}
             {showImages && post.images && post.images.length > 0 && post.images[0].public_url && (
               <div className="flex-shrink-0">
-                <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-gray-50">
+                <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-50">
                   <Image
                     src={post.images[0].public_url}
                     alt={post.images[0].alt_text || "게시글 이미지"}
                     fill
                     className="object-cover"
-                    sizes="56px"
+                    sizes="48px"
                   />
                   {/* Multiple images indicator */}
                   {post.images.length > 1 && (
-                    <div className="absolute bottom-0.5 right-0.5 bg-black bg-opacity-75 text-white text-xs px-1 py-0.5 rounded-sm font-normal leading-none">
+                    <div className="absolute bottom-0 right-0 bg-black bg-opacity-75 text-white text-xs px-0.5 py-0.5 rounded-tl-sm font-normal leading-none">
                       +{post.images.length - 1}
                     </div>
                   )}
@@ -300,30 +300,30 @@ export const PostCard = memo(function PostCard({
           </div>
         </div>
 
-        {/* Footer - enhanced engagement metrics */}
+        {/* Footer - ultra-subtle engagement metrics */}
         <div className={cn(
-          "flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100 transition-colors duration-200",
-          compact && "mt-2 pt-2" // Reduced spacing for compact mode
+          "flex items-center justify-between mt-2 pt-2 border-t border-gray-50",
+          compact && "mt-1.5 pt-1.5" // Reduced spacing for compact mode
         )}>
-          <div className="flex items-center gap-1 text-xs text-gray-500">
-            <User size={11} className="text-gray-400" />
+          <div className="flex items-center gap-0.5 text-xs text-gray-400">
+            <User size={10} className="text-gray-300" />
             <span className="font-normal">
               {post.user?.name || "익명"}
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             {/* Views count */}
             {post.views_count !== undefined && post.views_count > 0 && (
-              <div className="flex items-center gap-0.5 text-gray-400">
-                <Eye size={11} className="text-gray-400" aria-label="조회수" />
+              <div className="flex items-center gap-0.5 text-gray-300">
+                <Eye size={10} className="text-gray-300" aria-label="조회수" />
                 <span className="text-xs font-normal">
                   {post.views_count > 999 ? `${Math.floor(post.views_count / 1000)}k` : post.views_count}
                 </span>
               </div>
             )}
 
-            {/* Like button with enhanced styling */}
+            {/* Like button with ultra-subtle styling */}
             <LikeButton
               postId={post.id}
               initialLiked={post.isLiked || false}
@@ -332,9 +332,9 @@ export const PostCard = memo(function PostCard({
               showCount={true}
             />
 
-            {/* Comments with enhanced styling */}
-            <div className="flex items-center gap-0.5 text-gray-400">
-              <MessageCircle size={11} className="text-gray-400" aria-label="댓글" />
+            {/* Comments with ultra-subtle styling */}
+            <div className="flex items-center gap-0.5 text-gray-300">
+              <MessageCircle size={10} className="text-gray-300" aria-label="댓글" />
               <span className="text-xs font-normal">
                 {post.comments_count}
               </span>

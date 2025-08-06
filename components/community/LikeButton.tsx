@@ -72,9 +72,9 @@ export function LikeButton({
   };
 
   const sizeConfig = {
-    sm: { icon: 14, padding: "px-3 py-2 min-h-[44px]", text: "text-xs" },
-    md: { icon: 18, padding: "px-4 py-2.5 min-h-[48px]", text: "text-sm" },
-    lg: { icon: 20, padding: "px-5 py-3 min-h-[52px]", text: "text-base" },
+    sm: { icon: 10, padding: "px-0 py-0", text: "text-xs" },
+    md: { icon: 14, padding: "px-2 py-1", text: "text-sm" },
+    lg: { icon: 16, padding: "px-3 py-2", text: "text-base" },
   };
 
   const config = sizeConfig[size];
@@ -83,15 +83,16 @@ export function LikeButton({
     <button
       type="button"
       className={`
-        flex items-center gap-1 rounded-lg transition-all duration-200 select-none group/like
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus:ring-offset-1
+        flex items-center gap-0.5 rounded-md transition-all duration-200 select-none group/like
+        focus:outline-none focus-visible:ring-1 focus-visible:ring-orange-400 focus:ring-offset-0
         disabled:opacity-50 disabled:cursor-not-allowed
+        ${config.padding}
         ${
           liked
-            ? "text-orange-600 hover:text-orange-700 active:scale-95"
-            : "text-zinc-500 hover:text-orange-600 active:scale-95"
+            ? "text-orange-500 hover:text-orange-600"
+            : "text-gray-300 hover:text-orange-500"
         }
-        ${isAnimating ? "animate-bounce" : ""}
+        ${isAnimating ? "animate-pulse" : ""}
         ${isLoading ? "cursor-wait" : "cursor-pointer"}
       `}
       aria-label={liked ? "좋아요 취소하기" : "좋아요 누르기"}

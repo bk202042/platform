@@ -57,9 +57,9 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
       aria-label="카테고리 내비게이션"
     >
       <div className="p-6">
-        {/* Desktop Header - Daangn style */}
-        <div className="hidden lg:block mb-5">
-          <h2 className="text-base font-semibold text-gray-900 border-b border-gray-100 pb-2.5">
+        {/* Desktop Header - Ultra-minimal Daangn style */}
+        <div className="hidden lg:block mb-4">
+          <h2 className="text-sm font-medium text-gray-600 border-b border-gray-50 pb-2">
             카테고리
           </h2>
         </div>
@@ -72,10 +72,10 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                 type="button"
                 onClick={() => handleCategoryClick("")}
                 className={cn(
-                  "w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-normal transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500",
+                  "w-full flex items-center justify-between px-2 py-2 rounded-md text-sm font-normal transition-all duration-200 group focus:outline-none focus-visible:ring-1 focus-visible:ring-orange-400",
                   !currentCategory
-                    ? "bg-orange-50 text-orange-700"
-                    : "text-gray-700 hover:bg-gray-50"
+                    ? "bg-orange-25 text-orange-600"
+                    : "text-gray-600 hover:bg-gray-25"
                 )}
                 aria-current={!currentCategory ? "page" : undefined}
               >
@@ -83,10 +83,10 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                 {postCounts && (
                   <span
                     className={cn(
-                      "text-xs px-1.5 py-0.5 rounded-md font-normal transition-colors min-w-[20px] text-center",
+                      "text-xs px-1 py-0.5 rounded-sm font-normal transition-colors min-w-[16px] text-center",
                       !currentCategory
-                        ? "bg-orange-100 text-orange-700"
-                        : "bg-gray-100 text-gray-600 group-hover:bg-gray-200"
+                        ? "bg-orange-50 text-orange-600"
+                        : "bg-gray-50 text-gray-500 group-hover:bg-gray-100"
                     )}
                   >
                     {postCounts.total}
@@ -103,10 +103,10 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                     type="button"
                     onClick={() => handleCategoryClick(cat)}
                     className={cn(
-                      "w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-normal transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500",
+                      "w-full flex items-center justify-between px-2 py-2 rounded-md text-sm font-normal transition-all duration-200 group focus:outline-none focus-visible:ring-1 focus-visible:ring-orange-400",
                       isActive
-                        ? "bg-orange-50 text-orange-700"
-                        : "text-gray-700 hover:bg-gray-50"
+                        ? "bg-orange-25 text-orange-600"
+                        : "text-gray-600 hover:bg-gray-25"
                     )}
                     aria-current={isActive ? "page" : undefined}
                   >
@@ -114,10 +114,10 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                     {count !== null && (
                       <span
                         className={cn(
-                          "text-xs px-1.5 py-0.5 rounded-md font-normal transition-colors min-w-[20px] text-center",
+                          "text-xs px-1 py-0.5 rounded-sm font-normal transition-colors min-w-[16px] text-center",
                           isActive
-                            ? "bg-orange-100 text-orange-700"
-                            : "bg-gray-100 text-gray-600 group-hover:bg-gray-200"
+                            ? "bg-orange-50 text-orange-600"
+                            : "bg-gray-50 text-gray-500 group-hover:bg-gray-100"
                         )}
                       >
                         {count}

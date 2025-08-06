@@ -42,21 +42,21 @@ export const FilterChips = memo(function FilterChips({
   }
 
   return (
-    <div className={cn("flex items-center gap-2 flex-wrap mb-4", className)}>
+    <div className={cn("flex items-center gap-1.5 flex-wrap mb-3", className)}>
       {/* Active filter chips */}
       {filters.map((filter) => (
         <div
           key={filter.id}
-          className="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-50 text-orange-700 border border-orange-200 rounded-full text-xs font-medium transition-colors duration-200 hover:bg-orange-100"
+          className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-600 border border-gray-200 rounded-md text-xs font-normal transition-colors duration-200 hover:bg-gray-200"
         >
           <span>{filter.label}</span>
           <button
             type="button"
             onClick={() => onRemoveFilter(filter.id)}
-            className="ml-0.5 p-0.5 rounded-full hover:bg-orange-200 transition-colors duration-150"
+            className="ml-0.5 p-0.5 rounded-full hover:bg-gray-300 transition-colors duration-150"
             aria-label={`${filter.label} 필터 제거`}
           >
-            <X size={10} className="text-orange-600" />
+            <X size={8} className="text-gray-500" />
           </button>
         </div>
       ))}
@@ -66,7 +66,7 @@ export const FilterChips = memo(function FilterChips({
         <button
           type="button"
           onClick={onClearAll}
-          className="text-xs text-gray-500 hover:text-gray-700 font-normal transition-colors duration-200 px-2 py-1 rounded-md hover:bg-gray-50"
+          className="text-xs text-gray-400 hover:text-gray-600 font-normal transition-colors duration-200 px-1.5 py-0.5 rounded-md hover:bg-gray-50"
         >
           전체 해제
         </button>
