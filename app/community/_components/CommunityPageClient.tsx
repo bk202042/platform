@@ -211,22 +211,22 @@ export function CommunityPageClient({
         </Button>
       </MobileNavigation>
 
-      {/* Daangn-style layout with proper spacing */}
-      <div className="min-h-screen bg-gray-50">
+      {/* Daangn-style layout with Korean font stack and semantic colors */}
+      <div className="min-h-screen bg-zinc-50 font-['Apple_SD_Gothic_Neo','Malgun_Gothic','-apple-system','BlinkMacSystemFont',sans-serif]">
         <div className="max-w-6xl mx-auto">
-          {/* Header Section - Daangn style */}
-          <div className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
-            <div className="px-4 sm:px-6 lg:px-8 py-4">
+          {/* Header Section - Daangn design system */}
+          <div className="bg-white border-b border-zinc-100 sticky top-0 z-40 shadow-[0_2px_4px_rgba(0,0,0,0.04)]">
+            <div className="px-5 sm:px-6 lg:px-8 py-5"> {/* 20px padding (Daangn standard) */}
               <CommunityBreadcrumb
                 category={urlCategory as CommunityCategory}
                 apartmentName={currentLocation?.type === "apartment" ? currentLocation.name : undefined}
                 cityName={currentLocation?.city_name || currentLocation?.name}
               />
-              <div className="flex items-center justify-between mt-3">
-                <h1 className="text-2xl font-bold text-gray-900">동네생활</h1>
+              <div className="flex items-center justify-between mt-4"> {/* 16px spacing */}
+                <h1 className="text-2xl font-medium text-zinc-900 leading-[1.25]">동네생활</h1> {/* Daangn typography */}
                 <Button
                   onClick={handleCreatePost}
-                  className="hidden sm:flex items-center gap-2 bg-carrot-500 hover:bg-carrot-600 text-white px-4 py-2 rounded-lg font-semibold transition-daangn touch-target"
+                  className="hidden sm:flex items-center gap-2 bg-carrot-500 hover:bg-carrot-600 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] text-white px-4 py-3 rounded-xl font-medium transition-all duration-200 ease-out touch-target min-h-[44px]"
                 >
                   <Plus size={18} />
                   글쓰기

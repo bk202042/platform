@@ -114,14 +114,15 @@ export const PostList = memo(function PostList({
     return <EmptyState type="posts" onAction={onCreatePost} />;
   }
 
-  // Posts list
+  // Posts list with Daangn spacing system
   return (
     <div
       className={cn(
-        "space-y-2",
-        compact && "space-y-1", // Reduced spacing for compact mode
-        listMode && "space-y-0 bg-white rounded-lg border border-gray-100 overflow-hidden", // List mode styling with Daangn container
-        !listMode && "space-y-3" // Card mode with more spacing
+        "font-['Apple_SD_Gothic_Neo','Malgun_Gothic','-apple-system','BlinkMacSystemFont',sans-serif]",
+        "space-y-4", // 16px - Daangn standard spacing between cards
+        compact && "space-y-2", // 8px - Reduced spacing for compact mode
+        listMode && "space-y-0 bg-white rounded-xl border border-zinc-100 overflow-hidden shadow-[0_2px_4px_rgba(0,0,0,0.04)]", // List mode with Daangn container styling
+        !listMode && "space-y-4" // 16px - Card mode spacing following Daangn 8px scale
       )}
       role="feed"
       aria-label={`게시글 목록 (${posts.length}개)`}

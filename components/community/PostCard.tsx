@@ -1,5 +1,5 @@
 import React, { memo, useMemo, useCallback, useState } from "react";
-import { MessageCircle, User, Eye, Heart, Share2 } from "lucide-react";
+import { MessageCircle, User, Eye, Heart, Share2, MapPin } from "lucide-react";
 import { CommunityCategory } from "@/lib/validation/community";
 import { PostImage } from "@/lib/types/community";
 import { LikeButton } from "./LikeButton";
@@ -32,7 +32,7 @@ export interface PostCardProps {
   listMode?: boolean; // New prop for Daangn-style list layout
 }
 
-// Category badge configuration with Korean labels and Daangn-style colors
+// Category badge configuration with Korean labels and exact Daangn semantic colors
 const CATEGORY_CONFIG = {
   QNA: {
     label: "질문답변",
@@ -115,75 +115,83 @@ export const PostCard = memo(function PostCard({
     enableHaptic: true,
   });
 
-  // Daangn-style list layout
+  // Daangn-style list layout with complete design system implementation
   if (listMode) {
     return (
       <article
-        className="group py-3 px-4 hover:bg-gray-50 border-b border-gray-100 cursor-pointer transition-daangn touch-target"
+        className={cn(
+          "group py-4 px-5 hover:bg-zinc-50 border-b border-zinc-100 cursor-pointer transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-sm touch-manipulation min-h-[44px]",
+          "font-['Apple_SD_Gothic_Neo','Malgun_Gothic','-apple-system','BlinkMacSystemFont',sans-serif]"
+        )}
         onClick={handleClick}
         tabIndex={0}
         role="button"
         aria-label={ariaLabel}
         onKeyDown={handleKeyDown}
       >
-        <div className="flex items-start gap-2">
+        <div className="flex items-start gap-3">
           {/* Left content */}
           <div className="flex-1 min-w-0">
-            {/* Title */}
-            <h3 className="text-sm font-medium text-gray-900 leading-snug mb-1.5 line-clamp-2 group-hover:text-carrot-600 transition-daangn">
-              {post.title || post.body}
-            </h3>
-            
-            {/* Location and metadata row - prominently displayed */}
-            <div className="flex items-center text-xs text-gray-500 mb-2">
-              {/* Location - more prominent */}
+            {/* Header: Location + Category badges */}
+            <div className="flex items-center gap-2 mb-2">
               {post.apartments && (
-                <>
-                  <span className="font-medium text-gray-700">
+                <div className="flex items-center gap-1.5 text-xs text-zinc-600 bg-zinc-50 px-2 py-1 rounded-md border border-zinc-100">
+                  <MapPin size={10} className="text-zinc-500 flex-shrink-0" />
+                  <span className="font-medium truncate max-w-[120px]">
                     {post.apartments.cities?.name}
                   </span>
-                  <span className="mx-1.5 text-gray-300">•</span>
-                </>
+                </div>
               )}
-              
-              {/* Time */}
+              {categoryConfig && (
+                <span className={cn(
+                  "inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium",
+                  categoryConfig.color
+                )}>
+                  <span className="text-xs">{categoryConfig.icon}</span>
+                  {categoryConfig.label}
+                </span>
+              )}
               <ClientTimeDisplay
                 dateString={post.created_at}
-                className="text-xs text-gray-400"
+                className="text-xs text-zinc-400 ml-auto"
               />
             </div>
             
-            {/* Engagement metrics - positioned at bottom right like Daangn */}
-            <div className="flex items-center justify-end text-xs text-gray-300 space-x-1.5 mt-0.5">
+            {/* Content: Title */}
+            <h3 className="text-sm font-medium text-zinc-900 leading-[1.25] mb-2 line-clamp-2 group-hover:text-carrot-600 transition-all duration-200">
+              {post.title || post.body}
+            </h3>
+            
+            {/* Footer: Engagement metrics aligned right */}
+            <div className="flex items-center justify-end text-xs text-zinc-400 space-x-3">
               {post.comments_count > 0 && (
-                <div className="flex items-center gap-0.5">
-                  <MessageCircle size={9} className="text-gray-300" />
+                <div className="flex items-center gap-1">
+                  <MessageCircle size={12} className="text-zinc-400" />
                   <span className="font-normal">{post.comments_count}</span>
                 </div>
               )}
               {post.likes_count > 0 && (
-                <div className="flex items-center gap-0.5">
-                  <Heart size={9} className="text-gray-300" />
+                <div className="flex items-center gap-1">
+                  <Heart size={12} className="text-zinc-400" />
                   <span className="font-normal">{post.likes_count}</span>
                 </div>
               )}
             </div>
           </div>
           
-          {/* Right thumbnail - much smaller like Daangn */}
+          {/* Right thumbnail */}
           {showImages && post.images && post.images.length > 0 && post.images[0].public_url && (
             <div className="flex-shrink-0">
-              <div className="relative w-6 h-6 rounded-md overflow-hidden bg-gray-50">
+              <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-zinc-50 border border-zinc-100">
                 <Image
                   src={post.images[0].public_url}
                   alt={post.images[0].alt_text || "게시글 이미지"}
                   fill
                   className="object-cover"
-                  sizes="24px"
+                  sizes="48px"
                 />
-                {/* Multiple images indicator */}
                 {post.images.length > 1 && (
-                  <div className="absolute bottom-0 right-0 bg-black bg-opacity-80 text-white text-xs px-0.5 py-0.5 rounded-tl-sm font-normal leading-none">
+                  <div className="absolute bottom-0 right-0 bg-black bg-opacity-75 text-white text-xs px-1 py-0.5 rounded-tl-md font-normal leading-none">
                     +{post.images.length - 1}
                   </div>
                 )}
@@ -198,7 +206,8 @@ export const PostCard = memo(function PostCard({
   return (
     <article
       className={cn(
-        "group relative bg-white border border-gray-100 rounded-lg hover:bg-gray-50 hover:border-gray-200 hover:shadow-daangn-md transition-daangn cursor-pointer overflow-hidden touch-manipulation active:bg-gray-100",
+        "group relative bg-white border border-zinc-100 rounded-xl hover:bg-zinc-50 hover:border-zinc-200 hover:-translate-y-1 hover:shadow-[0_4px_12px_rgba(0,0,0,0.04)] transition-all duration-200 ease-out cursor-pointer overflow-hidden touch-manipulation active:bg-zinc-100 min-h-[44px]",
+        "font-['Apple_SD_Gothic_Neo','Malgun_Gothic','-apple-system','BlinkMacSystemFont',sans-serif]",
         gestureState.isActive && gestureState.direction === 'right' && "bg-red-25 border-red-200",
         gestureState.isActive && gestureState.direction === 'left' && "bg-blue-25 border-blue-200",
         compact && "py-2" // Reduced padding for compact mode
@@ -211,43 +220,42 @@ export const PostCard = memo(function PostCard({
       {...gestureHandlers}
     >
       <div className={cn(
-        "p-4 sm:p-5",
-        compact && "p-3 sm:p-4" // Reduced padding for compact mode
+        "p-5", // Daangn standard 20px padding
+        compact && "p-4" // Reduced padding for compact mode
       )}>
-        {/* Header with category and location - Daangn style */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2 flex-wrap">
-            {categoryConfig && (
-              <span
-                className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium ${categoryConfig.color} transition-daangn`}
-              >
-                <span className="text-xs">{categoryConfig.icon}</span>
-                {categoryConfig.label}
+        {/* Header: Location + Category + Timestamp - Daangn pattern */}
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
+          {post.apartments && (
+            <div className="flex items-center gap-1.5 text-xs text-zinc-600 bg-zinc-50 px-2 py-1 rounded-lg border border-zinc-100">
+              <MapPin size={12} className="text-zinc-500 flex-shrink-0" />
+              <span className="font-medium truncate max-w-[120px] sm:max-w-none">
+                {post.apartments.cities?.name}
               </span>
-            )}
-            {post.apartments && (
-              <span className="text-xs text-gray-500 flex items-center gap-1.5">
-                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                <span className="truncate max-w-[120px] sm:max-w-none font-medium text-gray-600">
-                  {post.apartments.cities?.name}
-                </span>
-              </span>
-            )}
-          </div>
+            </div>
+          )}
+          {categoryConfig && (
+            <span className={cn(
+              "inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-all duration-200",
+              categoryConfig.color
+            )}>
+              <span className="text-xs">{categoryConfig.icon}</span>
+              {categoryConfig.label}
+            </span>
+          )}
           <ClientTimeDisplay
             dateString={post.created_at}
-            className="text-xs text-gray-400 flex-shrink-0"
+            className="text-xs text-zinc-400 ml-auto"
           />
         </div>
 
-        {/* Content - enhanced Daangn-style layout */}
+        {/* Content - Daangn typography and spacing */}
         <div className={cn(
-          "space-y-2",
-          compact && "space-y-1" // Reduced spacing for compact mode
+          "space-y-3", // 12px spacing
+          compact && "space-y-2" // 8px spacing for compact
         )}>
           {post.title && (
             <h3 className={cn(
-              "text-base font-semibold text-gray-900 line-clamp-2 group-hover:text-carrot-600 transition-daangn leading-tight",
+              "text-base font-medium text-zinc-900 line-clamp-2 group-hover:text-carrot-600 transition-all duration-200 leading-[1.25]", // Daangn line-height
               compact && "text-sm" // Smaller title for compact mode
             )}>
               {post.title}
@@ -255,42 +263,41 @@ export const PostCard = memo(function PostCard({
           )}
 
           <p className={cn(
-            "text-sm text-gray-600 leading-normal line-clamp-2 group-hover:text-gray-700 transition-daangn",
+            "text-sm text-zinc-600 leading-[1.5] line-clamp-2 group-hover:text-zinc-700 transition-all duration-200", // Daangn line-height
             compact && "text-xs line-clamp-1" // Smaller text and single line for compact mode
           )}>
             {post.body}
           </p>
 
-          {/* Right thumbnail - Daangn style positioning */}
-          <div className="flex items-start gap-3 mt-2">
+          {/* Image handling - Daangn style */}
+          <div className="flex items-start gap-4 mt-2">
             <div className="flex-1">
               {/* Text-only image indicator for when images are hidden */}
               {!showImages && post.images && post.images.length > 0 && (
-                <div className="flex items-center gap-1.5 mt-1">
-                  <div className="w-3 h-2 bg-zinc-300 rounded-sm flex items-center justify-center">
-                    <div className="w-1.5 h-1 bg-zinc-500 rounded-sm" />
+                <div className="flex items-center gap-2 mt-1">
+                  <div className="w-4 h-3 bg-zinc-200 rounded-sm flex items-center justify-center">
+                    <div className="w-2 h-1.5 bg-zinc-500 rounded-sm" />
                   </div>
-                  <span className="text-xs text-gray-500 font-normal">
+                  <span className="text-xs text-zinc-500 font-normal">
                     사진 {post.images.length}장
                   </span>
                 </div>
               )}
             </div>
             
-            {/* Right thumbnail - ultra-compact like live Daangn */}
+            {/* Right thumbnail - Daangn 12px radius */}
             {showImages && post.images && post.images.length > 0 && post.images[0].public_url && (
               <div className="flex-shrink-0">
-                <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-50">
+                <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-zinc-50 border border-zinc-100">
                   <Image
                     src={post.images[0].public_url}
                     alt={post.images[0].alt_text || "게시글 이미지"}
                     fill
                     className="object-cover"
-                    sizes="48px"
+                    sizes="64px"
                   />
-                  {/* Multiple images indicator */}
                   {post.images.length > 1 && (
-                    <div className="absolute bottom-0 right-0 bg-black bg-opacity-75 text-white text-xs px-0.5 py-0.5 rounded-tl-sm font-normal leading-none">
+                    <div className="absolute bottom-1 right-1 bg-black bg-opacity-75 text-white text-xs px-1.5 py-0.5 rounded-md font-normal leading-none">
                       +{post.images.length - 1}
                     </div>
                   )}
@@ -300,30 +307,32 @@ export const PostCard = memo(function PostCard({
           </div>
         </div>
 
-        {/* Footer - Daangn-style engagement metrics */}
+        {/* Footer - Daangn engagement pattern */}
         <div className={cn(
-          "flex items-center justify-between mt-3 pt-3 border-t border-gray-100",
-          compact && "mt-2 pt-2" // Reduced spacing for compact mode
+          "flex items-center justify-between mt-4 pt-4 border-t border-zinc-100", // 16px spacing (Daangn standard)
+          compact && "mt-3 pt-3" // 12px spacing for compact
         )}>
-          <div className="flex items-center gap-1 text-xs text-gray-500">
-            <User size={12} className="text-gray-400" />
-            <span className="font-medium">
+          <div className="flex items-center gap-2 text-xs text-zinc-500">
+            <div className="w-6 h-6 rounded-full bg-zinc-100 flex items-center justify-center">
+              <User size={12} className="text-zinc-500" />
+            </div>
+            <span className="font-normal">
               {post.user?.name || "익명"}
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4"> {/* 16px gap between metrics */}
             {/* Views count */}
             {post.views_count !== undefined && post.views_count > 0 && (
-              <div className="flex items-center gap-1 text-gray-400 hover:text-gray-600 transition-daangn">
-                <Eye size={12} className="text-gray-400" aria-label="조회수" />
-                <span className="text-xs font-medium">
+              <div className="flex items-center gap-1 text-zinc-400 hover:text-zinc-600 transition-all duration-200">
+                <Eye size={14} className="text-zinc-400" aria-label="조회수" />
+                <span className="text-xs font-normal">
                   {post.views_count > 999 ? `${Math.floor(post.views_count / 1000)}k` : post.views_count}
                 </span>
               </div>
             )}
 
-            {/* Like button with Daangn styling */}
+            {/* Like button */}
             <LikeButton
               postId={post.id}
               initialLiked={post.isLiked || false}
@@ -332,10 +341,10 @@ export const PostCard = memo(function PostCard({
               showCount={true}
             />
 
-            {/* Comments with Daangn styling */}
-            <div className="flex items-center gap-1 text-gray-400 hover:text-gray-600 transition-daangn">
-              <MessageCircle size={12} className="text-gray-400" aria-label="댓글" />
-              <span className="text-xs font-medium">
+            {/* Comments */}
+            <div className="flex items-center gap-1 text-zinc-400 hover:text-zinc-600 transition-all duration-200 min-w-[44px] min-h-[44px] -m-2 p-2 rounded-lg hover:bg-zinc-50">
+              <MessageCircle size={14} className="text-zinc-400" aria-label="댓글" />
+              <span className="text-xs font-normal">
                 {post.comments_count}
               </span>
             </div>
