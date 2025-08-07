@@ -1275,7 +1275,147 @@
       "lastAccessed": "2025-08-06T07:59:21.963Z",
       "lastVerified": "2025-08-06T07:59:21.963Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1754535074664_b8tvw2333",
+      "content": "Analyzing community page with search functionality issues. UI shows Korean community platform with:\n- Search bar with placeholder \"지역 상택 또는 게시글 검색...\" (Location selection or post search)\n- Left sidebar with categories (전체, 질문답변, 추천정보, 중고거래, 자유게시판)\n- Tag-like filters for locations/topics\n- Posts with location indicators (호치민, 하노이) and categories\n- Sort dropdown (최신순)\nUser reports search bar not working properly - need to analyze implementation and provide architectural recommendations.",
+      "type": "general",
+      "tags": [
+        "general",
+        "community",
+        "search",
+        "ui-analysis",
+        "architecture"
+      ],
+      "timestamp": "2025-08-07T02:51:14.664Z",
+      "context": "Community page analysis for search functionality improvement",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T02:51:14.664Z",
+      "lastVerified": "2025-08-07T02:51:14.664Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754535096631_gsk68ua3n",
+      "content": "Community platform architecture analysis task: Researching current implementation of community page with search functionality, category filters, and posts. Need to identify routes, components, data access patterns, database schema, and potential search functionality issues.",
+      "type": "concept",
+      "tags": [
+        "concept",
+        "database",
+        "community",
+        "search",
+        "architecture",
+        "analysis",
+        "nextjs",
+        "supabase"
+      ],
+      "timestamp": "2025-08-07T02:51:36.631Z",
+      "context": "Initial analysis request for Korean community platform with Vietnamese property focus",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T02:51:36.631Z",
+      "lastVerified": "2025-08-07T02:51:36.631Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754535165935_selijqzdc",
+      "content": "Key findings from community architecture analysis:\n\n1. DATABASE SCHEMA: Complete community system with tables: community_posts, community_comments, community_likes, community_post_images. Posts table has search_vector column (tsvector) for full-text search.\n\n2. SEARCH IMPLEMENTATION ISSUE IDENTIFIED: While the search UI components exist (UnifiedSearchBar, UnifiedSearchInterface), the actual content search functionality is NOT implemented in the community posts API endpoint (/app/api/community/posts/route.ts). The GET endpoint filters by city, apartmentId, category, sort but there is NO handling for the \"search\" query parameter that the frontend sends via handleContentSearch.\n\n3. SEARCH FLOW: Frontend correctly sets \"search\" URL param via handleContentSearch() -> /community page renders with searchParams -> CommunityPageClient gets posts via server-side getPostsWithLikeStatus() -> but this function doesn't support text search parameter.\n\n4. MISSING LINK: The searchPostsWithLocation() function exists in data layer (line 696-787 in community.ts) but is never called. It has proper textSearch implementation using search_vector column.\n\n5. ARCHITECTURE: Well-structured with proper data layer abstraction, TypeScript types, image management, but search integration is incomplete.",
+      "type": "warning",
+      "tags": [
+        "warning",
+        "typescript",
+        "database",
+        "api",
+        "search",
+        "community",
+        "missing-implementation",
+        "architecture-issue"
+      ],
+      "timestamp": "2025-08-07T02:52:45.935Z",
+      "context": "Critical search functionality gap identified in community platform",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T02:52:45.935Z",
+      "lastVerified": "2025-08-07T02:52:45.935Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754535432172_49tdrh54a",
+      "content": "Community page analysis complete. Key findings:\nARCHITECTURE STATUS: Solid foundation with critical integration gaps\n- UI layer: ✅ Excellent search interface with Korean localization\n- Database: ✅ Full-text search ready with tsvector column\n- Data layer: ✅ searchPostsWithLocation() function exists but not used\n- API integration: ❌ Search parameter retrieved but ignored\n- Server components: ❌ Using wrong data functions (filtering vs searching)\n\nCRITICAL ISSUES:\n1. Search parameter not extracted in /app/community/page.tsx\n2. Wrong function called: getPostsWithLikeStatus() vs searchPostsWithLocation()\n3. API endpoint /app/api/community/posts/route.ts doesn't process search\n4. Category filtering non-functional\n5. Location search suggestions ignored\n\nARCHITECTURE STRENGTHS:\n- TypeScript safety with proper interfaces\n- RLS security policies implemented  \n- Caching strategy in place\n- Error handling comprehensive\n- UI components well-designed with debouncing",
+      "type": "code",
+      "tags": [
+        "code",
+        "typescript",
+        "database",
+        "api",
+        "community",
+        "search",
+        "backend",
+        "integration",
+        "fixes-needed"
+      ],
+      "timestamp": "2025-08-07T02:57:12.171Z",
+      "context": "Community page search analysis - integration gaps identified",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T02:57:12.171Z",
+      "lastVerified": "2025-08-07T02:57:12.171Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754535929002_5uknee8pk",
+      "content": "User wants radical simplification of community search - remove unified search bar complexity, keep only most essential function. Focus on intuitive UX over feature complexity. No legacy fallback needed unless explicitly required. Need detailed plan for complete simplification.",
+      "type": "code",
+      "tags": [
+        "code",
+        "simplification",
+        "ux-reduction",
+        "essential-features",
+        "community"
+      ],
+      "timestamp": "2025-08-07T03:05:29.001Z",
+      "context": "Community search simplification strategy",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T03:05:29.001Z",
+      "lastVerified": "2025-08-07T03:05:29.001Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754536152191_x0462pttt",
+      "content": "MVP Community Strategy: Remove search bar completely. Focus on simple user flow:\n1. User selects apartment (location-based filtering)\n2. User selects category (topic-based filtering) \n3. User sees relevant posts\n4. User can create posts for their apartment+category\n\nGoal: Simplify to essential apartment and category selection only. Remove unified search bar, suggestions, complex filtering. MVP approach - start small and basic with one clear user story.",
+      "type": "general",
+      "tags": [
+        "general",
+        "mvp",
+        "apartment-selection",
+        "category-filter",
+        "user-story",
+        "simplification"
+      ],
+      "timestamp": "2025-08-07T03:09:12.191Z",
+      "context": "MVP community simplification plan",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T03:09:12.191Z",
+      "lastVerified": "2025-08-07T03:09:12.191Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754536365022_brlhanvgt",
+      "content": "MVP Community Page Simplification COMPLETED:\n\n✅ ACHIEVED:\n- Removed complex UnifiedSearchInterface completely\n- Created simple ApartmentSelector dropdown component  \n- Created horizontal CategoryTabs with post counts\n- Eliminated search functionality, location suggestions, and complex state management\n- Clean MVP user flow: Apartment → Category → Posts\n- Fixed TypeScript errors and build passes\n- Lint passes with no warnings\n\n✅ NEW COMPONENTS:\n- /components/community/ApartmentSelector.tsx - Simple apartment dropdown\n- /components/community/CategoryTabs.tsx - Horizontal category tabs with counts\n\n✅ SIMPLIFIED FLOW:\n1. User selects apartment from dropdown (or \"전체 아파트\")\n2. User clicks category tab (전체, 질문답변, 추천정보, 중고거래, 자유게시판)\n3. User sees filtered posts\n4. User can create posts with + button\n\n✅ REMOVED COMPLEXITY:\n- Search bar and all search-related functionality\n- UnifiedSearchInterface component\n- Location search suggestions\n- Complex state management (currentLocation, handleLocationChange, handleContentSearch)\n- Vietnamese location search integration\n- Search parameter handling\n\nThe community page is now a clean, simple MVP focused on apartment+category filtering only.",
+      "type": "solution",
+      "tags": [
+        "solution",
+        "typescript",
+        "mvp",
+        "community",
+        "simplification",
+        "completed",
+        "apartment-selection",
+        "category-tabs"
+      ],
+      "timestamp": "2025-08-07T03:12:45.021Z",
+      "context": "MVP Community Page Simplification Complete",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T03:12:45.021Z",
+      "lastVerified": "2025-08-07T03:12:45.021Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-06T07:59:21.963Z"
+  "lastUpdated": "2025-08-07T03:12:45.021Z"
 }

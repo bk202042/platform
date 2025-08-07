@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect, Suspense } from "react";
+import { useState, useCallback, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PostList } from "@/components/community/PostList";
 import { SortSelector, SortOption } from "@/components/community/SortSelector";
@@ -8,8 +8,8 @@ import { CategorySidebar } from "./CategorySidebar";
 import { CommunityBreadcrumb } from "@/components/community/CommunityBreadcrumb";
 import { MobileNavigation } from "@/components/community/MobileNavigation";
 import { ErrorBoundary } from "@/components/community/ErrorBoundary";
-import { UnifiedSearchInterface } from "@/components/community/UnifiedSearchInterface";
-import { LocationSearchResult } from "@/lib/data/vietnamese-locations";
+import { ApartmentSelector } from "@/components/community/ApartmentSelector";
+import { CategoryTabs } from "@/components/community/CategoryTabs";
 import { PullToRefresh } from "@/components/community/PullToRefresh";
 import { MobileBottomNavigation } from "@/components/community/MobileBottomNavigation";
 
@@ -75,7 +75,6 @@ export function CommunityPageClient({
   const urlApartmentId = searchParams.get("apartmentId") || "";
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState<LocationSearchResult | null>(null);
   const [optimisticPosts, setOptimisticPosts] = useState(posts);
   const [listMode, setListMode] = useState(true); // Default to Daangn-style compact layout
 
@@ -83,78 +82,33 @@ export function CommunityPageClient({
   // Get current sort from URL params
   const currentSort = (searchParams.get("sort") as SortOption) || "latest";
 
-  const _handleApartmentChange = useCallback(
-    (newApartmentId: string) => {
+  const handleApartmentChange = useCallback(
+    (apartmentId: string) => {
       const params = new URLSearchParams(searchParams.toString());
-      if (newApartmentId) {
-        params.set("apartmentId", newApartmentId);
+      if (apartmentId) {
+        params.set("apartmentId", apartmentId);
       } else {
         params.delete("apartmentId");
       }
       router.push(`/community?${params.toString()}`);
-      // Note: setApartmentId is handled by useEffect when URL changes
     },
     [searchParams, router]
   );
 
-  const handleLocationChange = useCallback(
-    (location: LocationSearchResult | null) => {
-      setCurrentLocation(location);
+
+  const handleCategoryChange = useCallback(
+    (category: string) => {
       const params = new URLSearchParams(searchParams.toString());
-
-      if (location) {
-        if (location.type === "apartment") {
-          params.set("apartmentId", location.id);
-        } else {
-          // For city selection, clear apartment filter
-          params.delete("apartmentId");
-          // Could add city filter here if needed
-        }
+      if (category) {
+        params.set("category", category);
       } else {
-        // Clear all location filters
-        params.delete("apartmentId");
-      }
-
-      router.push(`/community?${params.toString()}`);
-    },
-    [searchParams, router]
-  );
-
-  const handleContentSearch = useCallback(
-    (query: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (query.trim()) {
-        params.set("search", query);
-      } else {
-        params.delete("search");
+        params.delete("category");
       }
       router.push(`/community?${params.toString()}`);
     },
     [searchParams, router]
   );
 
-  // Sync currentLocation with URL parameters
-  useEffect(() => {
-    if (urlApartmentId) {
-      const apartment = apartments.find((apt) => apt.id === urlApartmentId);
-      if (apartment) {
-        const locationResult: LocationSearchResult = {
-          id: apartment.id,
-          type: "apartment",
-          name: apartment.name,
-          name_ko: apartment.name,
-          full_address: apartment.cities?.name || "",
-          full_address_ko: apartment.cities?.name || "",
-          city_name: apartment.cities?.name || "",
-          city_name_ko: apartment.cities?.name || "",
-          similarity_score: 1.0,
-        };
-        setCurrentLocation(locationResult);
-      }
-    } else {
-      setCurrentLocation(null);
-    }
-  }, [urlApartmentId, apartments]);
 
   // Use URL values directly for consistent state
   // Memoize expensive computations using URL values (kept for potential future use)
@@ -219,8 +173,8 @@ export function CommunityPageClient({
             <div className="px-5 sm:px-6 lg:px-8 py-5"> {/* 20px padding (Daangn standard) */}
               <CommunityBreadcrumb
                 category={urlCategory as CommunityCategory}
-                apartmentName={currentLocation?.type === "apartment" ? currentLocation.name : undefined}
-                cityName={currentLocation?.city_name || currentLocation?.name}
+                apartmentName={apartments.find(apt => apt.id === urlApartmentId)?.name}
+                cityName={apartments.find(apt => apt.id === urlApartmentId)?.cities?.name}
               />
               <div className="flex items-center justify-between mt-4"> {/* 16px spacing */}
                 <h1 className="text-2xl font-medium text-zinc-900 leading-[1.25]">동네생활</h1> {/* Daangn typography */}
@@ -252,20 +206,25 @@ export function CommunityPageClient({
               >
                 <div className="px-2 sm:px-3 lg:px-4 py-2">
                 <ErrorBoundary>
-                  {/* Search Interface and Controls Section - Daangn style */}
-                  <div className="mb-2 bg-white rounded-lg border border-gray-200 shadow-daangn-sm overflow-hidden">
-                    {/* Unified Search Interface */}
-                    <UnifiedSearchInterface
-                      initialLocation={currentLocation}
-                      onLocationChange={handleLocationChange}
-                      onContentSearch={handleContentSearch}
-                      onCreatePost={handleCreatePost}
-                      postCount={postCounts?.total}
-                      activeUserCount={12} // TODO: Get from real data
-                      showCreateButton={false} // We have other create buttons
+                  {/* Simplified Controls Section - MVP style */}
+                  <div className="mb-4 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                    {/* Apartment Selection */}
+                    <div className="p-4 border-b border-gray-100">
+                      <ApartmentSelector
+                        apartments={apartments}
+                        selectedId={urlApartmentId}
+                        onSelect={handleApartmentChange}
+                      />
+                    </div>
+                    
+                    {/* Category Tabs */}
+                    <CategoryTabs
+                      selectedCategory={urlCategory}
+                      onCategoryChange={handleCategoryChange}
+                      postCounts={postCounts}
                     />
                     
-                    {/* Sort Controls - positioned below search like Daangn */}
+                    {/* Sort Controls */}
                     <div className="flex justify-between items-center py-3 px-4 border-t border-gray-100 bg-gray-50">
                       <div className="flex items-center gap-2">
                         <div className="lg:hidden">
@@ -357,7 +316,6 @@ export function CommunityPageClient({
           apartments={apartments || []}
           onPostCreated={handlePostCreated}
           onPostRemoved={handlePostRemoved}
-          initialLocation={currentLocation}
         />
       </Suspense>
 
