@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, Suspense } from "react";
+import { useState, useCallback, useMemo, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PostList } from "@/components/community/PostList";
 import { SortSelector, SortOption } from "@/components/community/SortSelector";
@@ -78,6 +78,10 @@ export function CommunityPageClient({
   const [optimisticPosts, setOptimisticPosts] = useState(posts);
   const [listMode, setListMode] = useState(true); // Default to Daangn-style compact layout
 
+  // Sync optimisticPosts with fresh server data when filtering changes
+  useEffect(() => {
+    setOptimisticPosts(posts);
+  }, [posts]);
 
   // Get current sort from URL params
   const currentSort = (searchParams.get("sort") as SortOption) || "latest";

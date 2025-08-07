@@ -1433,7 +1433,190 @@
       "lastAccessed": "2025-08-07T03:22:44.398Z",
       "lastVerified": "2025-08-07T03:22:44.398Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1754537636287_i8o3h02j2",
+      "content": "Starting investigation of apartment filtering issue in community page. Need to examine: 1) /app/community/page.tsx for parameter processing, 2) /lib/data/community.ts getPostsWithLikeStatus function, 3) CommunityPageClient.tsx for apartment selection handling, 4) Database queries and relationships",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "database",
+        "investigation",
+        "community",
+        "filtering",
+        "apartment-selection",
+        "bug-analysis"
+      ],
+      "timestamp": "2025-08-07T03:33:56.286Z",
+      "context": "Community page apartment filtering broken - posts not filtering by selected apartment",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T03:33:56.286Z",
+      "lastVerified": "2025-08-07T03:33:56.286Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754537673123_kdnfy8yas",
+      "content": "Investigation findings: Community apartment filtering issue analysis complete.\n\nKey findings:\n1. Server-side data fetching in /app/community/page.tsx correctly extracts apartmentId from searchParams and passes to getPostsWithLikeStatus\n2. getPostsWithLikeStatus function in /lib/data/community.ts properly filters by apartment_id when provided (line 217-218)\n3. Client-side CommunityPageClient.tsx correctly handles apartment selection and URL updates\n4. ApartmentSelector component properly triggers onSelect callback\n5. Database schema shows correct relationships: community_posts.apartment_id -> apartments.id\n\nThe filtering logic appears sound. Need to investigate potential caching issues or data inconsistencies.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "database",
+        "bug-investigation",
+        "community",
+        "apartment-filtering",
+        "data-flow"
+      ],
+      "timestamp": "2025-08-07T03:34:33.123Z",
+      "context": "Community page apartment filtering investigation",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T03:34:33.123Z",
+      "lastVerified": "2025-08-07T03:34:33.123Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754538291827_y8nxlirv2",
+      "content": "Community page test findings:\n1. Page loads successfully at http://localhost:3000/community\n2. Console shows AUTH errors (getSessionUser failed) - expected since not logged in\n3. Page structure includes:\n   - Navigation with 커뮤니티 (Community) link active\n   - Apartment dropdown (combobox elements ref=e103, e107)\n   - Category filters (전체, 질문답변, 추천정보, 중고거래, 자유게시판)\n   - Feed with 43 posts showing\n   - Posts show location (하노이/호치민/다낭), category icons, titles\n4. Key apartment dropdown elements found: ref=e103 and ref=e107\n5. Posts are displaying correctly with images and metadata",
+      "type": "error",
+      "tags": [
+        "error",
+        "community-page",
+        "testing",
+        "apartment-dropdown"
+      ],
+      "timestamp": "2025-08-07T03:44:51.826Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T03:44:51.826Z",
+      "lastVerified": "2025-08-07T03:44:51.826Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754538324658_gcq4kq86w",
+      "content": "Apartment dropdown test results - SUCCESS:\n1. Dropdown opens and shows comprehensive list of 25+ apartments across 3 cities\n2. URL updates correctly: http://localhost:3000/community?apartmentId=apt8\n3. Breadcrumb updates: Shows \"호치민 · 미드타운\" \n4. Category counts update: 전체 43→2, 질문답변 15→1, 중고거래 6→1, etc.\n5. Posts are NOT actually filtering - still showing all 43 posts despite URL/counts changing\n6. The filtering logic appears to be working at the UI level but posts aren't actually filtered",
+      "type": "general",
+      "tags": [
+        "general",
+        "apartment-dropdown",
+        "filtering-bug",
+        "ui-behavior"
+      ],
+      "timestamp": "2025-08-07T03:45:24.658Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T03:45:24.658Z",
+      "lastVerified": "2025-08-07T03:45:24.658Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754538361596_qlzb5iger",
+      "content": "Complete community page testing results:\n\nWORKING FEATURES ✅:\n1. Page loads successfully at localhost:3000/community\n2. Apartment dropdown opens and displays 25+ apartments across 3 cities\n3. URL updates correctly when selecting apartments (e.g., ?apartmentId=apt8)\n4. Breadcrumb navigation updates dynamically\n5. Category filters work - URL updates (?category=QNA)\n6. Both apartment and category filters can be combined\n7. UI responds correctly to filters (buttons show active state)\n8. Images load properly from Supabase storage\n9. Post metadata displays correctly (dates, categories, locations)\n\nISSUES IDENTIFIED ❌:\n1. AUTH errors: \"getSessionUser|failed: No claims found\" - Expected since not logged in\n2. 404 error: http://localhost:5746/ping/stagewise - Stagewise dev tool connection\n3. Filtering UX issue: Posts don't actually filter visually - all 43 posts still show despite URL/count changes\n4. Fast Refresh warnings about position: sticky/fixed elements\n\nCONSOLE ERRORS:\n- Multiple AUTH|getSessionUser failures (expected - not logged in)\n- Stagewise connection failure (development tool)\n- Auto-scroll warnings (minor UX issue)\n\nNETWORK REQUESTS:\n- All requests return 200 OK status\n- Proper RSC (React Server Components) requests on filter changes\n- Images load successfully from Supabase CDN",
+      "type": "warning",
+      "tags": [
+        "warning",
+        "react",
+        "testing",
+        "testing-complete",
+        "community-page",
+        "bug-report",
+        "functionality"
+      ],
+      "timestamp": "2025-08-07T03:46:01.596Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T03:46:01.596Z",
+      "lastVerified": "2025-08-07T03:46:01.596Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754538466910_nsdbgedw2",
+      "content": "Initial state observed: Community page showing 43 total posts with mix of locations (하노이/Hanoi, 호치민/Ho Chi Minh, 다낭/Da Nang) across different categories (질문답변/Q&A: 15, 추천정보/Recommendations: 9, 중고거래/Second-hand: 6, 자유게시판/Free board: 13, 나눔/Sharing). Testing apartment filtering fix.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "testing",
+        "community",
+        "filtering",
+        "bug-fix"
+      ],
+      "timestamp": "2025-08-07T03:47:46.909Z",
+      "context": "Testing apartment filtering functionality after bug fix",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T03:47:46.909Z",
+      "lastVerified": "2025-08-07T03:47:46.909Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754538491392_z4prgfm9h",
+      "content": "✅ APARTMENT FILTERING WORKING! After selecting \"타임시티 - 하노이\":\n- URL changed to: http://localhost:3000/community?apartmentId=apt5\n- Breadcrumb now shows: 홈 > 커뮤니티 > 하노이 · 타임시티 \n- Post count dropped from 43 to 2 posts\n- Category counts updated: 전체 2, 질문답변 1, 추천정보 1, 중고거래 0, 자유게시판 0\n- Only 2 posts shown: \"test image upload\" (추천정보), \"test test\" (질문답변)\n- Both posts are from 하노이, matching the filter\n- Dropdown shows selected apartment: \"타임시티 - 하노이\"",
+      "type": "general",
+      "tags": [
+        "general",
+        "success",
+        "apartment-filtering",
+        "ui-sync",
+        "bug-fixed"
+      ],
+      "timestamp": "2025-08-07T03:48:11.390Z",
+      "context": "Successful apartment filtering test results",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T03:48:11.390Z",
+      "lastVerified": "2025-08-07T03:48:11.390Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754538506918_ecpciv2b2",
+      "content": "✅ COMBINED FILTERING WORKING! After selecting 질문답변 (Q&A) category within 타임시티 apartment:\n- URL: http://localhost:3000/community?apartmentId=apt5&category=QNA\n- Breadcrumb path: 홈 > 커뮤니티 > 하노이 · 타임시티 > Q&A\n- Posts filtered from 2 to 1 post \n- Only showing \"test test\" post which is Q&A category from 하노이/타임시티\n- \"질문답변\" button is now active/highlighted\n- Post count correctly shows \"게시글 목록 (1개)\" \n- Both apartment AND category filters working together perfectly!",
+      "type": "general",
+      "tags": [
+        "general",
+        "success",
+        "combined-filtering",
+        "apartment-category",
+        "ui-sync"
+      ],
+      "timestamp": "2025-08-07T03:48:26.918Z",
+      "context": "Combined apartment+category filtering test success",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T03:48:26.918Z",
+      "lastVerified": "2025-08-07T03:48:26.918Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754538528469_33yo60vl6",
+      "content": "✅ APARTMENT RESET WORKING! After selecting \"전체 아파트\":\n- URL changed to: http://localhost:3000/community?category=QNA (apartment filter removed)\n- Breadcrumb: 홈 > 커뮤니티 > Q&A (apartment path removed)\n- Apartment dropdown shows: \"전체 아파트\"\n- Post count: Shows 15 Q&A posts from ALL apartments/cities\n- Category counts reset to full numbers: 전체 43, 질문답변 15, 추천정보 9, etc.\n- Posts from all cities visible: 하노이, 호치민, 다낭\n- Category filter (Q&A) maintained while apartment filter was removed\n- Feed shows \"게시글 목록 (15개)\" correctly",
+      "type": "general",
+      "tags": [
+        "general",
+        "success",
+        "apartment-reset",
+        "filtering",
+        "state-management"
+      ],
+      "timestamp": "2025-08-07T03:48:48.469Z",
+      "context": "Apartment filter reset test success",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T03:48:48.469Z",
+      "lastVerified": "2025-08-07T03:48:48.469Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754538603497_ilpvqkhah",
+      "content": "APARTMENT FILTERING BUG COMPLETELY RESOLVED ✅\n\n**The Problem:**\nUsers could select apartments from dropdown and URL/counts updated correctly, but post lists never actually filtered - all 43 posts remained visible regardless of apartment selection.\n\n**Root Cause Identified:**\nLine 78 in CommunityPageClient.tsx: `const [optimisticPosts, setOptimisticPosts] = useState(posts);`\n- optimisticPosts was initialized with server posts but NEVER synced with fresh filtered data\n- When apartment filters changed, server returned filtered posts but UI still showed stale optimisticPosts\n- Database filtering logic was correct, URL updates worked, counts updated, but display was stuck\n\n**The Fix:**\nAdded useEffect to sync optimisticPosts with fresh server data:\n```tsx\n// Sync optimisticPosts with fresh server data when filtering changes\nuseEffect(() => {\n  setOptimisticPosts(posts);\n}, [posts]);\n```\n\n**Test Results - ALL WORKING:**\n✅ Apartment selection filters posts correctly (43 → 2 posts)\n✅ Combined apartment + category filtering works  \n✅ URL parameters update properly (?apartmentId=apt5&category=QNA)\n✅ Post counts match displayed posts exactly\n✅ Breadcrumbs show correct navigation path\n✅ \"전체 아파트\" resets filters properly\n✅ Edge cases handled (rapid switching, browser back/forward)\n✅ Build passes with no errors\n\n**Files Changed:**\n- /app/community/_components/CommunityPageClient.tsx (added useEffect import and sync logic)\n\nThe apartment filtering functionality is now working perfectly for the MVP community page!",
+      "type": "warning",
+      "tags": [
+        "warning",
+        "database",
+        "apartment-filtering",
+        "bug-fix",
+        "community",
+        "state-sync",
+        "useEffect",
+        "completed"
+      ],
+      "timestamp": "2025-08-07T03:50:03.496Z",
+      "context": "Apartment filtering bug resolution - complete success",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-07T03:50:03.496Z",
+      "lastVerified": "2025-08-07T03:50:03.496Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-07T03:22:44.398Z"
+  "lastUpdated": "2025-08-07T03:50:03.496Z"
 }
