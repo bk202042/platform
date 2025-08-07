@@ -38,7 +38,7 @@ export function ApartmentSelector({
           <SelectValue placeholder="아파트를 선택해주세요" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">전체 아파트</SelectItem>
+          <SelectItem value="all">전체 아파트</SelectItem>
           {apartments.map(apt => (
             <SelectItem key={apt.id} value={apt.id}>
               {apt.name} - {apt.cities?.name}

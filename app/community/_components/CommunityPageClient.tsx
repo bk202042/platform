@@ -85,7 +85,7 @@ export function CommunityPageClient({
   const handleApartmentChange = useCallback(
     (apartmentId: string) => {
       const params = new URLSearchParams(searchParams.toString());
-      if (apartmentId) {
+      if (apartmentId && apartmentId !== "all") {
         params.set("apartmentId", apartmentId);
       } else {
         params.delete("apartmentId");
@@ -212,7 +212,7 @@ export function CommunityPageClient({
                     <div className="p-4 border-b border-gray-100">
                       <ApartmentSelector
                         apartments={apartments}
-                        selectedId={urlApartmentId}
+                        selectedId={urlApartmentId || "all"}
                         onSelect={handleApartmentChange}
                       />
                     </div>
