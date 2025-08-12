@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import * as PopoverPrimitive from '@radix-ui/react-popover';
 import { Button } from '@/components/ui/button';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -42,6 +42,12 @@ export function ApartmentAutocomplete({
 }: ApartmentAutocompleteProps) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Component aliases for cleaner JSX
+  const Popover = PopoverPrimitive.Root;
+  const PopoverTrigger = PopoverPrimitive.Trigger;
+  const PopoverPortal = PopoverPrimitive.Portal;
+  const PopoverContent = PopoverPrimitive.Content;
 
   // Reset search when popover closes
   React.useEffect(() => {
@@ -161,23 +167,25 @@ export function ApartmentAutocomplete({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent 
-        className="w-[--radix-popover-trigger-width] p-0" 
-        side="bottom" 
-        align="start"
-        sideOffset={4}
-        avoidCollisions={true}
-        // CRITICAL FIX: Render inside dialog container to prevent portal conflicts
-        container={portalContainer}
-        onOpenAutoFocus={(e) => {
-          // Prevent auto focus issues in dialog
-          e.preventDefault();
-        }}
-        style={{
-          // Ensure proper z-index for nested portals
-          zIndex: 9999,
-        }}
-      >
+      <PopoverPortal container={portalContainer}>
+        <PopoverContent
+          className={cn(
+            "w-[--radix-popover-trigger-width] p-0",
+            "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 origin-(--radix-popover-content-transform-origin) rounded-md border shadow-md outline-hidden"
+          )}
+          side="bottom" 
+          align="start"
+          sideOffset={4}
+          avoidCollisions={true}
+          onOpenAutoFocus={(e) => {
+            // Prevent auto focus issues in dialog
+            e.preventDefault();
+          }}
+          style={{
+            // Ensure proper z-index for nested portals
+            zIndex: 9999,
+          }}
+        >
         <Command shouldFilter={false}>
           <CommandInput
             placeholder="아파트 이름 검색..."
@@ -225,7 +233,8 @@ export function ApartmentAutocomplete({
             </CommandGroup>
           </CommandList>
         </Command>
-      </PopoverContent>
+        </PopoverContent>
+      </PopoverPortal>
     </Popover>
   );
 }

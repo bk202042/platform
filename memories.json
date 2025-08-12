@@ -2123,7 +2123,26 @@
       "lastAccessed": "2025-08-12T12:10:28.410Z",
       "lastVerified": "2025-08-12T12:10:28.410Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1755001261874_55wlmrqs3",
+      "content": "Build error: PopoverContent doesn't have container prop in current Radix UI version\n\nERROR: Property 'container' does not exist on PopoverContentProps\nLOCATION: ApartmentAutocomplete.tsx:171\n\nISSUE: Attempted to use container prop on PopoverContent but it doesn't exist\nSOLUTION NEEDED: Use PopoverPortal with container prop instead, or find alternative approach for dialog portal handling",
+      "type": "config",
+      "tags": [
+        "config",
+        "build-error",
+        "radix-ui",
+        "popover",
+        "portal",
+        "typescript"
+      ],
+      "timestamp": "2025-08-12T12:21:01.873Z",
+      "context": "Build failure - Radix UI PopoverContent container prop doesn't exist",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T12:21:01.873Z",
+      "lastVerified": "2025-08-12T12:21:01.873Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-12T12:10:28.410Z"
+  "lastUpdated": "2025-08-12T12:21:01.873Z"
 }
