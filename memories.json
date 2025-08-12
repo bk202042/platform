@@ -1821,7 +1821,28 @@
       "lastAccessed": "2025-08-12T07:05:07.718Z",
       "lastVerified": "2025-08-12T07:05:07.718Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1754982913121_iiecb8cp4",
+      "content": "CRITICAL APARTMENT SELECTION BUG FIXED: Identified and resolved the root cause preventing users from clicking apartments in dropdown. Issue was Radix UI Command converting apartment.id to lowercase before validation, causing UUID validation to fail. Fixed by: 1) Using apartment.id directly instead of currentValue, 2) Removing redundant UUID validation since IDs come from database, 3) Adding error handling and logging. Build passes ✅. Users can now successfully select apartments from dropdown.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "database",
+        "critical-fix",
+        "apartment-selection",
+        "radix-ui-bug",
+        "uuid-validation",
+        "build-success",
+        "dropdown-click-fix"
+      ],
+      "timestamp": "2025-08-12T07:15:13.121Z",
+      "context": "Critical apartment selection click bug fix - Radix UI Command lowercase conversion issue",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T07:15:13.121Z",
+      "lastVerified": "2025-08-12T07:15:13.121Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-12T07:05:07.718Z"
+  "lastUpdated": "2025-08-12T07:15:13.121Z"
 }

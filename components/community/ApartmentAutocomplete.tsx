@@ -6,7 +6,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { vietnameseApartmentSchema } from '@/lib/validation/community';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 
 
@@ -152,16 +151,16 @@ export function ApartmentAutocomplete({
                   <CommandItem
                     key={apartment.id}
                     value={apartment.id}
-                    onSelect={(currentValue) => {
-                      // Validate apartment ID before selection
-                      const validationResult = vietnameseApartmentSchema
-                        .pick({ id: true })
-                        .safeParse({ id: currentValue });
-                      
-                      if (validationResult.success) {
-                        onApartmentSelect(currentValue);
-                      } else {
-                        console.error('Invalid apartment ID:', currentValue);
+                    onSelect={() => {
+                      // CRITICAL FIX: Use apartment.id directly instead of currentValue
+                      // Radix UI Command converts currentValue to lowercase, breaking UUID validation
+                      // Since apartment.id comes from our database, no validation needed
+                      try {
+                        onApartmentSelect(apartment.id);
+                        console.log('Apartment selected successfully:', apartment.name, apartment.id);
+                      } catch (error) {
+                        console.error('Failed to select apartment:', apartment.name, error);
+                        // Could add toast notification here for user feedback
                       }
                       setOpen(false);
                     }}
