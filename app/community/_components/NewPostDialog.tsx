@@ -222,14 +222,7 @@ export function NewPostDialog({
                 <span>게시글이 표시될 지역을 선택하세요</span>
               </div>
             </div>
-            <div className={cn(
-              "relative rounded-lg border-2 transition-all duration-200",
-              hasFieldError("apartment_id") && touched.apartment_id
-                ? "border-red-500 bg-red-50/30"
-                : form.apartment_id
-                ? "border-green-500/40 bg-green-50/30"
-                : "border-dashed border-muted-foreground/30 bg-muted/20"
-            )}>
+            <div className="relative">
               <ApartmentAutocomplete
                 cities={cities}
                 apartments={apartments}
@@ -239,14 +232,21 @@ export function NewPostDialog({
                   // Clear apartment_id error immediately on successful selection
                   setFieldErrors(prev => prev.filter(e => e.field !== "apartment_id"));
                 }}
-                className="border-0 bg-transparent"
+                className={cn(
+                  "transition-all duration-200",
+                  hasFieldError("apartment_id") && touched.apartment_id
+                    ? "border-red-500 bg-red-50/30"
+                    : form.apartment_id
+                    ? "border-green-500/40 bg-green-50/30"
+                    : "border-dashed border-muted-foreground/30 bg-muted/20"
+                )}
                 aria-label="아파트 선택"
                 aria-required="true"
                 aria-invalid={hasFieldError("apartment_id") && touched.apartment_id}
                 aria-describedby={hasFieldError("apartment_id") && touched.apartment_id ? "apartment-error" : undefined}
               />
               {!form.apartment_id && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
                   <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full font-medium">
                     필수
                   </span>

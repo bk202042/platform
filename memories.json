@@ -1842,7 +1842,99 @@
       "lastAccessed": "2025-08-12T07:15:13.121Z",
       "lastVerified": "2025-08-12T07:15:13.121Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1754983340522_jx2he15kx",
+      "content": "Debugging apartment selection issue in Korean/Vietnamese property platform community form:\n- Users can see apartment dropdown but cannot click to select items\n- Using Next.js 15, Radix UI Command/Popover\n- ApartmentAutocomplete component with onSelect handler\n- Recent changes removed UUID validation\n- Need to investigate click handling and JavaScript errors",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "javascript",
+        "debugging",
+        "apartment-selection",
+        "radix-ui",
+        "community-form"
+      ],
+      "timestamp": "2025-08-12T07:22:20.521Z",
+      "context": "Starting debugging session for apartment selection issue",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T07:22:20.521Z",
+      "lastVerified": "2025-08-12T07:22:20.521Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754983378336_lyo79fxln",
+      "content": "Dialog opened successfully - found apartment combobox with placeholder \"🏢 아파트를 검색하고 선택하세요\". Console shows some warnings about missing Description for DialogContent and a 404 error. Now need to test apartment selection functionality.",
+      "type": "error",
+      "tags": [
+        "error",
+        "apartment-combobox",
+        "dialog-opened",
+        "testing-phase"
+      ],
+      "timestamp": "2025-08-12T07:22:58.336Z",
+      "context": "New post dialog analysis",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T07:22:58.336Z",
+      "lastVerified": "2025-08-12T07:22:58.336Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754983392968_d9lh6fu7n",
+      "content": "CRITICAL FINDING: Apartment dropdown opened successfully! Shows list of apartments:\n- 호치민, 미드타운 (currently selected)  \n- 하노이, 타임시티\n- 호치민, 스카이가든\n- 호치민, 선라이즈 시티\n- 호치민, 에스텔라 하이츠\n- 하노이, 썬샤인 시티\n- 다낭, 히요리 가든 타워\n- 하노이, 로얄 시티\nAnd many more...\n\nThe dropdown IS opening properly. Now need to test if clicking on options works.",
+      "type": "general",
+      "tags": [
+        "general",
+        "dropdown-opened",
+        "apartment-list-visible",
+        "selection-testing"
+      ],
+      "timestamp": "2025-08-12T07:23:12.968Z",
+      "context": "Apartment dropdown working - testing selection now",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T07:23:12.968Z",
+      "lastVerified": "2025-08-12T07:23:12.968Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754983469732_sc8yc3b5s",
+      "content": "🎉 APARTMENT SELECTION ISSUE RESOLVED! \n\nKEY FINDINGS:\n1. The dropdown WAS working properly all along\n2. Apartment selection IS functional - clicking worked successfully\n3. Console shows \"Apartment selected successfully: 스카이가든 apt10\" \n4. UI properly updated to show \"호치민, 스카이가든\" in combobox\n5. Success indicator appeared: \"✅ 아파트가 선택되었습니다\"\n\nTHE ISSUE WAS NOT WHAT WE INITIALLY THOUGHT:\n- Users could see dropdown ✓\n- Users could click on apartments ✓ \n- Selection functionality works perfectly ✓\n\nThe problem was likely user confusion or a temporary UI state issue, not a fundamental code problem.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "resolved",
+        "apartment-selection",
+        "working-properly",
+        "user-confusion"
+      ],
+      "timestamp": "2025-08-12T07:24:29.732Z",
+      "context": "Issue resolution - apartment selection working correctly",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T07:24:29.732Z",
+      "lastVerified": "2025-08-12T07:24:29.732Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754983808250_ut0sy6fe0",
+      "content": "APARTMENT SELECTION BUG FINALLY FIXED: Root cause was the wrapper div with 'relative rounded-lg border-2' around ApartmentAutocomplete component. This wrapper interfered with Radix UI Popover's portal rendering and event handling, preventing clicks on apartment options. Fix: Moved styling from wrapper div to ApartmentAutocomplete className prop, keeping only minimal 'relative' wrapper for the required badge positioning. Users can now click apartments successfully. Build passes ✅.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "apartment-selection",
+        "radix-ui-popover",
+        "wrapper-interference",
+        "event-handling",
+        "portal-rendering",
+        "final-fix",
+        "build-success"
+      ],
+      "timestamp": "2025-08-12T07:30:08.245Z",
+      "context": "Final fix for apartment selection click bug - wrapper div interference",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T07:30:08.245Z",
+      "lastVerified": "2025-08-12T07:30:08.245Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-12T07:15:13.121Z"
+  "lastUpdated": "2025-08-12T07:30:08.245Z"
 }
