@@ -1934,7 +1934,63 @@
       "lastAccessed": "2025-08-12T07:30:08.245Z",
       "lastVerified": "2025-08-12T07:30:08.245Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1754986482023_j6jglluqx",
+      "content": "User reports apartment selector combo box in post dialog not working unless apartment is selected before opening dialog on community page. Console shows auth issues and missing Description warnings for DialogContent.",
+      "type": "general",
+      "tags": [
+        "general",
+        "bug",
+        "apartment-selector",
+        "dialog",
+        "community"
+      ],
+      "timestamp": "2025-08-12T08:14:42.023Z",
+      "context": "Community post dialog apartment selector bug investigation",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T08:14:42.023Z",
+      "lastVerified": "2025-08-12T08:14:42.023Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754986530611_y674ymyk5",
+      "content": "Found the issue: The post dialog uses ApartmentAutocomplete which uses Radix UI Popover, while the community page uses a simple Select. The ApartmentAutocomplete is missing Description component for Dialog accessibility and may have issue with Popover inside Dialog portal rendering. Console shows missing Description warning for DialogContent.",
+      "type": "warning",
+      "tags": [
+        "warning",
+        "analysis",
+        "apartment-selector",
+        "dialog",
+        "accessibility",
+        "popover"
+      ],
+      "timestamp": "2025-08-12T08:15:30.610Z",
+      "context": "Dialog apartment selector analysis - ApartmentAutocomplete vs ApartmentSelector difference",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T08:15:30.610Z",
+      "lastVerified": "2025-08-12T08:15:30.610Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754986627027_dlu9mvy05",
+      "content": "Fixed apartment selector in post dialog by: 1) Added DialogDescription to fix accessibility warning 2) Improved ApartmentAutocomplete with better portal handling (avoidCollisions, onOpenAutoFocus, side/align props) 3) Added shouldFilter=false and autoFocus=false to Command 4) Reset search query on popover close and after selection 5) Removed complex styling wrapper div that interfered with Radix portals 6) Moved required indicator to label instead of absolute positioning",
+      "type": "warning",
+      "tags": [
+        "warning",
+        "fix",
+        "apartment-selector",
+        "dialog",
+        "popover",
+        "accessibility"
+      ],
+      "timestamp": "2025-08-12T08:17:07.026Z",
+      "context": "Apartment selector dialog fix implementation",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T08:17:07.026Z",
+      "lastVerified": "2025-08-12T08:17:07.026Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-12T07:30:08.245Z"
+  "lastUpdated": "2025-08-12T08:17:07.026Z"
 }

@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -205,9 +206,9 @@ export function NewPostDialog({
           <DialogTitle className="text-xl font-semibold">
             새 글 작성
           </DialogTitle>
-          <p className="text-sm text-muted-foreground">
+          <DialogDescription className="text-sm text-muted-foreground">
             커뮤니티에 새로운 글을 작성해보세요
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 mt-6" role="form" aria-label="새 게시글 작성 양식">
@@ -216,43 +217,39 @@ export function NewPostDialog({
             <div className="flex items-center gap-2">
               <Label htmlFor="apartment_id" className="text-sm font-medium">
                 아파트 <span className="text-red-500">*</span>
+                {!form.apartment_id && (
+                  <span className="ml-2 text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full font-medium">
+                    필수
+                  </span>
+                )}
               </Label>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <span>📍</span>
                 <span>게시글이 표시될 지역을 선택하세요</span>
               </div>
             </div>
-            <div className="relative">
-              <ApartmentAutocomplete
-                cities={cities}
-                apartments={apartments}
-                value={form.apartment_id}
-                onApartmentSelect={(id) => {
-                  handleInputChange("apartment_id", id);
-                  // Clear apartment_id error immediately on successful selection
-                  setFieldErrors(prev => prev.filter(e => e.field !== "apartment_id"));
-                }}
-                className={cn(
-                  "transition-all duration-200",
-                  hasFieldError("apartment_id") && touched.apartment_id
-                    ? "border-red-500 bg-red-50/30"
-                    : form.apartment_id
-                    ? "border-green-500/40 bg-green-50/30"
-                    : "border-dashed border-muted-foreground/30 bg-muted/20"
-                )}
-                aria-label="아파트 선택"
-                aria-required="true"
-                aria-invalid={hasFieldError("apartment_id") && touched.apartment_id}
-                aria-describedby={hasFieldError("apartment_id") && touched.apartment_id ? "apartment-error" : undefined}
-              />
-              {!form.apartment_id && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none z-10">
-                  <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full font-medium">
-                    필수
-                  </span>
-                </div>
+            <ApartmentAutocomplete
+              cities={cities}
+              apartments={apartments}
+              value={form.apartment_id}
+              onApartmentSelect={(id) => {
+                handleInputChange("apartment_id", id);
+                // Clear apartment_id error immediately on successful selection
+                setFieldErrors(prev => prev.filter(e => e.field !== "apartment_id"));
+              }}
+              className={cn(
+                "transition-all duration-200",
+                hasFieldError("apartment_id") && touched.apartment_id
+                  ? "border-red-500 bg-red-50/30"
+                  : form.apartment_id
+                  ? "border-green-500/40 bg-green-50/30"
+                  : "border-dashed border-muted-foreground/30 bg-muted/20"
               )}
-            </div>
+              aria-label="아파트 선택"
+              aria-required="true"
+              aria-invalid={hasFieldError("apartment_id") && touched.apartment_id}
+              aria-describedby={hasFieldError("apartment_id") && touched.apartment_id ? "apartment-error" : undefined}
+            />
             {hasFieldError("apartment_id") && touched.apartment_id && (
               <div id="apartment-error" className="flex items-center gap-2 p-2 bg-red-50 border border-red-200 rounded-md" role="alert" aria-live="polite">
                 <AlertCircle className="h-4 w-4 text-red-600 flex-shrink-0" />

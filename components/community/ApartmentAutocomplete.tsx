@@ -42,6 +42,13 @@ export function ApartmentAutocomplete({
 }: ApartmentAutocompleteProps) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Reset search when popover closes
+  React.useEffect(() => {
+    if (!open) {
+      setSearchQuery('');
+    }
+  }, [open]);
   
   // Debounce search query for better performance
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
@@ -133,12 +140,23 @@ export function ApartmentAutocomplete({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-        <Command>
+      <PopoverContent 
+        className="w-[--radix-popover-trigger-width] p-0" 
+        side="bottom" 
+        align="start"
+        sideOffset={4}
+        avoidCollisions={true}
+        onOpenAutoFocus={(e) => {
+          // Prevent auto focus issues in dialog
+          e.preventDefault();
+        }}
+      >
+        <Command shouldFilter={false}>
           <CommandInput
             placeholder="아파트 이름 검색..."
             value={searchQuery}
             onValueChange={handleSearchChange}
+            autoFocus={false}
           />
           <CommandList>
             <CommandEmpty>
@@ -151,7 +169,7 @@ export function ApartmentAutocomplete({
                   <CommandItem
                     key={apartment.id}
                     value={apartment.id}
-                    onSelect={() => {
+                    onSelect={(_currentValue) => {
                       // CRITICAL FIX: Use apartment.id directly instead of currentValue
                       // Radix UI Command converts currentValue to lowercase, breaking UUID validation
                       // Since apartment.id comes from our database, no validation needed
@@ -163,6 +181,8 @@ export function ApartmentAutocomplete({
                         // Could add toast notification here for user feedback
                       }
                       setOpen(false);
+                      // Reset search after selection
+                      setSearchQuery('');
                     }}
                   >
                     <Check
