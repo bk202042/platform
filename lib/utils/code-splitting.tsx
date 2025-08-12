@@ -162,6 +162,9 @@ export function LazyOnVisible({
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
+    // Guard against SSR and ensure DOM is ready
+    if (typeof window === 'undefined') return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -172,8 +175,10 @@ export function LazyOnVisible({
       { rootMargin }
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
+    const currentRef = ref.current;
+    // Enhanced type checking for Node
+    if (currentRef && currentRef instanceof Node) {
+      observer.observe(currentRef);
     }
 
     return () => observer.disconnect();

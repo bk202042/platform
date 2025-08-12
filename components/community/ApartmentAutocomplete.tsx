@@ -2,12 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '@/components/ui/command';
-import { 
-  Root as PopoverRoot, 
-  Trigger as PopoverTrigger, 
-  Portal as PopoverPortal, 
-  Content as PopoverContentPrimitive 
-} from '@radix-ui/react-popover';
+import * as PopoverPrimitive from '@radix-ui/react-popover';
 import { Button } from '@/components/ui/button';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -47,6 +42,12 @@ export function ApartmentAutocomplete({
 }: ApartmentAutocompleteProps) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Component aliases for cleaner JSX
+  const Popover = PopoverPrimitive.Root;
+  const PopoverTrigger = PopoverPrimitive.Trigger;
+  const PopoverPortal = PopoverPrimitive.Portal;
+  const PopoverContent = PopoverPrimitive.Content;
 
 
   // Reset search when popover closes
@@ -125,12 +126,26 @@ export function ApartmentAutocomplete({
     setSearchQuery(newQuery);
   }, []);
 
+  // CRITICAL FIX: Portal container for dialog compatibility
+  const [portalContainer, setPortalContainer] = React.useState<HTMLElement | null>(null);
+  
+  // Find dialog container for proper portal rendering
+  React.useEffect(() => {
+    // Find the dialog content container to render popover inside dialog
+    const dialogContent = document.querySelector('[data-radix-dialog-content]') as HTMLElement;
+    if (dialogContent) {
+      setPortalContainer(dialogContent);
+    } else {
+      // Fallback to document.body if not in dialog
+      setPortalContainer(document.body);
+    }
+  }, [open]);
 
   // Defensive check for data availability to prevent race conditions
   const isDataReady = allApartments.length > 0 && cities.length > 0;
 
   return (
-    <PopoverRoot open={open && isDataReady} onOpenChange={setOpen}>
+    <Popover open={open && isDataReady} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -153,12 +168,16 @@ export function ApartmentAutocomplete({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverPortal>
-        <PopoverContentPrimitive
+      <PopoverPortal container={portalContainer}>
+        <PopoverContent
           className={cn(
-            "w-[--radix-popover-trigger-width] p-0",
-            "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 origin-(--radix-popover-content-transform-origin) rounded-md border shadow-md outline-hidden"
+            "w-[var(--radix-popover-trigger-width)] p-0",
+            "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 rounded-md border shadow-md outline-hidden"
           )}
+          style={{
+            transformOrigin: 'var(--radix-popover-content-transform-origin)',
+            zIndex: 9999,
+          }}
           side="bottom" 
           align="start"
           sideOffset={4}
@@ -215,8 +234,8 @@ export function ApartmentAutocomplete({
             </CommandGroup>
           </CommandList>
         </Command>
-        </PopoverContentPrimitive>
+        </PopoverContent>
       </PopoverPortal>
-    </PopoverRoot>
+    </Popover>
   );
 }
