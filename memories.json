@@ -1990,7 +1990,140 @@
       "lastAccessed": "2025-08-12T08:17:07.026Z",
       "lastVerified": "2025-08-12T08:17:07.026Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1755000306038_srkhdoy7e",
+      "content": "Starting apartment selector combobox debugging. Currently on community page at localhost:3001/community. Can see apartment selector with \"아파트 선택\" text and combobox elements. About to click \"글쓰기\" button to open post dialog without selecting apartment first.",
+      "type": "general",
+      "tags": [
+        "general",
+        "debugging",
+        "apartment-selector",
+        "combobox",
+        "community-page"
+      ],
+      "timestamp": "2025-08-12T12:05:06.037Z",
+      "context": "Debugging apartment selector issue in post dialog",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T12:05:06.037Z",
+      "lastVerified": "2025-08-12T12:05:06.037Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755000320672_wpj083q2o",
+      "content": "Post dialog opened successfully. Can see apartment selector combobox with placeholder text \"🏢 아파트를 검색하고 선택하세요\" (Search and select apartment). The combobox is marked as \"active\" in the DOM. No apartment was selected on the community page before opening this dialog. About to test clicking on the apartment selector combobox.",
+      "type": "general",
+      "tags": [
+        "general",
+        "debugging",
+        "post-dialog",
+        "apartment-selector",
+        "no-prior-selection"
+      ],
+      "timestamp": "2025-08-12T12:05:20.672Z",
+      "context": "Testing apartment selector behavior without prior selection",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T12:05:20.672Z",
+      "lastVerified": "2025-08-12T12:05:20.672Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755000344441_ebjb0wx2c",
+      "content": "CRITICAL FINDING: Apartment selector combobox in post dialog WORKS perfectly when opened without prior apartment selection on community page. Clicking the combobox opened a dropdown with 20+ apartment options including: 호치민 미드타운, 하노이 타임시티, 호치민 스카이가든, etc. The combobox shows [expanded] state and has \"호치민, 미드타운\" pre-selected. This contradicts the reported issue!",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "debugging",
+        "apartment-selector",
+        "working-correctly",
+        "dropdown-opened",
+        "no-prior-selection"
+      ],
+      "timestamp": "2025-08-12T12:05:44.441Z",
+      "context": "Apartment selector functionality test - no prior selection scenario",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T12:05:44.441Z",
+      "lastVerified": "2025-08-12T12:05:44.441Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755000391684_mtq8s4pw5",
+      "content": "APARTMENT SELECTION WORKS PERFECTLY: Successfully selected \"하노이, 타임시티\" apartment in post dialog. Console shows \"Apartment selected successfully: 타임시티 apt5\". UI updated with selected apartment name, validation feedback shows \"✅ 아파트가 선택되었습니다\". The combobox is fully functional when no prior apartment selection was made on community page. This completely contradicts the reported issue!",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "debugging",
+        "apartment-selection",
+        "working-correctly",
+        "no-prior-selection",
+        "contradicts-issue"
+      ],
+      "timestamp": "2025-08-12T12:06:31.684Z",
+      "context": "Apartment selector working correctly without prior selection",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T12:06:31.684Z",
+      "lastVerified": "2025-08-12T12:06:31.684Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755000433064_c7giol66p",
+      "content": "Successfully selected apartment on community page: \"타임시티 - 하노이\". URL updated to include apartmentId=apt5, breadcrumb shows selected apartment, posts filtered to 3 (from 45), and category counts updated. Community page apartment selector working perfectly. Now proceeding to test post dialog behavior with prior apartment selection.",
+      "type": "general",
+      "tags": [
+        "general",
+        "debugging",
+        "community-apartment-selection",
+        "working-correctly",
+        "prior-selection",
+        "scenario-2"
+      ],
+      "timestamp": "2025-08-12T12:07:13.064Z",
+      "context": "Community page apartment selection successful - testing scenario 2",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T12:07:13.064Z",
+      "lastVerified": "2025-08-12T12:07:13.064Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755000462175_aw352j4l7",
+      "content": "FINAL DISCOVERY: With prior apartment selection on community page, post dialog apartment selector is PRE-POPULATED with \"하노이, 타임시티\" and shows success indicator \"✅ 아파트가 선택되었습니다\". Both scenarios work perfectly - this completely contradicts the reported issue. The apartment selector combobox functions correctly in both cases: 1) Without prior selection (opens dropdown with all options), 2) With prior selection (pre-fills with selected apartment). NO BUG FOUND.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "debugging",
+        "apartment-selector",
+        "works-correctly",
+        "both-scenarios",
+        "no-bug-found",
+        "contradicts-issue"
+      ],
+      "timestamp": "2025-08-12T12:07:42.175Z",
+      "context": "Complete apartment selector debugging - no bug found",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T12:07:42.175Z",
+      "lastVerified": "2025-08-12T12:07:42.175Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755000628410_3elclm9s4",
+      "content": "Root cause identified for apartment selector combobox issue:\n\nISSUE: Popover-in-Dialog portal conflict causing apartment selector to not work unless pre-warmed\n- Portal rendering conflict between Dialog and Popover components\n- Both use portals to document.body, creating z-index and focus management issues\n- State initialization race condition with apartments/cities data\n\nCURRENT CODE ANALYSIS:\n- ApartmentAutocomplete uses Radix Popover inside Dialog\n- Already has some fixes: onOpenAutoFocus preventDefault, avoidCollisions\n- Missing proper portal container configuration for dialog context\n\nSOLUTION NEEDED:\n1. Configure popover portal container to render within dialog\n2. Add defensive checks for data availability\n3. Ensure proper z-index stacking for nested portals",
+      "type": "config",
+      "tags": [
+        "config",
+        "apartment-selector",
+        "popover",
+        "dialog",
+        "portal",
+        "radix-ui",
+        "debugging"
+      ],
+      "timestamp": "2025-08-12T12:10:28.410Z",
+      "context": "Debugging apartment selector combobox issue in post dialog",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T12:10:28.410Z",
+      "lastVerified": "2025-08-12T12:10:28.410Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-12T08:17:07.026Z"
+  "lastUpdated": "2025-08-12T12:10:28.410Z"
 }

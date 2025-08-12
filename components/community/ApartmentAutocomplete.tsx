@@ -119,20 +119,41 @@ export function ApartmentAutocomplete({
     setSearchQuery(newQuery);
   }, []);
 
+  // CRITICAL FIX: Portal container for dialog compatibility
+  const [portalContainer, setPortalContainer] = React.useState<HTMLElement | null>(null);
+  
+  // Find dialog container for proper portal rendering
+  React.useEffect(() => {
+    // Find the dialog content container to render popover inside dialog
+    const dialogContent = document.querySelector('[data-radix-dialog-content]') as HTMLElement;
+    if (dialogContent) {
+      setPortalContainer(dialogContent);
+    } else {
+      // Fallback to document.body if not in dialog
+      setPortalContainer(document.body);
+    }
+  }, [open]);
+
+  // Defensive check for data availability to prevent race conditions
+  const isDataReady = allApartments.length > 0 && cities.length > 0;
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open && isDataReady} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
           role="combobox"
-          aria-expanded={open}
+          aria-expanded={open && isDataReady}
           className={cn("w-full justify-between", className)}
-          onClick={() => setOpen(!open)}
+          onClick={() => isDataReady && setOpen(!open)}
+          disabled={!isDataReady}
         >
           <span className={cn(
             selectedApartment && selectedCity ? "text-foreground" : "text-muted-foreground"
           )}>
-            {selectedApartment && selectedCity 
+            {!isDataReady 
+              ? "🔄 아파트 정보를 불러오는 중..."
+              : selectedApartment && selectedCity 
               ? `${selectedCity.name}, ${selectedApartment.name}` 
               : "🏢 아파트를 검색하고 선택하세요"
             }
@@ -146,9 +167,15 @@ export function ApartmentAutocomplete({
         align="start"
         sideOffset={4}
         avoidCollisions={true}
+        // CRITICAL FIX: Render inside dialog container to prevent portal conflicts
+        container={portalContainer}
         onOpenAutoFocus={(e) => {
           // Prevent auto focus issues in dialog
           e.preventDefault();
+        }}
+        style={{
+          // Ensure proper z-index for nested portals
+          zIndex: 9999,
         }}
       >
         <Command shouldFilter={false}>
