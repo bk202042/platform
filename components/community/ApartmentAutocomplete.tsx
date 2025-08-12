@@ -6,13 +6,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Database } from '@/lib/types/database';
 import { vietnameseApartmentSchema } from '@/lib/validation/community';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 
-// Type aliases from database schema for better type safety
-type CityRow = Database['public']['Tables']['cities']['Row'];
-type ApartmentRow = Database['public']['Tables']['apartments']['Row'];
 
 // Component-specific interfaces that extend database types
 export interface ApartmentSelectOption {
