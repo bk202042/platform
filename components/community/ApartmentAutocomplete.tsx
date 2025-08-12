@@ -126,7 +126,10 @@ export function ApartmentAutocomplete({
           <span className={cn(
             selectedApartment && selectedCity ? "text-foreground" : "text-muted-foreground"
           )}>
-            {selectedApartment && selectedCity ? `${selectedCity.name}, ${selectedApartment.name}` : "아파트를 선택하세요..."}
+            {selectedApartment && selectedCity 
+              ? `${selectedCity.name}, ${selectedApartment.name}` 
+              : "🏢 아파트를 검색하고 선택하세요"
+            }
           </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
