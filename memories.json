@@ -1616,7 +1616,81 @@
       "lastAccessed": "2025-08-07T03:50:03.496Z",
       "lastVerified": "2025-08-07T03:50:03.496Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1754979333182_cx0ur17zw",
+      "content": "Bug Investigation: Community post creation form - users cannot change apartment selection once set. Need to find: 1) Community post creation form component, 2) Apartment selector component, 3) State management for apartment selection, 4) Selection logic bugs, 5) Related apartment data handling components",
+      "type": "error",
+      "tags": [
+        "error",
+        "bug",
+        "community",
+        "apartment-selection",
+        "form",
+        "state-management"
+      ],
+      "timestamp": "2025-08-12T06:15:33.182Z",
+      "context": "Debugging apartment selection issue in community post form",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T06:15:33.182Z",
+      "lastVerified": "2025-08-12T06:15:33.182Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754979379503_5kqw76i7z",
+      "content": "Investigation findings: 1) NewPostDialog uses ApartmentAutocomplete component for apartment selection, 2) Form state is reset on dialog open/close (line 100-112 in NewPostDialog.tsx), 3) ApartmentAutocomplete has toggle logic that allows deselection (lines 84-88), 4) Recent commits show changes to apartment selector with \"all\" value handling, 5) Two separate apartment components: ApartmentAutocomplete (for form) and ApartmentSelector (for filtering)",
+      "type": "general",
+      "tags": [
+        "general",
+        "bug-analysis",
+        "apartment-selection",
+        "form-reset",
+        "state-management"
+      ],
+      "timestamp": "2025-08-12T06:16:19.503Z",
+      "context": "Apartment selection bug analysis - component interaction findings",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T06:16:19.503Z",
+      "lastVerified": "2025-08-12T06:16:19.503Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754979425609_g5g8c1rup",
+      "content": "Starting architectural review of apartment selection bug in ApartmentAutocomplete.tsx. Need to analyze the component, understand the bug, propose architectural improvements, and ensure type safety across the apartment selection system.",
+      "type": "error",
+      "tags": [
+        "error",
+        "apartment-selection",
+        "architecture-review",
+        "type-safety",
+        "community-posts"
+      ],
+      "timestamp": "2025-08-12T06:17:05.609Z",
+      "context": "TypeScript backend architecture review for community post creation apartment selection",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T06:17:05.609Z",
+      "lastVerified": "2025-08-12T06:17:05.609Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1754979468371_34zb76ync",
+      "content": "Completed architectural analysis of apartment selection bug. Key findings:\n\n1. Bug Location: ApartmentAutocomplete.tsx lines 83-89, toggle logic prevents users from selecting different apartments\n2. Architecture Issues: \n   - Type inconsistencies between components (local interfaces vs database types)\n   - No shared type definitions between ApartmentAutocomplete and ApartmentSelector\n   - Missing centralized apartment data access patterns\n   - Inconsistent state management patterns\n   - No validation layer integration\n\n3. Current Architecture:\n   - Database types in /lib/types/database.ts\n   - Vietnamese location data access in /lib/data/vietnamese-locations.ts\n   - Validation schemas in /lib/validation/community.ts\n   - Two separate components: ApartmentAutocomplete (community posts) and ApartmentSelector (filtering)\n\n4. Recommendations:\n   - Fix toggle logic bug\n   - Create shared type definitions\n   - Integrate with data access layer\n   - Add validation layer\n   - Implement consistent state management\n   - Add error handling patterns",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "database",
+        "apartment-selection",
+        "architecture-analysis",
+        "type-safety",
+        "data-layer-integration"
+      ],
+      "timestamp": "2025-08-12T06:17:48.371Z",
+      "context": "Architectural analysis of apartment selection system for community post creation",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-12T06:17:48.371Z",
+      "lastVerified": "2025-08-12T06:17:48.371Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-07T03:50:03.496Z"
+  "lastUpdated": "2025-08-12T06:17:48.371Z"
 }

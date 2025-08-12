@@ -1,29 +1,41 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Database } from '@/lib/types/database';
+import { vietnameseApartmentSchema } from '@/lib/validation/community';
+import { useDebounce } from '@/lib/hooks/useDebounce';
 
-interface City {
+// Type aliases from database schema for better type safety
+type CityRow = Database['public']['Tables']['cities']['Row'];
+type ApartmentRow = Database['public']['Tables']['apartments']['Row'];
+
+// Component-specific interfaces that extend database types
+export interface ApartmentSelectOption {
   id: string;
   name: string;
+  name_ko?: string;
+  city_id: string;
+  district?: string;
+  district_ko?: string;
 }
 
-interface Apartment {
+export interface CitySelectOption {
   id: string;
   name: string;
-  city_id: string;
+  name_ko?: string;
 }
 
 interface ApartmentAutocompleteProps {
   onApartmentSelect: (apartmentId: string) => void;
   value: string;
   className?: string;
-  cities: City[];
-  apartments: Apartment[];
+  cities: CitySelectOption[];
+  apartments: ApartmentSelectOption[];
 }
 
 export function ApartmentAutocomplete({
@@ -35,14 +47,75 @@ export function ApartmentAutocomplete({
 }: ApartmentAutocompleteProps) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Debounce search query for better performance
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
+  // Memoized filtered apartments with enhanced search
+  const filteredApartments = useMemo(() => {
+    if (!debouncedSearchQuery.trim()) {
+      return allApartments.slice(0, 20); // Limit initial results for performance
+    }
+    
+    const query = debouncedSearchQuery.toLowerCase().trim();
+    
+    return allApartments
+      .filter(apartment => {
+        // Search in apartment name (Korean and English)
+        const nameMatch = apartment.name.toLowerCase().includes(query) ||
+                          (apartment.name_ko && apartment.name_ko.toLowerCase().includes(query));
+        
+        // Search in district (Korean and English)
+        const districtMatch = (apartment.district && apartment.district.toLowerCase().includes(query)) ||
+                             (apartment.district_ko && apartment.district_ko.toLowerCase().includes(query));
+        
+        // Search in city name
+        const city = cities.find(c => c.id === apartment.city_id);
+        const cityMatch = city && (
+          city.name.toLowerCase().includes(query) ||
+          (city.name_ko && city.name_ko.toLowerCase().includes(query))
+        );
+        
+        return nameMatch || districtMatch || cityMatch;
+      })
+      .sort((a, b) => {
+        // Prioritize exact name matches
+        const aNameExact = a.name.toLowerCase() === query || 
+                          (a.name_ko && a.name_ko.toLowerCase() === query);
+        const bNameExact = b.name.toLowerCase() === query ||
+                          (b.name_ko && b.name_ko.toLowerCase() === query);
+        
+        if (aNameExact && !bNameExact) return -1;
+        if (!aNameExact && bNameExact) return 1;
+        
+        // Then prioritize name starts with query
+        const aNameStarts = a.name.toLowerCase().startsWith(query) ||
+                           (a.name_ko && a.name_ko.toLowerCase().startsWith(query));
+        const bNameStarts = b.name.toLowerCase().startsWith(query) ||
+                           (b.name_ko && b.name_ko.toLowerCase().startsWith(query));
+        
+        if (aNameStarts && !bNameStarts) return -1;
+        if (!aNameStarts && bNameStarts) return 1;
+        
+        // Finally sort alphabetically
+        return a.name.localeCompare(b.name);
+      })
+      .slice(0, 50); // Limit search results for performance
+  }, [allApartments, cities, debouncedSearchQuery]);
 
-  const filteredApartments = allApartments.filter(apartment =>
-    apartment.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const selectedApartment = useMemo(() => 
+    allApartments.find(apt => apt.id === value), 
+    [allApartments, value]
+  );
+  
+  const selectedCity = useMemo(() => 
+    selectedApartment ? cities.find(city => city.id === selectedApartment.city_id) : null,
+    [selectedApartment, cities]
   );
 
-  const selectedApartment = allApartments.find(apt => apt.id === value);
-  const selectedCity = selectedApartment ? cities.find(city => city.id === selectedApartment.city_id) : null;
+  const handleSearchChange = useCallback((newQuery: string) => {
+    setSearchQuery(newQuery);
+  }, []);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -67,11 +140,11 @@ export function ApartmentAutocomplete({
           <CommandInput
             placeholder="아파트 이름 검색..."
             value={searchQuery}
-            onValueChange={setSearchQuery}
+            onValueChange={handleSearchChange}
           />
           <CommandList>
             <CommandEmpty>
-              {searchQuery ? `"${searchQuery}"에 대한 검색 결과가 없습니다.` : "아파트를 검색해보세요."}
+              {debouncedSearchQuery ? `"${debouncedSearchQuery}"에 대한 검색 결과가 없습니다.` : "아파트를 검색해보세요."}
             </CommandEmpty>
             <CommandGroup>
               {filteredApartments.map((apartment) => {
@@ -81,10 +154,16 @@ export function ApartmentAutocomplete({
                     key={apartment.id}
                     value={apartment.id}
                     onSelect={(currentValue) => {
-                      // Fix: Ensure proper string comparison and handle selection properly
-                      const isCurrentlySelected = String(currentValue) === String(value);
-                      const newValue = isCurrentlySelected ? "" : currentValue;
-                      onApartmentSelect(newValue);
+                      // Validate apartment ID before selection
+                      const validationResult = vietnameseApartmentSchema
+                        .pick({ id: true })
+                        .safeParse({ id: currentValue });
+                      
+                      if (validationResult.success) {
+                        onApartmentSelect(currentValue);
+                      } else {
+                        console.error('Invalid apartment ID:', currentValue);
+                      }
                       setOpen(false);
                     }}
                   >
