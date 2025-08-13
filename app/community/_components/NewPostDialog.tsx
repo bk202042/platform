@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ApartmentAutocomplete } from "@/components/community/ApartmentAutocomplete";
+import { ApartmentSelectorForDialog } from "@/components/community/ApartmentSelectorForDialog";
 import {
   createPostSchema,
   COMMUNITY_CATEGORIES,
@@ -228,7 +228,7 @@ export function NewPostDialog({
                 <span>게시글이 표시될 지역을 선택하세요</span>
               </div>
             </div>
-            <ApartmentAutocomplete
+            <ApartmentSelectorForDialog
               cities={cities}
               apartments={apartments}
               value={form.apartment_id}
@@ -246,7 +246,7 @@ export function NewPostDialog({
                   : "border-dashed border-muted-foreground/30 bg-muted/20"
               )}
               aria-label="아파트 선택"
-              aria-required="true"
+              aria-required={true}
               aria-invalid={hasFieldError("apartment_id") && touched.apartment_id}
               aria-describedby={hasFieldError("apartment_id") && touched.apartment_id ? "apartment-error" : undefined}
             />
