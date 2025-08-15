@@ -2142,7 +2142,25 @@
       "lastAccessed": "2025-08-12T12:21:01.873Z",
       "lastVerified": "2025-08-12T12:21:01.873Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1755059206848_trg2r0xny",
+      "content": "APARTMENT SELECTOR SYNC SOLUTION - Complete Fix Applied:\n\nPROBLEM: Two different apartment selection components causing inconsistent behavior:\n1. ApartmentSelector (community page) - Simple Select component that worked reliably\n2. ApartmentAutocomplete (new post dialog) - Complex Popover+Command with portal conflicts in Dialog\n\nROOT CAUSE: ApartmentAutocomplete had portal rendering conflicts when used inside Dialog components, causing unreliable behavior where it only worked after \"pre-warming\" with apartment selection on community page first.\n\nSOLUTION IMPLEMENTED:\n1. Created ApartmentSelectorForDialog component based on reliable ApartmentSelector\n2. Replaced ApartmentAutocomplete with ApartmentSelectorForDialog in NewPostDialog\n3. Maintained exact same interface compatibility: onApartmentSelect(id: string) and value: string\n4. Removed complex Popover/Command state management issues\n\nTECHNICAL LESSON: When components behave inconsistently, especially with portal-based UI libraries like Radix UI, simpler solutions often work better than complex ones. Portal conflicts in nested components (Popover inside Dialog) are common sources of reliability issues.\n\nFILES CHANGED:\n- /components/community/ApartmentSelectorForDialog.tsx (new)\n- /app/community/_components/NewPostDialog.tsx (updated import and component usage)\n\nRESULT: Both apartment selectors now behave identically and work without pre-selection requirements.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "apartment-selector",
+        "radix-ui",
+        "portal-conflicts",
+        "component-consistency",
+        "debugging-solution"
+      ],
+      "timestamp": "2025-08-13T04:26:46.848Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-13T04:26:46.848Z",
+      "lastVerified": "2025-08-13T04:26:46.848Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-12T12:21:01.873Z"
+  "lastUpdated": "2025-08-13T04:26:46.848Z"
 }

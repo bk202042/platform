@@ -62,13 +62,12 @@ export default function Footer() {
         </div>
         <div className="mt-6 pt-6 border-t border-gray-100 text-center text-xs text-gray-400">
           <p>
-            &copy; {new Date().getFullYear()} VinaHome. 모든 권리 보유. 공평
+            &copy; {new Date().getFullYear()} 비나홈(VinaHome). 모든 권리 보유. 공평
             주택 기회.
           </p>
           <p className="mt-1 text-[10px]">
-            VinaHome은 장애가 있는 개인의 디지털 접근성을 보장하기 위해 최선을
-            다하고 있습니다. 저희는 모든 사람을 위해 웹 경험의 접근성을
-            지속적으로 개선하고 있습니다.
+            비나홈은 베트남에서의 새로운 삶과 기회를 연결하는 커뮤니티 기반 프리미엄 부동산 플랫폼으로,
+            신뢰와 혁신을 바탕으로 모든 사용자에게 안전하고 투명한 부동산 거래 환경을 제공합니다.
           </p>
         </div>
       </div>
