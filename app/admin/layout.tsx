@@ -22,9 +22,9 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-white">
       <AdminSidebar user={session.user} />
-      <main className="flex-1 p-6 overflow-auto">{children}</main>
+      <main className="flex-1 p-6 overflow-auto bg-white">{children}</main>
     </div>
   );
 }
