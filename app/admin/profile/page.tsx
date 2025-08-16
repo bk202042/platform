@@ -48,8 +48,8 @@ export default async function ProfilePage({ searchParams }: PageProps) {
         <Sidebar user={user} currentSection={currentSection} />
         
         {/* Main Content */}
-        <main className="flex-1 pl-80">
-          <div className="p-8">
+        <main className="flex-1 lg:pl-80">
+          <div className="p-4 lg:p-8">
             {currentSection === "profile" && <ProfileSection user={user} />}
             {currentSection === "posts" && <PostsSection userId={user.id} initialPosts={initialPosts} />}
           </div>
