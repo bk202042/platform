@@ -1,16 +1,23 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import ProfileDetails from "./_components/ProfileDetails";
+import { Sidebar } from "./_components/Sidebar";
+import { ProfileSection } from "./_components/ProfileSection";
+import { PostsSection } from "./_components/PostsSection";
+import { getUserPostSummaries } from "@/lib/data/community";
+import { PostSummary } from "@/lib/types/community";
 
 export const metadata = {
-  title: "관리자 프로필 | Vietnam Property Platform",
-  description: "관리자 계정 정보 관리 및 설정",
+  title: "프로필 | Vietnam Property Platform",
+  description: "프로필 관리 및 게시글 관리",
 };
 
-export default async function AdminProfilePage() {
+interface PageProps {
+  searchParams: Promise<{ section?: string }>;
+}
+
+export default async function ProfilePage({ searchParams }: PageProps) {
   const supabase = await createClient();
 
-  // Check if user is authenticated
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -20,27 +27,33 @@ export default async function AdminProfilePage() {
   }
 
   const user = session.user;
-  const fullName = user.user_metadata?.full_name || user.email;
-  const role = user.user_metadata?.role || "Admin";
+  const params = await searchParams;
+  const currentSection = params.section || "profile";
+
+  // Fetch posts data on server side for posts section
+  let initialPosts: PostSummary[] = [];
+  if (currentSection === "posts") {
+    try {
+      initialPosts = await getUserPostSummaries(user.id, { limit: 50 });
+    } catch (_error) {
+      // Fallback to empty array on error
+      initialPosts = [];
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-2 sm:px-4 py-8">
-      <div className="w-full max-w-2xl bg-white rounded-lg shadow p-4 sm:p-8 flex flex-col items-center">
-        <div className="flex flex-col items-center mb-6 sm:mb-8 w-full">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gray-200 flex items-center justify-center text-2xl sm:text-3xl font-bold text-gray-600 mb-2">
-            {fullName ? fullName[0] : "?"}
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto flex">
+        {/* Left Sidebar */}
+        <Sidebar user={user} currentSection={currentSection} />
+        
+        {/* Main Content */}
+        <main className="flex-1 pl-80">
+          <div className="p-8">
+            {currentSection === "profile" && <ProfileSection user={user} />}
+            {currentSection === "posts" && <PostsSection userId={user.id} initialPosts={initialPosts} />}
           </div>
-          <div className="font-semibold text-base sm:text-lg text-center break-all">
-            {fullName}
-          </div>
-          <div className="text-gray-500 text-sm text-center">{role}</div>
-        </div>
-        <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-center w-full">
-          Edit Profile
-        </h1>
-        <div className="w-full">
-          <ProfileDetails user={user} />
-        </div>
+        </main>
       </div>
     </div>
   );

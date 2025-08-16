@@ -157,3 +157,191 @@ export interface ActionResult {
   timestamp?: string;
   data?: Post | null;
 }
+
+// ============================================================================
+// USER POST MANAGEMENT TYPES
+// ============================================================================
+
+// User post analytics interface
+export interface UserPostAnalytics {
+  totalPosts: number;
+  totalLikes: number;
+  totalComments: number;
+  totalViews: number;
+  postsByStatus: {
+    draft: number;
+    published: number;
+    archived: number;
+  };
+  postsByCategory: Record<string, number>;
+  engagementTrend: EngagementTrendPoint[];
+  averageEngagement: number;
+}
+
+// Engagement trend data point
+export interface EngagementTrendPoint {
+  date: string;
+  likes: number;
+  comments: number;
+  views: number;
+  total: number;
+}
+
+// Post engagement metrics for individual posts
+export interface PostEngagementMetrics {
+  post: {
+    id: string;
+    likesCount: number;
+    commentsCount: number;
+    viewCount: number;
+    createdAt: string;
+    lastActivityAt: string;
+  };
+  metrics: {
+    totalEngagement: number;
+    engagementRate: number;
+    daysSinceCreated: number;
+  };
+  recentLikes: RecentLike[];
+  recentComments: RecentComment[];
+}
+
+// Recent like information
+export interface RecentLike {
+  created_at: string;
+  profiles: {
+    first_name?: string;
+    last_name?: string;
+    avatar_url?: string;
+  } | null;
+}
+
+// Recent comment information
+export interface RecentComment {
+  id: string;
+  content: string;
+  created_at: string;
+  profiles: {
+    first_name?: string;
+    last_name?: string;
+    avatar_url?: string;
+  } | null;
+}
+
+// User post with management metadata
+export interface UserPost extends Post {
+  canEdit: boolean;
+  canDelete: boolean;
+  engagementRate?: number;
+  lastEngagement?: string;
+}
+
+// Post update data interface
+export interface PostUpdateData {
+  title?: string;
+  body?: string;
+  category?: CommunityCategory;
+  status?: "draft" | "published" | "archived";
+  apartment_id?: string;
+}
+
+// User post query parameters
+export interface UserPostQueryParams {
+  userId: string;
+  status?: "draft" | "published" | "archived" | "all";
+  category?: CommunityCategory;
+  sort?: "latest" | "popular" | "engagement";
+  limit?: number;
+  offset?: number;
+}
+
+// Post draft interface
+export interface PostDraft {
+  id: string;
+  title?: string;
+  body: string;
+  category: CommunityCategory;
+  apartment_id: string;
+  created_at: string;
+  updated_at: string;
+  apartments?: {
+    name: string;
+    city_id: string;
+    cities?: {
+      name: string;
+    };
+  };
+}
+
+// Batch operation result
+export interface BatchOperationResult {
+  success: boolean;
+  updatedCount: number;
+  errors: string[];
+  updatedPosts?: {
+    id: string;
+    status: string;
+    updated_at: string;
+  }[];
+}
+
+// Post management action types
+export type PostManagementAction = 
+  | "edit"
+  | "delete" 
+  | "publish"
+  | "archive"
+  | "draft"
+  | "view_analytics";
+
+// Post status transition
+export interface PostStatusTransition {
+  from: "draft" | "published" | "archived";
+  to: "draft" | "published" | "archived";
+  allowed: boolean;
+  requiresConfirmation?: boolean;
+  warningMessage?: string;
+}
+
+// User post permissions
+export interface PostPermissions {
+  canEdit: boolean;
+  canDelete: boolean;
+  canChangeStatus: boolean;
+  canViewAnalytics: boolean;
+  reasons?: string[];
+}
+
+// Post summary for dashboard
+export interface PostSummary {
+  id: string;
+  title?: string;
+  category: CommunityCategory;
+  status: "draft" | "published" | "archived";
+  apartment_name: string;
+  city_name: string;
+  likes_count: number;
+  comments_count: number;
+  view_count: number;
+  created_at: string;
+  updated_at: string;
+  last_activity_at: string;
+}
+
+// User engagement summary
+export interface UserEngagementSummary {
+  totalEngagement: number;
+  weeklyEngagement: number;
+  monthlyEngagement: number;
+  topPerformingPost: {
+    id: string;
+    title?: string;
+    totalEngagement: number;
+  } | null;
+  engagementByCategory: Record<string, number>;
+  recentActivity: {
+    likes: number;
+    comments: number;
+    views: number;
+  };
+}

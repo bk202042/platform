@@ -1126,3 +1126,895 @@ export async function createPostWithImages(data: {
 
   return { post, images };
 }
+
+// ============================================================================
+// USER POST MANAGEMENT SYSTEM
+// ============================================================================
+
+/**
+ * Get posts created by a specific user with comprehensive analytics
+ */
+export async function getUserPosts(params: {
+  userId: string;
+  status?: "draft" | "published" | "archived" | "all";
+  category?: CommunityCategory;
+  sort?: "latest" | "popular" | "engagement";
+  limit?: number;
+  offset?: number;
+}) {
+  const supabase = await createClient();
+  
+  let query = supabase
+    .from("community_posts")
+    .select(`
+      *,
+      apartments(id, name, city_id, cities(name, name_ko)),
+      community_post_images(id, storage_path, display_order, alt_text, metadata, created_at)
+    `)
+    .eq("user_id", params.userId)
+    .eq("is_deleted", false);
+
+  // Filter by status
+  if (params.status && params.status !== "all") {
+    query = query.eq("status", params.status);
+  }
+
+  // Filter by category
+  if (params.category) {
+    query = query.eq("category", params.category);
+  }
+
+  // Apply sorting
+  switch (params.sort) {
+    case "popular":
+      query = query.order("likes_count", { ascending: false })
+                   .order("created_at", { ascending: false });
+      break;
+    case "engagement":
+      // Sort by total engagement (likes + comments + views)
+      query = query.order("likes_count", { ascending: false })
+                   .order("comments_count", { ascending: false })
+                   .order("view_count", { ascending: false });
+      break;
+    default:
+      query = query.order("created_at", { ascending: false });
+  }
+
+  // Apply pagination
+  if (params.limit) {
+    query = query.limit(params.limit);
+  }
+  if (params.offset) {
+    query = query.range(
+      params.offset,
+      params.offset + (params.limit || 10) - 1
+    );
+  }
+
+  const { data: posts, error } = await query;
+  if (error) {
+    console.error("getUserPosts error:", error);
+    throw error;
+  }
+
+  if (!posts) return [];
+
+  // Transform posts with image URLs
+  return posts.map((post) => {
+    let images: PostImage[] = [];
+    if (post.community_post_images && Array.isArray(post.community_post_images) && post.community_post_images.length > 0) {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+      images = post.community_post_images
+        .sort((a: PostImage, b: PostImage) => a.display_order - b.display_order)
+        .map((image: PostImage) => ({
+          ...image,
+          post_id: post.id,
+          public_url: createPublicUrl(image.storage_path, supabaseUrl),
+        }));
+    }
+
+    return {
+      ...post,
+      images,
+    };
+  });
+}
+
+/**
+ * Get user post analytics and statistics
+ */
+export async function getUserPostAnalytics(userId: string) {
+  const supabase = await createClient();
+
+  // Get overall stats
+  const { data: stats, error: statsError } = await supabase
+    .from("community_posts")
+    .select(`
+      status,
+      category,
+      likes_count,
+      comments_count,
+      view_count,
+      created_at
+    `)
+    .eq("user_id", userId)
+    .eq("is_deleted", false);
+
+  if (statsError) {
+    console.error("getUserPostAnalytics error:", statsError);
+    throw statsError;
+  }
+
+  if (!stats || stats.length === 0) {
+    return {
+      totalPosts: 0,
+      totalLikes: 0,
+      totalComments: 0,
+      totalViews: 0,
+      postsByStatus: { draft: 0, published: 0, archived: 0 },
+      postsByCategory: {},
+      engagementTrend: [],
+      averageEngagement: 0,
+    };
+  }
+
+  // Calculate statistics
+  const totalPosts = stats.length;
+  const totalLikes = stats.reduce((sum, post) => sum + (post.likes_count || 0), 0);
+  const totalComments = stats.reduce((sum, post) => sum + (post.comments_count || 0), 0);
+  const totalViews = stats.reduce((sum, post) => sum + (post.view_count || 0), 0);
+
+  // Posts by status
+  const postsByStatus = stats.reduce((acc, post) => {
+    acc[post.status] = (acc[post.status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Posts by category
+  const postsByCategory = stats.reduce((acc, post) => {
+    acc[post.category] = (acc[post.category] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Engagement trend (last 30 days)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  
+  const recentPosts = stats.filter(post => 
+    new Date(post.created_at) >= thirtyDaysAgo
+  );
+
+  const engagementTrend = recentPosts.map(post => ({
+    date: post.created_at,
+    likes: post.likes_count || 0,
+    comments: post.comments_count || 0,
+    views: post.view_count || 0,
+    total: (post.likes_count || 0) + (post.comments_count || 0) + (post.view_count || 0),
+  }));
+
+  const averageEngagement = totalPosts > 0 
+    ? Math.round((totalLikes + totalComments + totalViews) / totalPosts)
+    : 0;
+
+  return {
+    totalPosts,
+    totalLikes,
+    totalComments,
+    totalViews,
+    postsByStatus: {
+      draft: postsByStatus.draft || 0,
+      published: postsByStatus.published || 0,
+      archived: postsByStatus.archived || 0,
+    },
+    postsByCategory,
+    engagementTrend,
+    averageEngagement,
+  };
+}
+
+/**
+ * Update post with validation and analytics tracking
+ */
+export async function updateUserPost(
+  postId: string,
+  userId: string,
+  updateData: {
+    title?: string;
+    body?: string;
+    category?: CommunityCategory;
+    status?: "draft" | "published" | "archived";
+    apartment_id?: string;
+  }
+) {
+  const supabase = await createClient();
+
+  // First verify the user owns this post
+  const { data: existingPost, error: checkError } = await supabase
+    .from("community_posts")
+    .select("id, user_id, status")
+    .eq("id", postId)
+    .eq("user_id", userId)
+    .eq("is_deleted", false)
+    .single();
+
+  if (checkError || !existingPost) {
+    throw new Error("Post not found or access denied");
+  }
+
+  // Prepare update data
+  const updatePayload = {
+    ...updateData,
+    updated_at: new Date().toISOString(),
+    last_activity_at: new Date().toISOString(),
+  };
+
+  const { data: updatedPost, error: updateError } = await supabase
+    .from("community_posts")
+    .update(updatePayload)
+    .eq("id", postId)
+    .eq("user_id", userId)
+    .select(`
+      *,
+      apartments(id, name, city_id, cities(name, name_ko)),
+      community_post_images(id, storage_path, display_order, alt_text, metadata, created_at)
+    `)
+    .single();
+
+  if (updateError) {
+    console.error("updateUserPost error:", updateError);
+    throw updateError;
+  }
+
+  // Transform with image URLs
+  let images: PostImage[] = [];
+  if (updatedPost.community_post_images && Array.isArray(updatedPost.community_post_images)) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    images = updatedPost.community_post_images
+      .sort((a: PostImage, b: PostImage) => a.display_order - b.display_order)
+      .map((image: PostImage) => ({
+        ...image,
+        post_id: updatedPost.id,
+        public_url: createPublicUrl(image.storage_path, supabaseUrl),
+      }));
+  }
+
+  return {
+    ...updatedPost,
+    images,
+  };
+}
+
+/**
+ * Delete post (soft delete with cleanup)
+ */
+export async function deleteUserPost(postId: string, userId: string) {
+  const supabase = await createClient();
+
+  // Verify ownership
+  const { data: existingPost, error: checkError } = await supabase
+    .from("community_posts")
+    .select("id, user_id")
+    .eq("id", postId)
+    .eq("user_id", userId)
+    .eq("is_deleted", false)
+    .single();
+
+  if (checkError || !existingPost) {
+    throw new Error("Post not found or access denied");
+  }
+
+  // Soft delete the post
+  const { error: deleteError } = await supabase
+    .from("community_posts")
+    .update({
+      is_deleted: true,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", postId)
+    .eq("user_id", userId);
+
+  if (deleteError) {
+    console.error("deleteUserPost error:", deleteError);
+    throw deleteError;
+  }
+
+  // Optionally clean up associated data (comments, likes)
+  // Note: We keep the data for analytics but mark it as associated with deleted post
+  
+  return { success: true };
+}
+
+/**
+ * Change post status (draft/published/archived)
+ */
+export async function changePostStatus(
+  postId: string,
+  userId: string,
+  newStatus: "draft" | "published" | "archived"
+) {
+  const supabase = await createClient();
+
+  // Verify ownership
+  const { data: existingPost, error: checkError } = await supabase
+    .from("community_posts")
+    .select("id, user_id, status")
+    .eq("id", postId)
+    .eq("user_id", userId)
+    .eq("is_deleted", false)
+    .single();
+
+  if (checkError || !existingPost) {
+    throw new Error("Post not found or access denied");
+  }
+
+  const { data: updatedPost, error: updateError } = await supabase
+    .from("community_posts")
+    .update({
+      status: newStatus,
+      updated_at: new Date().toISOString(),
+      last_activity_at: new Date().toISOString(),
+    })
+    .eq("id", postId)
+    .eq("user_id", userId)
+    .select("id, status, updated_at")
+    .single();
+
+  if (updateError) {
+    console.error("changePostStatus error:", updateError);
+    throw updateError;
+  }
+
+  return updatedPost;
+}
+
+/**
+ * Get detailed post engagement metrics
+ */
+export async function getPostEngagementMetrics(postId: string, userId: string) {
+  const supabase = await createClient();
+
+  // Verify ownership
+  const { data: post, error: postError } = await supabase
+    .from("community_posts")
+    .select(`
+      id,
+      user_id,
+      likes_count,
+      comments_count,
+      view_count,
+      created_at,
+      last_activity_at
+    `)
+    .eq("id", postId)
+    .eq("user_id", userId)
+    .eq("is_deleted", false)
+    .single();
+
+  if (postError || !post) {
+    throw new Error("Post not found or access denied");
+  }
+
+  // Get recent likes (last 7 days)
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const { data: recentLikes, error: likesError } = await supabase
+    .from("community_likes")
+    .select("created_at, profiles(first_name, last_name, avatar_url)")
+    .eq("post_id", postId)
+    .gte("created_at", sevenDaysAgo.toISOString())
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  if (likesError) {
+    console.error("getPostEngagementMetrics likes error:", likesError);
+  }
+
+  // Get recent comments
+  const { data: recentComments, error: commentsError } = await supabase
+    .from("community_comments")
+    .select(`
+      id,
+      content,
+      created_at,
+      profiles(first_name, last_name, avatar_url)
+    `)
+    .eq("post_id", postId)
+    .eq("is_deleted", false)
+    .gte("created_at", sevenDaysAgo.toISOString())
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  if (commentsError) {
+    console.error("getPostEngagementMetrics comments error:", commentsError);
+  }
+
+  // Calculate engagement rate
+  const daysSinceCreated = Math.max(
+    1,
+    Math.floor((Date.now() - new Date(post.created_at).getTime()) / (1000 * 60 * 60 * 24))
+  );
+  
+  const totalEngagement = post.likes_count + post.comments_count + post.view_count;
+  const engagementRate = totalEngagement / daysSinceCreated;
+
+  return {
+    post: {
+      id: post.id,
+      likesCount: post.likes_count,
+      commentsCount: post.comments_count,
+      viewCount: post.view_count,
+      createdAt: post.created_at,
+      lastActivityAt: post.last_activity_at,
+    },
+    metrics: {
+      totalEngagement,
+      engagementRate: Math.round(engagementRate * 100) / 100,
+      daysSinceCreated,
+    },
+    recentLikes: recentLikes || [],
+    recentComments: recentComments || [],
+  };
+}
+
+/**
+ * Batch operations for user posts
+ */
+export async function batchUpdatePostStatus(
+  postIds: string[],
+  userId: string,
+  newStatus: "draft" | "published" | "archived"
+) {
+  const supabase = await createClient();
+
+  // Verify all posts belong to the user
+  const { data: posts, error: checkError } = await supabase
+    .from("community_posts")
+    .select("id, user_id")
+    .in("id", postIds)
+    .eq("user_id", userId)
+    .eq("is_deleted", false);
+
+  if (checkError || !posts || posts.length !== postIds.length) {
+    throw new Error("Some posts not found or access denied");
+  }
+
+  const { data: updatedPosts, error: updateError } = await supabase
+    .from("community_posts")
+    .update({
+      status: newStatus,
+      updated_at: new Date().toISOString(),
+    })
+    .in("id", postIds)
+    .eq("user_id", userId)
+    .select("id, status, updated_at");
+
+  if (updateError) {
+    console.error("batchUpdatePostStatus error:", updateError);
+    throw updateError;
+  }
+
+  return updatedPosts;
+}
+
+/**
+ * Get user's post drafts
+ */
+export async function getUserDrafts(userId: string, limit: number = 10) {
+  const supabase = await createClient();
+
+  const { data: drafts, error } = await supabase
+    .from("community_posts")
+    .select(`
+      id,
+      title,
+      body,
+      category,
+      apartment_id,
+      created_at,
+      updated_at,
+      apartments(name, city_id, cities(name))
+    `)
+    .eq("user_id", userId)
+    .eq("status", "draft")
+    .eq("is_deleted", false)
+    .order("updated_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("getUserDrafts error:", error);
+    throw error;
+  }
+
+  return drafts || [];
+}
+
+// ============================================================================
+// CACHING & OPTIMIZATION FUNCTIONS
+// ============================================================================
+
+/**
+ * Cached version of getUserPostAnalytics for improved performance
+ */
+import { unstable_cache } from "next/cache";
+
+export const getCachedUserPostAnalytics = unstable_cache(
+  async (userId: string) => {
+    return await getUserPostAnalytics(userId);
+  },
+  ["user-post-analytics"],
+  {
+    tags: ["user-analytics", "community-posts"],
+    revalidate: 300, // 5 minutes cache
+  }
+);
+
+/**
+ * Cached version of getUserPosts for dashboard quick views
+ */
+export const getCachedUserPostsSummary = unstable_cache(
+  async (userId: string, limit: number = 10) => {
+    return await getUserPosts({
+      userId,
+      limit,
+      sort: "latest",
+    });
+  },
+  ["user-posts-summary"],
+  {
+    tags: ["user-posts", "community-posts"],
+    revalidate: 60, // 1 minute cache for recent posts
+  }
+);
+
+/**
+ * Get user post permissions for a specific post
+ */
+export async function getUserPostPermissions(postId: string, userId: string) {
+  const supabase = await createClient();
+
+  // Check if user owns the post and get current status
+  const { data: post, error } = await supabase
+    .from("community_posts")
+    .select("id, user_id, status, created_at")
+    .eq("id", postId)
+    .eq("is_deleted", false)
+    .single();
+
+  if (error || !post) {
+    return {
+      canEdit: false,
+      canDelete: false,
+      canChangeStatus: false,
+      canViewAnalytics: false,
+      reasons: ["Post not found"],
+    };
+  }
+
+  const isOwner = post.user_id === userId;
+  const postAge = Date.now() - new Date(post.created_at).getTime();
+  const hoursSinceCreated = postAge / (1000 * 60 * 60);
+
+  // Define permission rules
+  const permissions = {
+    canEdit: isOwner && hoursSinceCreated < 24, // Can edit within 24 hours
+    canDelete: isOwner && (post.status === "draft" || hoursSinceCreated < 1), // Can delete drafts or within 1 hour
+    canChangeStatus: isOwner,
+    canViewAnalytics: isOwner,
+    reasons: [] as string[],
+  };
+
+  // Add reasons for denied permissions
+  if (!isOwner) {
+    permissions.reasons.push("Not the post owner");
+  } else {
+    if (!permissions.canEdit && hoursSinceCreated >= 24) {
+      permissions.reasons.push("Edit window expired (24 hours)");
+    }
+    if (!permissions.canDelete && post.status !== "draft" && hoursSinceCreated >= 1) {
+      permissions.reasons.push("Delete window expired (1 hour for published posts)");
+    }
+  }
+
+  return permissions;
+}
+
+/**
+ * Get post summary for user dashboard
+ */
+export async function getUserPostSummaries(
+  userId: string,
+  params: {
+    limit?: number;
+    status?: "draft" | "published" | "archived" | "all";
+    sort?: "latest" | "popular" | "engagement";
+  } = {}
+) {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("community_posts")
+    .select(`
+      id,
+      title,
+      category,
+      status,
+      likes_count,
+      comments_count,
+      view_count,
+      created_at,
+      updated_at,
+      last_activity_at,
+      apartments(name, cities(name))
+    `)
+    .eq("user_id", userId)
+    .eq("is_deleted", false);
+
+  // Apply filters
+  if (params.status && params.status !== "all") {
+    query = query.eq("status", params.status);
+  }
+
+  // Apply sorting
+  switch (params.sort) {
+    case "popular":
+      query = query.order("likes_count", { ascending: false });
+      break;
+    case "engagement":
+      query = query.order("view_count", { ascending: false });
+      break;
+    default:
+      query = query.order("created_at", { ascending: false });
+  }
+
+  // Apply limit
+  if (params.limit) {
+    query = query.limit(params.limit);
+  }
+
+  const { data: posts, error } = await query;
+  if (error) {
+    console.error("getUserPostSummaries error:", error);
+    throw error;
+  }
+
+  // Transform to summary format
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (posts || []).map((post: any) => ({
+    id: post.id,
+    title: post.title,
+    category: post.category,
+    status: post.status,
+    apartment_name: post.apartments?.name || "Unknown",
+    city_name: post.apartments?.cities?.name || "Unknown",
+    likes_count: post.likes_count || 0,
+    comments_count: post.comments_count || 0,
+    view_count: post.view_count || 0,
+    created_at: post.created_at,
+    updated_at: post.updated_at,
+    last_activity_at: post.last_activity_at,
+  }));
+}
+
+/**
+ * Get user engagement summary for quick stats
+ */
+export async function getUserEngagementSummary(userId: string) {
+  const supabase = await createClient();
+
+  // Get recent posts for weekly/monthly calculations
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const { data: posts, error } = await supabase
+    .from("community_posts")
+    .select(`
+      id,
+      title,
+      category,
+      likes_count,
+      comments_count,
+      view_count,
+      created_at
+    `)
+    .eq("user_id", userId)
+    .eq("is_deleted", false)
+    .eq("status", "published");
+
+  if (error) {
+    console.error("getUserEngagementSummary error:", error);
+    throw error;
+  }
+
+  if (!posts || posts.length === 0) {
+    return {
+      totalEngagement: 0,
+      weeklyEngagement: 0,
+      monthlyEngagement: 0,
+      topPerformingPost: null,
+      engagementByCategory: {},
+      recentActivity: { likes: 0, comments: 0, views: 0 },
+    };
+  }
+
+  // Calculate engagement metrics
+  const totalEngagement = posts.reduce(
+    (sum, post) => sum + (post.likes_count || 0) + (post.comments_count || 0) + (post.view_count || 0),
+    0
+  );
+
+  const weeklyPosts = posts.filter(post => new Date(post.created_at) >= sevenDaysAgo);
+  const monthlyPosts = posts.filter(post => new Date(post.created_at) >= thirtyDaysAgo);
+
+  const weeklyEngagement = weeklyPosts.reduce(
+    (sum, post) => sum + (post.likes_count || 0) + (post.comments_count || 0) + (post.view_count || 0),
+    0
+  );
+
+  const monthlyEngagement = monthlyPosts.reduce(
+    (sum, post) => sum + (post.likes_count || 0) + (post.comments_count || 0) + (post.view_count || 0),
+    0
+  );
+
+  // Find top performing post
+  const topPost = posts.reduce((top, current) => {
+    const currentEngagement = (current.likes_count || 0) + (current.comments_count || 0) + (current.view_count || 0);
+    const topEngagement = top ? (top.likes_count || 0) + (top.comments_count || 0) + (top.view_count || 0) : 0;
+    return currentEngagement > topEngagement ? current : top;
+  }, null as typeof posts[0] | null);
+
+  const topPerformingPost = topPost ? {
+    id: topPost.id,
+    title: topPost.title,
+    totalEngagement: (topPost.likes_count || 0) + (topPost.comments_count || 0) + (topPost.view_count || 0),
+  } : null;
+
+  // Engagement by category
+  const engagementByCategory = posts.reduce((acc, post) => {
+    const engagement = (post.likes_count || 0) + (post.comments_count || 0) + (post.view_count || 0);
+    acc[post.category] = (acc[post.category] || 0) + engagement;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Recent activity (last 7 days)
+  const recentActivity = weeklyPosts.reduce(
+    (acc, post) => ({
+      likes: acc.likes + (post.likes_count || 0),
+      comments: acc.comments + (post.comments_count || 0),
+      views: acc.views + (post.view_count || 0),
+    }),
+    { likes: 0, comments: 0, views: 0 }
+  );
+
+  return {
+    totalEngagement,
+    weeklyEngagement,
+    monthlyEngagement,
+    topPerformingPost,
+    engagementByCategory,
+    recentActivity,
+  };
+}
+
+/**
+ * Invalidate user post caches when data changes
+ */
+export async function invalidateUserPostCaches(userId: string, tags?: string[]) {
+  const { revalidateTag } = await import("next/cache");
+  
+  // Default tags to invalidate
+  const defaultTags = [
+    "user-analytics",
+    "user-posts", 
+    "community-posts",
+    `user-${userId}-posts`,
+    `user-${userId}-analytics`,
+  ];
+
+  const tagsToInvalidate = tags || defaultTags;
+  
+  tagsToInvalidate.forEach(tag => {
+    revalidateTag(tag);
+  });
+}
+
+/**
+ * Post activity tracking for engagement analytics
+ */
+export async function trackPostActivity(
+  postId: string,
+  activityType: "view" | "like" | "comment" | "share",
+  userId?: string
+) {
+  const supabase = await createClient();
+
+  // Update post activity counters
+  if (activityType === "view") {
+    const { error } = await supabase.rpc("increment_post_views", {
+      post_uuid: postId
+    });
+    
+    if (error) {
+      console.error("trackPostActivity view error:", error);
+    }
+  }
+
+  // Update last_activity_at timestamp
+  const { error: updateError } = await supabase
+    .from("community_posts")
+    .update({ last_activity_at: new Date().toISOString() })
+    .eq("id", postId);
+
+  if (updateError) {
+    console.error("trackPostActivity timestamp error:", updateError);
+  }
+
+  // Optionally log to user_activity table if it exists
+  if (userId) {
+    const { error: activityError } = await supabase
+      .from("user_activity")
+      .insert({
+        user_id: userId,
+        activity_type: activityType,
+        resource_type: "post",
+        resource_id: postId,
+        metadata: { timestamp: new Date().toISOString() },
+      });
+
+    if (activityError) {
+      console.error("trackPostActivity user_activity error:", activityError);
+    }
+  }
+}
+
+/**
+ * Bulk post operations with optimized queries
+ */
+export async function bulkGetPostPermissions(postIds: string[], userId: string) {
+  const supabase = await createClient();
+
+  const { data: posts, error } = await supabase
+    .from("community_posts")
+    .select("id, user_id, status, created_at")
+    .in("id", postIds)
+    .eq("is_deleted", false);
+
+  if (error) {
+    console.error("bulkGetPostPermissions error:", error);
+    throw error;
+  }
+
+  return postIds.map(postId => {
+    const post = posts?.find(p => p.id === postId);
+    if (!post) {
+      return {
+        postId,
+        permissions: {
+          canEdit: false,
+          canDelete: false,
+          canChangeStatus: false,
+          canViewAnalytics: false,
+          reasons: ["Post not found"],
+        },
+      };
+    }
+
+    const isOwner = post.user_id === userId;
+    const postAge = Date.now() - new Date(post.created_at).getTime();
+    const hoursSinceCreated = postAge / (1000 * 60 * 60);
+
+    return {
+      postId,
+      permissions: {
+        canEdit: isOwner && hoursSinceCreated < 24,
+        canDelete: isOwner && (post.status === "draft" || hoursSinceCreated < 1),
+        canChangeStatus: isOwner,
+        canViewAnalytics: isOwner,
+        reasons: isOwner ? [] : ["Not the post owner"],
+      },
+    };
+  });
+}
