@@ -86,7 +86,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
       {/* Trulia-style form layout */}
       <div className="space-y-8">
         {/* Email field - Trulia style with blue edit link */}
-        <div>
+        <div className="bg-gray-50 p-4 rounded border border-gray-200">
           <label className="block text-gray-700 text-sm font-medium mb-2">Email</label>
           <div className="flex items-center justify-between">
             <span className="text-gray-900 text-base">{formData.email}</span>
@@ -130,7 +130,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
         </div>
 
         {/* Password field - Trulia style */}
-        <div>
+        <div className="bg-gray-50 p-4 rounded border border-gray-200">
           <label className="block text-gray-700 text-sm font-medium mb-2">Password</label>
           <div className="flex items-center justify-between">
             <span className="text-gray-900 text-base">******</span>
@@ -181,7 +181,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
             name="fullName"
             value={formData.fullName}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
             placeholder="Enter your full name"
           />
         </div>
@@ -194,7 +194,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
             name="phone"
             value={formData.phone}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
             placeholder="Enter your phone number"
           />
         </div>
@@ -204,7 +204,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
           <label className="block text-gray-700 text-sm font-medium mb-2">User Type</label>
           <select
             name="userType"
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            className="w-full px-3 py-2 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
             title="Select user type"
             defaultValue="home-buyer"
           >
@@ -222,7 +222,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
             name="location"
             value={formData.location}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
             placeholder="Enter your location"
           />
         </div>
