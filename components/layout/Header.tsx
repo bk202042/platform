@@ -65,27 +65,24 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-2">
             <Link
               href="/search"
-              className="px-1 py-2 font-medium text-base text-[#2A2A33] hover:text-[#007882] transition-colors duration-200 relative group"
+              className="px-4 py-2 font-medium text-base text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded-md transition-all duration-200"
             >
               매매
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#007882] transition-all duration-200 group-hover:w-full"></span>
             </Link>
             <Link
               href="/properties"
-              className="px-1 py-2 font-medium text-base text-[#2A2A33] hover:text-[#007882] transition-colors duration-200 relative group"
+              className="px-4 py-2 font-medium text-base text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded-md transition-all duration-200"
             >
               임대
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#007882] transition-all duration-200 group-hover:w-full"></span>
             </Link>
             <Link
               href="/community"
-              className="px-1 py-2 font-medium text-base text-[#2A2A33] hover:text-[#007882] transition-colors duration-200 relative group"
+              className="px-4 py-2 font-medium text-base text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded-md transition-all duration-200"
             >
               커뮤니티
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#007882] transition-all duration-200 group-hover:w-full"></span>
             </Link>
           </nav>
         </div>
@@ -101,7 +98,7 @@ export function Header() {
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="flex items-center gap-2 px-2 py-2 font-medium text-base text-[#2A2A33] hover:text-[#007882] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#007882] relative group"
+                    className="flex items-center gap-2 rounded-md px-4 py-2 font-medium text-base text-[#2A2A33] hover:bg-[#007882] hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#007882]"
                   >
                     <User className="h-5 w-5" />
                     <span className="hidden sm:inline">{user.user_metadata?.full_name || user.email}</span>
@@ -214,21 +211,21 @@ export function Header() {
               <Link
                 href="/search"
                 onClick={closeMobileMenu}
-                className="block px-2 py-3 text-base font-medium text-[#2A2A33] hover:text-[#007882] transition-colors"
+                className="block px-4 py-3 text-base font-medium text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded-md transition-all duration-200"
               >
                 매매
               </Link>
               <Link
                 href="/properties"
                 onClick={closeMobileMenu}
-                className="block px-2 py-3 text-base font-medium text-[#2A2A33] hover:text-[#007882] transition-colors"
+                className="block px-4 py-3 text-base font-medium text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded-md transition-all duration-200"
               >
                 임대
               </Link>
               <Link
                 href="/community"
                 onClick={closeMobileMenu}
-                className="block px-2 py-3 text-base font-medium text-[#2A2A33] hover:text-[#007882] transition-colors"
+                className="block px-4 py-3 text-base font-medium text-[#2A2A33] hover:bg-[#007882] hover:text-white rounded-md transition-all duration-200"
               >
                 커뮤니티
               </Link>
