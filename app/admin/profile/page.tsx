@@ -45,15 +45,28 @@ export default async function ProfilePage({ searchParams }: PageProps) {
   return (
     <div className="min-h-screen bg-white">
       {/* Mobile Header - Only visible on mobile */}
-      <MobileHeader user={user} currentSection={currentSection} />
+      <div className="lg:hidden">
+        <MobileHeader user={user} currentSection={currentSection} />
+      </div>
       
-      <div className="max-w-7xl mx-auto flex">
-        {/* Left Sidebar - Hidden on mobile, visible on desktop */}
+      {/* Desktop Layout Grid */}
+      <div className="hidden lg:grid lg:grid-cols-[320px_1fr] lg:max-w-7xl lg:mx-auto lg:min-h-screen">
+        {/* Left Sidebar - Only rendered on desktop */}
         <Sidebar user={user} currentSection={currentSection} />
         
-        {/* Main Content */}
-        <main className="flex-1 w-full lg:pl-80">
-          <div className="pt-16 lg:pt-0 p-4 lg:p-8">
+        {/* Main Content - Desktop */}
+        <main className="lg:overflow-hidden">
+          <div className="p-8">
+            {currentSection === "profile" && <ProfileSection user={user} />}
+            {currentSection === "posts" && <PostsSection userId={user.id} initialPosts={initialPosts} />}
+          </div>
+        </main>
+      </div>
+
+      {/* Mobile Layout - Full width, no sidebar */}
+      <div className="lg:hidden">
+        <main className="w-full">
+          <div className="pt-16 p-4">
             {currentSection === "profile" && <ProfileSection user={user} />}
             {currentSection === "posts" && <PostsSection userId={user.id} initialPosts={initialPosts} />}
           </div>

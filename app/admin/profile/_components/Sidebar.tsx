@@ -35,7 +35,7 @@ export function Sidebar({ user, currentSection }: SidebarProps) {
   ];
 
   return (
-    <div className="hidden lg:block fixed left-0 top-0 h-full w-80 bg-white border-r border-gray-200 z-40">
+    <div className="relative h-full w-80 bg-white border-r border-gray-200">
       {/* User Profile Section */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center gap-3">

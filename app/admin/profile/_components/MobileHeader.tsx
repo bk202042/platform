@@ -43,7 +43,7 @@ export function MobileHeader({ user, currentSection }: MobileHeaderProps) {
   return (
     <>
       {/* Mobile Header - Fixed at top, only visible on mobile */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50">
+      <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50">
         <div className="flex items-center justify-between h-full px-4">
           {/* Left side - Menu button and current section */}
           <div className="flex items-center gap-3">
@@ -74,7 +74,7 @@ export function MobileHeader({ user, currentSection }: MobileHeaderProps) {
 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-40">
+        <div className="fixed inset-0 z-60">
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black bg-opacity-50"
