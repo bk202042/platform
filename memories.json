@@ -2538,7 +2538,26 @@
       "lastAccessed": "2025-08-16T10:16:14.821Z",
       "lastVerified": "2025-08-16T10:16:14.821Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1755342468928_jparvbner",
+      "content": "Investigated mobile profile sidebar issue. Current implementation has proper responsive layout in page.tsx with desktop grid (hidden lg:grid) containing Sidebar component, and separate mobile layout (lg:hidden) without sidebar. However, user reports sidebar still visible on mobile. The layout structure appears correct - desktop has hidden lg:grid with Sidebar, mobile has lg:hidden without sidebar.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "mobile",
+        "responsive",
+        "sidebar",
+        "profile",
+        "layout"
+      ],
+      "timestamp": "2025-08-16T11:07:48.927Z",
+      "context": "Mobile profile page debugging",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-16T11:07:48.927Z",
+      "lastVerified": "2025-08-16T11:07:48.927Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-16T10:16:14.821Z"
+  "lastUpdated": "2025-08-16T11:07:48.927Z"
 }

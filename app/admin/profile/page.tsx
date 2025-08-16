@@ -49,21 +49,7 @@ export default async function ProfilePage({ searchParams }: PageProps) {
         <MobileHeader user={user} currentSection={currentSection} />
       </div>
       
-      {/* Desktop Layout Grid */}
-      <div className="hidden lg:grid lg:grid-cols-[320px_1fr] lg:max-w-7xl lg:mx-auto lg:min-h-screen">
-        {/* Left Sidebar - Only rendered on desktop */}
-        <Sidebar user={user} currentSection={currentSection} />
-        
-        {/* Main Content - Desktop */}
-        <main className="lg:overflow-hidden">
-          <div className="p-8">
-            {currentSection === "profile" && <ProfileSection user={user} />}
-            {currentSection === "posts" && <PostsSection userId={user.id} initialPosts={initialPosts} />}
-          </div>
-        </main>
-      </div>
-
-      {/* Mobile Layout - Full width, no sidebar */}
+      {/* Mobile Layout - Default: Full width, no sidebar */}
       <div className="lg:hidden">
         <main className="w-full">
           <div className="pt-16 p-4">
@@ -71,6 +57,22 @@ export default async function ProfilePage({ searchParams }: PageProps) {
             {currentSection === "posts" && <PostsSection userId={user.id} initialPosts={initialPosts} />}
           </div>
         </main>
+      </div>
+
+      {/* Desktop Layout Grid - Only visible on large screens */}
+      <div className="hidden lg:block">
+        <div className="grid grid-cols-[320px_1fr] max-w-7xl mx-auto min-h-screen">
+          {/* Left Sidebar - Only rendered on desktop */}
+          <Sidebar user={user} currentSection={currentSection} />
+          
+          {/* Main Content - Desktop */}
+          <main className="overflow-hidden">
+            <div className="p-8">
+              {currentSection === "profile" && <ProfileSection user={user} />}
+              {currentSection === "posts" && <PostsSection userId={user.id} initialPosts={initialPosts} />}
+            </div>
+          </main>
+        </div>
       </div>
     </div>
   );
