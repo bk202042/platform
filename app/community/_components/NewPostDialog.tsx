@@ -339,7 +339,7 @@ export function NewPostDialog({
           {/* Title Input */}
           <div className="space-y-2">
             <Label htmlFor="title" className="text-sm font-medium">
-              제목 (선택사항)
+              제목
             </Label>
             <Input
               id="title"
