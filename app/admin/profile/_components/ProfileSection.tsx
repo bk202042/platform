@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
@@ -71,103 +70,11 @@ export function ProfileSection({ user }: ProfileSectionProps) {
     }
   };
 
-  const FormField = ({ 
-    label, 
-    name, 
-    value, 
-    type = "text",
-    isPassword = false 
-  }: {
-    label: string;
-    name: string;
-    value: string;
-    type?: string;
-    isPassword?: boolean;
-  }) => {
-    const isEditing = editingField === name;
-    const displayValue = isPassword ? "••••••" : value;
-
-    return (
-      <div className="flex items-center justify-between py-4 border-b border-gray-200">
-        <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {label}
-          </label>
-          {isEditing ? (
-            <div className="flex items-center gap-3">
-              <input
-                type={type}
-                name={name}
-                value={formData[name as keyof typeof formData]}
-                onChange={handleInputChange}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={`${label}을 입력하세요`}
-                title={`${label} 입력 필드`}
-                autoFocus
-              />
-              <Button
-                onClick={() => handleSave(name)}
-                disabled={isLoading}
-                size="sm"
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                저장
-              </Button>
-              <Button
-                onClick={() => {
-                  setEditingField(null);
-                  setFormData(prev => ({ 
-                    ...prev, 
-                    [name]: name === "email" ? user.email || "" : 
-                            name === "fullName" ? user.user_metadata?.full_name || "" :
-                            name === "phone" ? user.user_metadata?.phone || "" : ""
-                  }));
-                }}
-                variant="outline"
-                size="sm"
-              >
-                취소
-              </Button>
-            </div>
-          ) : (
-            <div className="text-gray-900">{displayValue || "설정되지 않음"}</div>
-          )}
-        </div>
-        {!isEditing && (
-          <Button
-            onClick={() => setEditingField(name)}
-            variant="ghost"
-            size="sm"
-            className="text-blue-600 hover:text-blue-700"
-          >
-            편집
-          </Button>
-        )}
-      </div>
-    );
-  };
-
-  const fullName = user.user_metadata?.full_name || user.email || "사용자";
-  const userType = "Home Buyer";
-
   return (
-    <div className="w-full max-w-2xl">
-      {/* User Profile Header */}
-      <div className="mb-6 bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
-        <div className="flex items-center gap-3 sm:gap-4">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gray-200 flex items-center justify-center text-xl sm:text-2xl font-medium text-gray-600 flex-shrink-0">
-            {fullName[0]?.toUpperCase()}
-          </div>
-          <div className="min-w-0 flex-1">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">{fullName}</h2>
-            <p className="text-gray-500 text-sm sm:text-base">{userType}</p>
-            <p className="text-xs sm:text-sm text-gray-400 truncate">{user.email}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">계정 정보</h1>
+    <div className="w-full max-w-4xl">
+      {/* Trulia-inspired clean header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-normal text-gray-800">Edit Profile</h1>
       </div>
 
       {message && (
@@ -176,58 +83,147 @@ export function ProfileSection({ user }: ProfileSectionProps) {
         </div>
       )}
 
-      <div className="bg-white border border-gray-200 rounded-lg">
-        <div className="p-6 space-y-0">
-          <FormField
-            label="이메일"
-            name="email"
-            value={formData.email}
-            type="email"
-          />
-          
-          <FormField
-            label="비밀번호"
-            name="password"
-            value=""
-            type="password"
-            isPassword={true}
-          />
+      {/* Trulia-style form layout */}
+      <div className="space-y-8">
+        {/* Email field - Trulia style with blue edit link */}
+        <div>
+          <label className="block text-gray-700 text-sm font-medium mb-2">Email</label>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-900 text-base">{formData.email}</span>
+            <button 
+              type="button"
+              onClick={() => setEditingField('email')}
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            >
+              Edit
+            </button>
+          </div>
+          {editingField === 'email' && (
+            <div className="mt-3 flex items-center gap-3">
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                title="Email address"
+                placeholder="Enter your email"
+                autoFocus
+              />
+              <button
+                type="button"
+                onClick={() => handleSave('email')}
+                disabled={isLoading}
+                className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:opacity-50"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditingField(null)}
+                className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
 
-          <FormField
-            label="이름"
+        {/* Password field - Trulia style */}
+        <div>
+          <label className="block text-gray-700 text-sm font-medium mb-2">Password</label>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-900 text-base">******</span>
+            <button 
+              type="button"
+              onClick={() => setEditingField('password')}
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            >
+              Edit
+            </button>
+          </div>
+          {editingField === 'password' && (
+            <div className="mt-3 flex items-center gap-3">
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                title="Password"
+                placeholder="Enter new password"
+                autoFocus
+              />
+              <button
+                type="button"
+                onClick={() => handleSave('password')}
+                disabled={isLoading}
+                className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:opacity-50"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditingField(null)}
+                className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Full Name field - Trulia style input */}
+        <div>
+          <label className="block text-gray-700 text-sm font-medium mb-2">Full Name</label>
+          <input
+            type="text"
             name="fullName"
             value={formData.fullName}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter your full name"
           />
+        </div>
 
-          <FormField
-            label="전화번호"
+        {/* Phone field - Trulia style input */}
+        <div>
+          <label className="block text-gray-700 text-sm font-medium mb-2">Phone</label>
+          <input
+            type="tel"
             name="phone"
             value={formData.phone}
-            type="tel"
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter your phone number"
           />
+        </div>
 
-          <div className="flex items-center justify-between py-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                사용자 유형
-              </label>
-              <select
-                name="userType"
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                title="사용자 유형 선택"
-                defaultValue="home-buyer"
-              >
-                <option value="home-buyer">Home Buyer</option>
-                <option value="agent">Agent</option>
-                <option value="investor">Investor</option>
-              </select>
-            </div>
-          </div>
+        {/* User Type field - Trulia style dropdown */}
+        <div>
+          <label className="block text-gray-700 text-sm font-medium mb-2">User Type</label>
+          <select
+            name="userType"
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            title="Select user type"
+            defaultValue="home-buyer"
+          >
+            <option value="home-buyer">Home Buyer</option>
+            <option value="agent">Agent</option>
+            <option value="investor">Investor</option>
+          </select>
+        </div>
 
-          <FormField
-            label="위치"
+        {/* Location field - Trulia style input */}
+        <div>
+          <label className="block text-gray-700 text-sm font-medium mb-2">Location</label>
+          <input
+            type="text"
             name="location"
             value={formData.location}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter your location"
           />
         </div>
       </div>

@@ -1,7 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Sidebar } from "./_components/Sidebar";
-import { MobileHeader } from "./_components/MobileHeader";
 import { ProfileSection } from "./_components/ProfileSection";
 import { PostsSection } from "./_components/PostsSection";
 import { getUserPostSummaries } from "@/lib/data/community";
@@ -43,37 +41,10 @@ export default async function ProfilePage({ searchParams }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Mobile Header - Only visible on mobile */}
-      <div className="lg:hidden">
-        <MobileHeader user={user} currentSection={currentSection} />
-      </div>
-      
-      {/* Mobile Layout - Default: Full width, no sidebar */}
-      <div className="lg:hidden">
-        <main className="w-full">
-          <div className="pt-16 p-4">
-            {currentSection === "profile" && <ProfileSection user={user} />}
-            {currentSection === "posts" && <PostsSection userId={user.id} initialPosts={initialPosts} />}
-          </div>
-        </main>
-      </div>
-
-      {/* Desktop Layout Grid - Only visible on large screens */}
-      <div className="hidden lg:block">
-        <div className="grid grid-cols-[320px_1fr] max-w-7xl mx-auto min-h-screen">
-          {/* Left Sidebar - Only rendered on desktop */}
-          <Sidebar user={user} currentSection={currentSection} />
-          
-          {/* Main Content - Desktop */}
-          <main className="overflow-hidden">
-            <div className="p-8">
-              {currentSection === "profile" && <ProfileSection user={user} />}
-              {currentSection === "posts" && <PostsSection userId={user.id} initialPosts={initialPosts} />}
-            </div>
-          </main>
-        </div>
-      </div>
+    <div className="w-full">
+      {/* Clean Trulia-inspired design - just the content */}
+      {currentSection === "profile" && <ProfileSection user={user} />}
+      {currentSection === "posts" && <PostsSection userId={user.id} initialPosts={initialPosts} />}
     </div>
   );
 }
