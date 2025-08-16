@@ -37,14 +37,14 @@ export function Sidebar({ user, currentSection }: SidebarProps) {
   return (
     <div className="fixed left-0 top-0 h-full w-80 bg-white border-r border-gray-200 -translate-x-full lg:translate-x-0 transition-transform duration-300 z-40">
       {/* User Profile Section */}
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-medium text-gray-600">
+      <div className="p-4 border-b border-gray-200">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-lg font-medium text-gray-600 flex-shrink-0">
             {fullName[0]?.toUpperCase()}
           </div>
-          <div>
-            <h2 className="text-lg font-medium text-gray-900">{fullName}</h2>
-            <p className="text-sm text-gray-500">{userType}</p>
+          <div className="min-w-0 flex-1">
+            <h2 className="text-sm font-medium text-gray-900 truncate">{fullName}</h2>
+            <p className="text-xs text-gray-500 truncate">{userType}</p>
           </div>
         </div>
       </div>
