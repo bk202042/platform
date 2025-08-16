@@ -90,26 +90,8 @@ export function Header() {
           </nav>
         </div>
 
-        {/* Right section with saved items, auth, and mobile menu */}
+        {/* Right section with auth and mobile menu */}
         <div className="flex items-center space-x-6">
-          {/* Saved Items - Only show when user is logged in */}
-          {!loading && user && (
-            <>
-              <Link
-                href="/admin/saved-homes"
-                className="hidden lg:block px-1 py-2 font-medium text-base text-[#2A2A33] hover:text-[#007882] transition-colors duration-200"
-              >
-                저장된 매물
-              </Link>
-              <Link
-                href="/admin/saved-searches"
-                className="hidden lg:block px-1 py-2 font-medium text-base text-[#2A2A33] hover:text-[#007882] transition-colors duration-200"
-              >
-                저장된 검색
-              </Link>
-            </>
-          )}
-
           {/* User Authentication */}
           <div className="flex items-center space-x-4">
             {loading ? (
@@ -256,24 +238,8 @@ export function Header() {
                 <div className="pt-3 border-t border-gray-100 mt-3">
                   {user ? (
                     <div className="space-y-2">
-                      {/* Saved Items */}
-                      <Link
-                        href="/admin/saved-homes"
-                        onClick={closeMobileMenu}
-                        className="block px-2 py-3 text-base font-medium text-[#2A2A33] hover:text-[#007882] transition-colors"
-                      >
-                        저장된 매물
-                      </Link>
-                      <Link
-                        href="/admin/saved-searches"
-                        onClick={closeMobileMenu}
-                        className="block px-2 py-3 text-base font-medium text-[#2A2A33] hover:text-[#007882] transition-colors"
-                      >
-                        저장된 검색
-                      </Link>
-                      
                       {/* User Profile Section */}
-                      <div className="pt-2 border-t border-gray-100 mt-2">
+                      <div>
                         <div className="px-2 py-2 text-sm text-gray-600">
                           {user.user_metadata?.full_name || user.email}
                         </div>
