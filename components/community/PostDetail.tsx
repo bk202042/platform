@@ -61,7 +61,7 @@ const CATEGORY_CONFIG = {
   },
   SECONDHAND: {
     label: "중고거래",
-    color: "bg-orange-100 text-orange-800 border-orange-200",
+    color: "bg-[#CCFBF1] text-[#0F766E] border-[#99F6E4]",
   },
   FREE: {
     label: "나눔",

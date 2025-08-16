@@ -84,13 +84,13 @@ export function LikeButton({
       type="button"
       className={`
         flex items-center gap-1 rounded-lg transition-daangn select-none group/like touch-target
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-carrot-400 focus:ring-offset-0
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2DD4BF] focus:ring-offset-0
         disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 active:scale-95
         ${config.padding}
         ${
           liked
-            ? "text-carrot-500 hover:text-carrot-600"
-            : "text-gray-400 hover:text-carrot-500"
+            ? "text-[#007882] hover:text-[#006670]"
+            : "text-gray-400 hover:text-[#007882]"
         }
         ${isAnimating ? "animate-bounce" : ""}
         ${isLoading ? "cursor-wait" : "cursor-pointer"}
@@ -103,7 +103,7 @@ export function LikeButton({
       {isLoading ? (
         <Loader2
           size={config.icon}
-          className="animate-spin text-carrot-500"
+          className="animate-spin text-[#007882]"
           aria-hidden="true"
         />
       ) : (
@@ -119,7 +119,7 @@ export function LikeButton({
       {showCount && (
         <span
           id={`like-count-${postId}`}
-          className={`text-xs font-medium transition-daangn ${liked ? "text-carrot-600" : "text-gray-500"} group-hover/like:text-carrot-600`}
+          className={`text-xs font-medium transition-daangn ${liked ? "text-[#007882]" : "text-gray-500"} group-hover/like:text-[#007882]`}
           aria-label={`좋아요 ${count}개`}
           aria-live="polite"
         >

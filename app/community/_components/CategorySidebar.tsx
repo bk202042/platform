@@ -72,9 +72,9 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                 type="button"
                 onClick={() => handleCategoryClick("")}
                 className={cn(
-                  "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-daangn group focus:outline-none focus-visible:ring-2 focus-visible:ring-carrot-400 touch-target",
+                  "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-daangn group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2DD4BF] touch-target",
                   !currentCategory
-                    ? "bg-carrot-50 text-carrot-700 border border-carrot-100"
+                    ? "bg-[#F0FDFA] text-[#0F766E] border border-[#CCFBF1]"
                     : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                 )}
                 aria-current={!currentCategory ? "page" : undefined}
@@ -85,7 +85,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                     className={cn(
                       "text-xs px-2 py-1 rounded-full font-medium transition-daangn min-w-[20px] text-center",
                       !currentCategory
-                        ? "bg-carrot-100 text-carrot-700"
+                        ? "bg-[#CCFBF1] text-[#0F766E]"
                         : "bg-gray-100 text-gray-600 group-hover:bg-gray-200"
                     )}
                   >
@@ -103,9 +103,9 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                     type="button"
                     onClick={() => handleCategoryClick(cat)}
                     className={cn(
-                      "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-daangn group focus:outline-none focus-visible:ring-2 focus-visible:ring-carrot-400 touch-target",
+                      "w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-daangn group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2DD4BF] touch-target",
                       isActive
-                        ? "bg-carrot-50 text-carrot-700 border border-carrot-100"
+                        ? "bg-[#F0FDFA] text-[#0F766E] border border-[#CCFBF1]"
                         : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     )}
                     aria-current={isActive ? "page" : undefined}
@@ -116,7 +116,7 @@ export function CategorySidebar({ postCounts }: CategorySidebarProps) {
                         className={cn(
                           "text-xs px-2 py-1 rounded-full font-medium transition-daangn min-w-[20px] text-center",
                           isActive
-                            ? "bg-carrot-100 text-carrot-700"
+                            ? "bg-[#CCFBF1] text-[#0F766E]"
                             : "bg-gray-100 text-gray-600 group-hover:bg-gray-200"
                         )}
                       >

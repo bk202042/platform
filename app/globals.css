@@ -1,7 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  /* Daangn Carrot Color Scale */
+  /* Teal Primary Color Scale */
+  --teal-50: #F0FDFA;
+  --teal-100: #CCFBF1;
+  --teal-200: #99F6E4;
+  --teal-300: #5EEAD4;
+  --teal-400: #2DD4BF;
+  --teal-500: #14B8A6;
+  --teal-600: #0D9488;
+  --teal-700: #0F766E;
+  --teal-800: #115E59;
+  --teal-900: #134E4A;
+
+  /* Legacy Carrot Color Scale (kept for potential fallback) */
   --carrot-50: #FFF7F0;
   --carrot-100: #FFEDD6;
   --carrot-200: #FFD9AD;
@@ -37,7 +49,7 @@
   
   --semantic-border-primary: #DEE2E6;
   --semantic-border-secondary: #E9ECEF;
-  --semantic-border-focus: #FF8A3D;
+  --semantic-border-focus: #007882;
 
   /* Daangn Status Colors */
   --status-success: #28A745;
@@ -45,7 +57,7 @@
   --status-error: #DC3545;
   --status-info: #17A2B8;
 
-  /* Updated shadcn/ui tokens using Daangn colors */
+  /* Updated shadcn/ui tokens using Teal colors */
   --background: var(--semantic-bg-primary);
   --foreground: var(--semantic-text-primary);
 
@@ -55,7 +67,7 @@
   --popover: var(--semantic-bg-primary);
   --popover-foreground: var(--semantic-text-primary);
 
-  --primary: var(--carrot-500);
+  --primary: #007882;
   --primary-foreground: var(--semantic-text-inverse);
 
   --secondary: var(--semantic-bg-secondary);
@@ -72,13 +84,25 @@
 
   --border: var(--semantic-border-primary);
   --input: var(--semantic-border-primary);
-  --ring: var(--semantic-border-focus);
+  --ring: #007882;
 
   --radius: 0.75rem; /* Updated to Daangn's 12px default */
 }
 
 @theme inline {
-  /* Daangn Carrot Colors */
+  /* Teal Primary Colors */
+  --color-teal-50: var(--teal-50);
+  --color-teal-100: var(--teal-100);
+  --color-teal-200: var(--teal-200);
+  --color-teal-300: var(--teal-300);
+  --color-teal-400: var(--teal-400);
+  --color-teal-500: var(--teal-500);
+  --color-teal-600: var(--teal-600);
+  --color-teal-700: var(--teal-700);
+  --color-teal-800: var(--teal-800);
+  --color-teal-900: var(--teal-900);
+
+  /* Legacy Carrot Colors */
   --color-carrot-50: var(--carrot-50);
   --color-carrot-100: var(--carrot-100);
   --color-carrot-200: var(--carrot-200);
@@ -195,7 +219,7 @@
     --popover: #212529;
     --popover-foreground: #f1f3f4;
 
-    --primary: var(--carrot-500); /* Keep Daangn orange in dark mode */
+    --primary: #007882; /* Use teal in dark mode */
     --primary-foreground: var(--semantic-text-inverse);
 
     --secondary: #343a40;
@@ -212,7 +236,7 @@
 
     --border: #495057;
     --input: #495057;
-    --ring: var(--carrot-500);
+    --ring: #007882;
 
     /* Update semantic colors for dark mode */
     --semantic-bg-primary: #1a1a1a;

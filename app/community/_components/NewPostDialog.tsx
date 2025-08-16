@@ -218,7 +218,7 @@ export function NewPostDialog({
               <Label htmlFor="apartment_id" className="text-sm font-medium">
                 아파트 <span className="text-red-500">*</span>
                 {!form.apartment_id && (
-                  <span className="ml-2 text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full font-medium">
+                  <span className="ml-2 text-xs text-[#007882] bg-[#F0FDFA] px-2 py-1 rounded-full font-medium">
                     필수
                   </span>
                 )}
@@ -395,7 +395,7 @@ export function NewPostDialog({
               {/* Progressive length indicator */}
               <div className="absolute bottom-2 right-2 flex items-center gap-2">
                 {form.body.length > 0 && form.body.length < 10 && (
-                  <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full">
+                  <span className="text-xs text-[#007882] bg-[#F0FDFA] px-2 py-1 rounded-full">
                     최소 1자 이상
                   </span>
                 )}
@@ -409,7 +409,7 @@ export function NewPostDialog({
                     "text-xs px-2 py-1 rounded-full",
                     form.body.length >= 1950
                       ? "text-red-600 bg-red-100"
-                      : "text-orange-600 bg-orange-100"
+                      : "text-[#007882] bg-[#F0FDFA]"
                   )}>
                     {2000 - form.body.length}자 남음
                   </span>
@@ -440,7 +440,7 @@ export function NewPostDialog({
                 form.body.length >= 1950 
                   ? "text-red-600 font-medium"
                   : form.body.length >= 1800
-                  ? "text-orange-600"
+                  ? "text-[#007882]"
                   : "text-muted-foreground"
               )} aria-label={`${form.body.length}자 입력됨, 최대 2000자`}>
                 {form.body.length}/2000

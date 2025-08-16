@@ -83,7 +83,7 @@ export function MobileBottomNavigation({
                     "flex flex-col items-center justify-center py-2.5 px-3 rounded-lg transition-daangn touch-target",
                     "active:scale-95 active:bg-gray-100",
                     isActive
-                      ? "text-carrot-600 bg-carrot-50"
+                      ? "text-[#007882] bg-[#F0FDFA]"
                       : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                   )}
                   aria-label={item.label}
@@ -97,7 +97,7 @@ export function MobileBottomNavigation({
                   </div>
                   <span className={cn(
                     "text-xs font-medium mt-1 transition-daangn",
-                    isActive ? "text-carrot-600" : "text-gray-500"
+                    isActive ? "text-[#007882]" : "text-gray-500"
                   )}>
                     {item.label}
                   </span>
@@ -108,7 +108,7 @@ export function MobileBottomNavigation({
         </div>
 
         {/* Active Indicator */}
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-carrot-500 to-transparent opacity-70" />
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#007882] to-transparent opacity-70" />
       </nav>
 
       {/* Floating Action Button for Post Creation */}
@@ -117,7 +117,7 @@ export function MobileBottomNavigation({
           <Button
             onClick={onCreatePost}
             className={cn(
-              "w-14 h-14 rounded-full bg-carrot-500 hover:bg-carrot-600 text-white shadow-daangn-xl hover:shadow-daangn-xl hover:scale-105",
+              "w-14 h-14 rounded-full bg-[#007882] hover:bg-[#006670] text-white shadow-daangn-xl hover:shadow-daangn-xl hover:scale-105",
               "transition-daangn active:scale-95",
               "border-4 border-white touch-target"
             )}
@@ -128,7 +128,7 @@ export function MobileBottomNavigation({
           </Button>
           
           {/* Floating Button Background Glow */}
-          <div className="absolute inset-0 w-14 h-14 rounded-full bg-carrot-400 opacity-20 animate-pulse -z-10" />
+          <div className="absolute inset-0 w-14 h-14 rounded-full bg-[#2DD4BF] opacity-20 animate-pulse -z-10" />
         </div>
       )}
 

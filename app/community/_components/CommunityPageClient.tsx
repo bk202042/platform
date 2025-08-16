@@ -162,7 +162,7 @@ export function CommunityPageClient({
         <Button
           size="sm"
           onClick={handleCreatePost}
-          className="flex items-center gap-1 px-3 py-2 min-h-[36px] bg-orange-500 hover:bg-orange-600 text-white"
+          className="flex items-center gap-1 px-3 py-2 min-h-[36px] bg-[#007882] hover:bg-[#006670] text-white"
         >
           <Plus size={16} />
           <span className="hidden xs:inline">글쓰기</span>
@@ -184,7 +184,7 @@ export function CommunityPageClient({
                 <h1 className="text-2xl font-medium text-zinc-900 leading-[1.25]">동네생활</h1> {/* Daangn typography */}
                 <Button
                   onClick={handleCreatePost}
-                  className="hidden sm:flex items-center gap-2 bg-carrot-500 hover:bg-carrot-600 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] text-white px-4 py-3 rounded-xl font-medium transition-all duration-200 ease-out touch-target min-h-[44px]"
+                  className="hidden sm:flex items-center gap-2 bg-[#007882] hover:bg-[#006670] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] text-white px-4 py-3 rounded-xl font-medium transition-all duration-200 ease-out touch-target min-h-[44px]"
                 >
                   <Plus size={18} />
                   글쓰기
@@ -248,7 +248,7 @@ export function CommunityPageClient({
                           onClick={() => setListMode(!listMode)}
                           className={`h-8 px-3 text-xs font-medium rounded-md touch-target transition-colors ${
                             listMode 
-                              ? 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100' 
+                              ? 'bg-[#F0FDFA] text-[#007882] border-[#99F6E4] hover:bg-[#CCFBF1]' 
                               : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
                           }`}
                         >
@@ -284,7 +284,7 @@ export function CommunityPageClient({
                           </p>
                           <Button
                             onClick={handleCreatePost}
-                            className="bg-carrot-500 hover:bg-carrot-600 text-white px-6 py-3 font-semibold rounded-lg transition-daangn touch-target"
+                            className="bg-[#007882] hover:bg-[#006670] text-white px-6 py-3 font-semibold rounded-lg transition-daangn touch-target"
                           >
                             첫 글 쓰기
                           </Button>
@@ -303,7 +303,7 @@ export function CommunityPageClient({
         <div className="fixed bottom-6 right-6 sm:hidden z-50">
           <Button
             onClick={handleCreatePost}
-            className="w-16 h-16 rounded-full bg-carrot-500 hover:bg-carrot-600 active:bg-carrot-700 text-white shadow-daangn-xl hover:shadow-daangn-xl hover:scale-105 active:scale-95 transition-daangn touch-target"
+            className="w-16 h-16 rounded-full bg-[#007882] hover:bg-[#006670] active:bg-[#0F766E] text-white shadow-daangn-xl hover:shadow-daangn-xl hover:scale-105 active:scale-95 transition-daangn touch-target"
           >
             <Plus size={24} strokeWidth={2.5} />
           </Button>

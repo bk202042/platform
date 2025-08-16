@@ -42,7 +42,7 @@ export function CategoryTabs({
             key={category}
             className={`flex items-center gap-1 px-4 py-2 rounded-lg whitespace-nowrap font-medium transition-colors ${
               isSelected
-                ? 'bg-orange-500 text-white shadow-sm' 
+                ? 'bg-[#007882] text-white shadow-sm' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
             onClick={() => onCategoryChange(category === "전체" ? "" : category)}

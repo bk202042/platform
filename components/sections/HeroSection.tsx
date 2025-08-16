@@ -89,7 +89,7 @@ export function HeroSection() {
               <Button
                 type="submit"
                 size="icon"
-                className="absolute right-2 top-2 h-10 w-10 rounded-lg bg-[#E95C33] hover:bg-[#D14A21] text-white"
+                className="absolute right-2 top-2 h-10 w-10 rounded-lg bg-[#d93c23] hover:bg-[#c2341e] text-white"
                 aria-label="Submit Search"
               >
                 <Search className="h-5 w-5" />

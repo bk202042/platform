@@ -46,7 +46,7 @@ const CATEGORY_CONFIG = {
   },
   SECONDHAND: {
     label: "중고거래",
-    color: "bg-carrot-50 text-carrot-700 border border-carrot-100",
+    color: "bg-[#F0FDFA] text-[#0F766E] border border-[#CCFBF1]",
     icon: "🛍️"
   },
   FREE: {
@@ -158,7 +158,7 @@ export const PostCard = memo(function PostCard({
             </div>
             
             {/* Content: Title */}
-            <h3 className="text-sm font-medium text-zinc-900 leading-[1.25] mb-2 line-clamp-2 group-hover:text-carrot-600 transition-all duration-200">
+            <h3 className="text-sm font-medium text-zinc-900 leading-[1.25] mb-2 line-clamp-2 group-hover:text-[#007882] transition-all duration-200">
               {post.title || post.body}
             </h3>
             
@@ -255,7 +255,7 @@ export const PostCard = memo(function PostCard({
         )}>
           {post.title && (
             <h3 className={cn(
-              "text-base font-medium text-zinc-900 line-clamp-2 group-hover:text-carrot-600 transition-all duration-200 leading-[1.25]", // Daangn line-height
+              "text-base font-medium text-zinc-900 line-clamp-2 group-hover:text-[#007882] transition-all duration-200 leading-[1.25]", // Daangn line-height
               compact && "text-sm" // Smaller title for compact mode
             )}>
               {post.title}
