@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Sidebar } from "./_components/Sidebar";
+import { MobileHeader } from "./_components/MobileHeader";
 import { ProfileSection } from "./_components/ProfileSection";
 import { PostsSection } from "./_components/PostsSection";
 import { getUserPostSummaries } from "@/lib/data/community";
@@ -43,13 +44,16 @@ export default async function ProfilePage({ searchParams }: PageProps) {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Mobile Header - Only visible on mobile */}
+      <MobileHeader user={user} currentSection={currentSection} />
+      
       <div className="max-w-7xl mx-auto flex">
-        {/* Left Sidebar */}
+        {/* Left Sidebar - Hidden on mobile, visible on desktop */}
         <Sidebar user={user} currentSection={currentSection} />
         
         {/* Main Content */}
-        <main className="flex-1 lg:pl-80">
-          <div className="p-4 lg:p-8">
+        <main className="flex-1 w-full lg:pl-80">
+          <div className="pt-16 lg:pt-0 p-4 lg:p-8">
             {currentSection === "profile" && <ProfileSection user={user} />}
             {currentSection === "posts" && <PostsSection userId={user.id} initialPosts={initialPosts} />}
           </div>
