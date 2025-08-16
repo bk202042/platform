@@ -101,6 +101,8 @@ export function ProfileSection({ user }: ProfileSectionProps) {
                 value={formData[name as keyof typeof formData]}
                 onChange={handleInputChange}
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder={`${label}을 입력하세요`}
+                title={`${label} 입력 필드`}
                 autoFocus
               />
               <Button
@@ -145,10 +147,27 @@ export function ProfileSection({ user }: ProfileSectionProps) {
     );
   };
 
+  const fullName = user.user_metadata?.full_name || user.email || "사용자";
+  const userType = "Home Buyer";
+
   return (
-    <div className="max-w-2xl">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">프로필 편집</h1>
+    <div className="w-full max-w-2xl">
+      {/* User Profile Header */}
+      <div className="mb-6 bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gray-200 flex items-center justify-center text-xl sm:text-2xl font-medium text-gray-600 flex-shrink-0">
+            {fullName[0]?.toUpperCase()}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">{fullName}</h2>
+            <p className="text-gray-500 text-sm sm:text-base">{userType}</p>
+            <p className="text-xs sm:text-sm text-gray-400 truncate">{user.email}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">계정 정보</h1>
       </div>
 
       {message && (
@@ -195,6 +214,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
               <select
                 name="userType"
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                title="사용자 유형 선택"
                 defaultValue="home-buyer"
               >
                 <option value="home-buyer">Home Buyer</option>
