@@ -578,8 +578,18 @@ export async function getApartments() {
     .order("name", { ascending: true });
   if (error) throw error;
   
+  // Type assertion for the query result
+  type ApartmentWithCity = {
+    id: string;
+    name: string;
+    name_ko: string | null;
+    name_en: string | null;
+    city_id: string;
+    cities: { name: string; name_ko: string | null } | { name: string; name_ko: string | null }[] | null;
+  };
+  
   // Group apartments by city and ensure proper city-based organization
-  const apartments = data || [];
+  const apartments = (data as ApartmentWithCity[]) || [];
   
   // Sort to ensure cities come first, then apartments within each city
   apartments.sort((a, b) => {
