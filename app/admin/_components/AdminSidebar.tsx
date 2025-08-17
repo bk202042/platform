@@ -58,7 +58,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
       {/* Hamburger Menu Button - Only visible on mobile */}
       <button
         onClick={() => setIsOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white shadow-md border border-gray-200 hover:bg-gray-50 transition-colors"
+        className="md:hidden fixed top-4 right-4 z-50 p-2 rounded-lg bg-white shadow-md border border-gray-200 hover:bg-gray-50 transition-colors"
         aria-label="Open menu"
       >
         <Menu className="h-6 w-6 text-gray-700" />
@@ -85,7 +85,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
         {/* Close button - Only visible on mobile */}
         <button
           onClick={() => setIsOpen(false)}
-          className="md:hidden absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="md:hidden absolute top-4 left-4 p-2 rounded-lg hover:bg-gray-100 transition-colors"
           aria-label="Close menu"
         >
           <X className="h-5 w-5 text-gray-700" />
