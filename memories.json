@@ -2834,7 +2834,26 @@
       "lastAccessed": "2025-08-17T04:25:09.290Z",
       "lastVerified": "2025-08-17T04:25:09.290Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1755406963270_3fw32vejd",
+      "content": "Playwright investigation results for profile page layout after post editing feature implementation:\n\n**Current Layout Status:**\n- ✅ AdminLayout working correctly with sidebar navigation\n- ✅ Profile page structure: sidebar + main content area\n- ✅ Sidebar navigation includes: \"Edit Profile\", \"내 게시글\", \"Saved Homes\" \n- ✅ Section-based routing working (?section=posts vs profile)\n- ✅ Post editing functionality working perfectly:\n  - Edit buttons correctly enabled/disabled based on 24-hour window\n  - Edit form pre-populates with existing data\n  - Navigation to /community/edit/[postId] works\n  - Cancel button returns to profile posts section\n- ✅ Posts section displays all user posts with metadata\n- ✅ Both profile and posts sections render correctly\n\n**Layout Analysis:**\n- Current layout uses standard AdminLayout pattern with responsive sidebar\n- Desktop: persistent sidebar, mobile: hamburger menu with drawer\n- No visual layout issues detected in Playwright investigation\n- All functionality preserved and working correctly\n\n**User's Concern:**\n- User reports layout \"doesn't match exactly\" pre-feature implementation\n- Playwright screenshots show clean, functional layout\n- Possible discrepancy between user expectations vs actual visual state\n- May need direct comparison with user's original screenshots to identify specific differences",
+      "type": "concept",
+      "tags": [
+        "concept",
+        "playwright",
+        "layout",
+        "profile-page",
+        "post-editing",
+        "investigation"
+      ],
+      "timestamp": "2025-08-17T05:02:43.267Z",
+      "context": "Post editing feature implementation - profile page layout investigation",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-17T05:02:43.267Z",
+      "lastVerified": "2025-08-17T05:02:43.267Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-17T04:25:09.290Z"
+  "lastUpdated": "2025-08-17T05:02:43.267Z"
 }
