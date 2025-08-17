@@ -71,7 +71,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
   };
 
   return (
-    <div className="w-full max-w-4xl">
+    <div className="w-full max-w-4xl mx-auto">
       {/* Trulia-inspired clean header */}
       <div className="mb-8">
         <h1 className="text-3xl font-normal text-gray-800">Edit Profile</h1>

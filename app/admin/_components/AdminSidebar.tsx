@@ -75,7 +75,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
       {/* Sidebar - Always visible on desktop, drawer on mobile */}
       <aside 
         className={`
-          w-56 bg-white h-full flex flex-col items-center py-8
+          w-56 bg-white min-h-screen flex flex-col items-center py-8
           md:sticky md:top-0 md:translate-x-0
           fixed top-0 left-0 z-50 transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
