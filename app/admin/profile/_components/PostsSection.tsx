@@ -77,28 +77,9 @@ export function PostsSection({ userId: _userId, initialPosts }: PostsSectionProp
     });
   };
 
-  const canEditPost = (post: PostSummary) => {
-    const postAge = Date.now() - new Date(post.created_at).getTime();
-    const hoursSinceCreated = postAge / (1000 * 60 * 60);
-    return hoursSinceCreated < 24;
-  };
 
-  const getEditTooltip = (post: PostSummary) => {
-    if (canEditPost(post)) {
-      return "게시글 수정";
-    }
-    return "수정 기간이 만료되었습니다 (24시간 제한)";
-  };
-
-  const handleEditPost = (postId: string, post: PostSummary) => {
-    if (canEditPost(post)) {
-      window.location.href = `/community/edit/${postId}`;
-    } else {
-      setNotification({
-        type: "error",
-        message: "게시글은 작성 후 24시간 내에만 수정할 수 있습니다.",
-      });
-    }
+  const handleEditPost = (postId: string, _post: PostSummary) => {
+    window.location.href = `/community/edit/${postId}`;
   };
 
   const handleDeletePost = async (postId: string) => {
@@ -233,13 +214,9 @@ export function PostsSection({ userId: _userId, initialPosts }: PostsSectionProp
                     <Button
                       variant="ghost"
                       size="sm"
-                      className={canEditPost(post) 
-                        ? "text-gray-600 hover:text-gray-900" 
-                        : "text-gray-400 cursor-not-allowed"
-                      }
+                      className="text-gray-600 hover:text-gray-900"
                       onClick={() => handleEditPost(post.id, post)}
-                      title={getEditTooltip(post)}
-                      disabled={!canEditPost(post)}
+                      title="게시글 수정"
                     >
                       <Edit3 className="w-4 h-4" />
                     </Button>

@@ -31,13 +31,7 @@ export default async function EditPostPage({ params }: PageProps) {
     redirect("/community");
   }
 
-  // Check edit time window (24 hours)
-  const postAge = Date.now() - new Date(post.created_at).getTime();
-  const hoursSinceCreated = postAge / (1000 * 60 * 60);
-  
-  if (hoursSinceCreated > 24) {
-    redirect("/admin/profile?section=posts&error=edit_expired");
-  }
+  // Edit time limit removed - users can edit posts at any time
 
   // Get cities and apartments for selectors
   const [cities, apartments] = await Promise.all([

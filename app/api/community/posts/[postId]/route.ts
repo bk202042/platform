@@ -137,16 +137,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // 편집 시간 제한 확인 (24시간)
-    const postAge = Date.now() - new Date(existingPost.created_at).getTime();
-    const hoursSinceCreated = postAge / (1000 * 60 * 60);
-    
-    if (hoursSinceCreated > 24) {
-      return NextResponse.json(
-        { error: "Edit window expired. Posts can only be edited within 24 hours." },
-        { status: 403 }
-      );
-    }
+    // Edit time limit removed - users can edit posts at any time
 
     // 게시글 업데이트
     try {
