@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Edit3, Trash2, Eye } from "lucide-react";
+import { Edit3, Trash2, Eye, CheckCircle, AlertCircle } from "lucide-react";
 import { PostSummary } from "@/lib/types/community";
+import { useSearchParams } from "next/navigation";
 
 interface PostsSectionProps {
   userId: string;
@@ -12,6 +13,35 @@ interface PostsSectionProps {
 
 export function PostsSection({ userId: _userId, initialPosts }: PostsSectionProps) {
   const [posts, setPosts] = useState<PostSummary[]>(initialPosts);
+  const [notification, setNotification] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+  const searchParams = useSearchParams();
+
+  // Handle URL parameters for notifications
+  useEffect(() => {
+    const success = searchParams.get("success");
+    const error = searchParams.get("error");
+
+    if (success === "post_updated") {
+      setNotification({
+        type: "success",
+        message: "게시글이 성공적으로 수정되었습니다.",
+      });
+    } else if (error === "edit_expired") {
+      setNotification({
+        type: "error", 
+        message: "게시글 수정 기간이 만료되었습니다. (24시간 제한)",
+      });
+    }
+
+    // Clear notification after 5 seconds
+    if (success || error) {
+      const timer = setTimeout(() => setNotification(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -47,21 +77,83 @@ export function PostsSection({ userId: _userId, initialPosts }: PostsSectionProp
     });
   };
 
-  const handleEditPost = (postId: string) => {
-    // Navigate to edit page - implementation depends on routing structure
-    window.location.href = `/community/edit/${postId}`;
+  const canEditPost = (post: PostSummary) => {
+    const postAge = Date.now() - new Date(post.created_at).getTime();
+    const hoursSinceCreated = postAge / (1000 * 60 * 60);
+    return hoursSinceCreated < 24;
+  };
+
+  const getEditTooltip = (post: PostSummary) => {
+    if (canEditPost(post)) {
+      return "게시글 수정";
+    }
+    return "수정 기간이 만료되었습니다 (24시간 제한)";
+  };
+
+  const handleEditPost = (postId: string, post: PostSummary) => {
+    if (canEditPost(post)) {
+      window.location.href = `/community/edit/${postId}`;
+    } else {
+      setNotification({
+        type: "error",
+        message: "게시글은 작성 후 24시간 내에만 수정할 수 있습니다.",
+      });
+    }
   };
 
   const handleDeletePost = async (postId: string) => {
     if (confirm("이 게시글을 삭제하시겠습니까?")) {
-      // Implementation for post deletion
-      // This would call a delete function and refresh the list
-      setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+      try {
+        const response = await fetch(`/api/community/posts/${postId}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "삭제에 실패했습니다.");
+        }
+
+        setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+        setNotification({
+          type: "success",
+          message: "게시글이 삭제되었습니다.",
+        });
+      } catch (error) {
+        console.error("Error deleting post:", error);
+        setNotification({
+          type: "error",
+          message: error instanceof Error ? error.message : "게시글 삭제 중 오류가 발생했습니다.",
+        });
+      }
     }
   };
 
   return (
     <div className="max-w-4xl">
+      {/* Notification */}
+      {notification && (
+        <div className={`mb-6 p-4 rounded-lg border flex items-center gap-3 ${
+          notification.type === "success" 
+            ? "bg-green-50 border-green-200 text-green-800"
+            : "bg-red-50 border-red-200 text-red-800"
+        }`}>
+          {notification.type === "success" ? (
+            <CheckCircle className="w-5 h-5 text-green-600" />
+          ) : (
+            <AlertCircle className="w-5 h-5 text-red-600" />
+          )}
+          <span className="text-sm font-medium">{notification.message}</span>
+          <button
+            onClick={() => setNotification(null)}
+            className={`ml-auto text-sm hover:underline ${
+              notification.type === "success" ? "text-green-700" : "text-red-700"
+            }`}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">내 게시글</h1>
         <Button 
@@ -138,8 +230,13 @@ export function PostsSection({ userId: _userId, initialPosts }: PostsSectionProp
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-gray-600 hover:text-gray-900"
-                      onClick={() => handleEditPost(post.id)}
+                      className={canEditPost(post) 
+                        ? "text-gray-600 hover:text-gray-900" 
+                        : "text-gray-400 cursor-not-allowed"
+                      }
+                      onClick={() => handleEditPost(post.id, post)}
+                      title={getEditTooltip(post)}
+                      disabled={!canEditPost(post)}
                     >
                       <Edit3 className="w-4 h-4" />
                     </Button>
