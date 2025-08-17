@@ -574,10 +574,28 @@ export async function getApartments() {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("apartments")
-    .select("id, name, city_id, cities(name)")
+    .select("id, name, name_ko, name_en, city_id, cities(name, name_ko)")
     .order("name", { ascending: true });
   if (error) throw error;
-  return data || [];
+  
+  // Group apartments by city and ensure proper city-based organization
+  const apartments = data || [];
+  
+  // Sort to ensure cities come first, then apartments within each city
+  apartments.sort((a, b) => {
+    const cityA = Array.isArray(a.cities) ? a.cities[0]?.name : a.cities?.name;
+    const cityB = Array.isArray(b.cities) ? b.cities[0]?.name : b.cities?.name;
+    
+    // First sort by city name
+    if (cityA !== cityB) {
+      return (cityA || '').localeCompare(cityB || '');
+    }
+    
+    // Then sort by apartment name within the same city
+    return a.name.localeCompare(b.name);
+  });
+  
+  return apartments;
 }
 
 // 카테고리별 게시글 수 조회

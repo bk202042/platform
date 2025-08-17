@@ -2684,7 +2684,63 @@
       "lastAccessed": "2025-08-16T11:37:16.660Z",
       "lastVerified": "2025-08-16T11:32:28.241Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1755398963380_b7uc9dlrq",
+      "content": "Starting investigation of apartment duplications in community post dialog and apartment selector. Need to:\n1. Examine Supabase database schema for apartments\n2. Identify duplicate apartment data\n3. Find English names needing Korean translation\n4. Understand apartment data flow in ApartmentSelector and ApartmentSelectorForDialog components\n5. Determine deduplication and city organization strategy",
+      "type": "general",
+      "tags": [
+        "general",
+        "database",
+        "apartments",
+        "duplicates",
+        "korean-translation",
+        "community-dialog"
+      ],
+      "timestamp": "2025-08-17T02:49:23.379Z",
+      "context": "Community post dialog apartment selector investigation",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-17T02:49:23.379Z",
+      "lastVerified": "2025-08-17T02:49:23.379Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755399044457_n3ba8i470",
+      "content": "Key findings from apartment duplication investigation:\n\nDATABASE ANALYSIS:\n- Found potential duplicates: Vinhomes Central Park vs 빈홈 센트럴 파크 (different representations of same apartment)\n- Apartments needing Korean translation: F Home, Hyatt Regency Danang, Vinhomes Royal City\n- No exact name duplicates found, but semantic duplicates exist\n- 28 total apartments across 3 cities (Hanoi, Ho Chi Minh, Da Nang)\n\nCOMPONENT STRUCTURE:\n- ApartmentSelector: Basic dropdown with apartments, displays \"apt.name - apt.cities?.name\"\n- ApartmentSelectorForDialog: More advanced, displays \"city?.name, apartment.name\" \n- Both components receive raw apartment arrays without city grouping or deduplication\n\nDATA FLOW:\n- getAllVietnameseApartments() in vietnamese-locations.ts fetches apartments\n- No deduplication logic in data layer\n- Components don't group by cities in UI\n- Potential duplicates get displayed as separate options",
+      "type": "warning",
+      "tags": [
+        "warning",
+        "database",
+        "apartments",
+        "duplicates",
+        "korean-translation",
+        "component-analysis"
+      ],
+      "timestamp": "2025-08-17T02:50:44.456Z",
+      "context": "Apartment duplication investigation findings",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-17T02:50:44.456Z",
+      "lastVerified": "2025-08-17T02:50:44.456Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1755399736446_aehlizpj0",
+      "content": "Successfully completed apartment deduplication and Korean localization task. Database now contains: 27 apartments total, all with Korean names, organized by cities (다낭: 6 apartments, 하노이: 8 apartments, 호치민: 13 apartments). Duplicate \"apt14\" removed, English names converted to Korean. Components updated: getApartments() function, ApartmentSelector.tsx, ApartmentSelectorForDialog.tsx - all with city-based grouping.",
+      "type": "code",
+      "tags": [
+        "code",
+        "database",
+        "apartment-deduplication",
+        "korean-localization",
+        "database-cleanup",
+        "ui-components"
+      ],
+      "timestamp": "2025-08-17T03:02:16.445Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-08-17T03:02:16.445Z",
+      "lastVerified": "2025-08-17T03:02:16.445Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-08-16T11:32:28.241Z"
+  "lastUpdated": "2025-08-17T03:02:16.445Z"
 }

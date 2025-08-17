@@ -121,6 +121,15 @@ export function Header() {
                   <DropdownMenuItem>
                     <button
                       type="button"
+                      onClick={() => router.push("/admin/profile?section=posts")}
+                      className="cursor-pointer w-full text-left"
+                    >
+                      내 게시글
+                    </button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <button
+                      type="button"
                       onClick={() => router.push("/admin/saved-homes")}
                       className="cursor-pointer w-full text-left flex items-center gap-2"
                     >
