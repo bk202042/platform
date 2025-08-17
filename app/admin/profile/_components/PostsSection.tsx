@@ -129,7 +129,7 @@ export function PostsSection({ userId: _userId, initialPosts }: PostsSectionProp
   };
 
   return (
-    <div className="max-w-4xl">
+    <div className="max-w-4xl mx-auto">
       {/* Notification */}
       {notification && (
         <div className={`mb-6 p-4 rounded-lg border flex items-center gap-3 ${
