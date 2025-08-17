@@ -155,7 +155,10 @@ export function PostsSection({ userId: _userId, initialPosts }: PostsSectionProp
       )}
 
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">내 게시글</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">내 게시글</h1>
+          <p className="text-sm text-gray-600 mt-1">작성한 게시글을 관리하고 수정할 수 있습니다.</p>
+        </div>
         <Button 
           className="bg-blue-600 hover:bg-blue-700 text-white"
           onClick={() => window.location.href = "/community"}
