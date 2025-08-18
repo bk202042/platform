@@ -69,6 +69,9 @@ export default function Footer() {
             <p className="text-sm text-zinc-600 font-medium">
               &copy; {new Date().getFullYear()} 비나홈(VinaHome). 모든 권리 보유. 공평 주택 기회.
             </p>
+            <p className="text-xs text-zinc-500 mt-2">
+              사업자등록번호: 896-44-01025 | 고객문의: hello@vinahome.cc
+            </p>
           </div>
           
           {/* Company Description */}
