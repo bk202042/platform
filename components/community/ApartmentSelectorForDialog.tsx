@@ -8,6 +8,8 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { Building, MapPin } from "lucide-react";
+import { useTwoStepApartmentSelector } from "@/hooks/useTwoStepApartmentSelector";
 
 // Component-specific interfaces that extend database types
 export interface ApartmentSelectOption {
@@ -45,67 +47,123 @@ export function ApartmentSelectorForDialog({
   apartments,
   ...ariaProps
 }: ApartmentSelectorForDialogProps) {
-  // Group apartments by city for better organization
-  const apartmentsByCity = apartments.reduce((acc, apt) => {
-    const city = cities.find(c => c.id === apt.city_id);
-    const cityName = city?.name || city?.name_ko || "기타";
-    if (!acc[cityName]) {
-      acc[cityName] = {
-        city: city,
-        apartments: []
-      };
-    }
-    acc[cityName].apartments.push(apt);
-    return acc;
-  }, {} as Record<string, { city: CitySelectOption | undefined; apartments: ApartmentSelectOption[] }>);
-
-  // Sort cities and apartments within each city
-  const sortedCities = Object.keys(apartmentsByCity).sort();
-  
-  // Sort apartments within each city
-  Object.values(apartmentsByCity).forEach(cityGroup => {
-    cityGroup.apartments.sort((a, b) => a.name.localeCompare(b.name));
+  const {
+    selectedCityId,
+    selectedApartmentId,
+    filteredApartments,
+    cityOptionsWithCounts,
+    isApartmentSelectorEnabled,
+    handleCitySelect,
+    handleApartmentSelect,
+    getCityDisplayName,
+    getApartmentDisplayName
+  } = useTwoStepApartmentSelector({
+    cities,
+    apartments,
+    initialSelectedApartmentId: value,
+    onApartmentSelect,
+    includeAllOption: false
   });
 
   return (
-    <Select value={value} onValueChange={onApartmentSelect}>
-      <SelectTrigger 
-        className={cn("w-full", className)}
-        aria-label={ariaProps["aria-label"]}
-        aria-required={ariaProps["aria-required"]}
-        aria-invalid={ariaProps["aria-invalid"]}
-        aria-describedby={ariaProps["aria-describedby"]}
-      >
-        <SelectValue placeholder="🏢 아파트를 검색하고 선택하세요" />
-      </SelectTrigger>
-      <SelectContent>
-        {sortedCities.map(cityName => {
-          const cityGroup = apartmentsByCity[cityName];
-          return (
-            <div key={cityName}>
-              {/* City header - disabled item for visual grouping */}
-              <SelectItem 
-                value={`city-header-${cityName}`} 
-                disabled 
-                className="font-medium text-gray-500 bg-gray-50 text-xs uppercase tracking-wide"
-              >
-                📍 {cityName}
-              </SelectItem>
-              {/* Apartments in this city */}
-              {cityGroup.apartments.map(apartment => (
-                <SelectItem key={apartment.id} value={apartment.id} className="pl-6">
-                  <div className="flex flex-col">
-                    <span className="font-medium">{apartment.name}</span>
-                    {apartment.district && (
-                      <span className="text-xs text-gray-500">{apartment.district}</span>
-                    )}
+    <div className={cn("space-y-4", className)}>
+      {/* Two-step selection container */}
+      <div className="space-y-3">
+        {/* Step 1: City Selection */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-xs font-medium text-gray-600 uppercase tracking-wide">
+            <span className="flex items-center justify-center w-4 h-4 text-[9px] font-bold text-white bg-blue-500 rounded-full">1</span>
+            도시 선택
+          </div>
+          <Select value={selectedCityId} onValueChange={handleCitySelect}>
+            <SelectTrigger 
+              className="w-full"
+              aria-label="도시 선택"
+              aria-required={ariaProps["aria-required"]}
+            >
+              <SelectValue placeholder="도시를 먼저 선택해주세요" />
+            </SelectTrigger>
+            <SelectContent>
+              {cityOptionsWithCounts.map(city => (
+                <SelectItem key={city.id} value={city.id}>
+                  <div className="flex items-center gap-2">
+                    <MapPin size={14} className="text-gray-400" />
+                    <span className="text-sm">{getCityDisplayName(city)}</span>
                   </div>
                 </SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Step 2: Apartment Selection */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-xs font-medium text-gray-600 uppercase tracking-wide">
+            <span className={`flex items-center justify-center w-4 h-4 text-[9px] font-bold rounded-full transition-colors ${
+              isApartmentSelectorEnabled 
+                ? 'text-white bg-blue-500' 
+                : 'text-gray-400 bg-gray-200'
+            }`}>2</span>
+            아파트 선택
+          </div>
+          <Select 
+            value={selectedApartmentId} 
+            onValueChange={handleApartmentSelect}
+            disabled={!isApartmentSelectorEnabled}
+          >
+            <SelectTrigger 
+              className={`w-full transition-all duration-200 ${
+                isApartmentSelectorEnabled ? 'opacity-100' : 'opacity-50'
+              }`}
+              aria-label={ariaProps["aria-label"] || "아파트 선택"}
+              aria-required={ariaProps["aria-required"]}
+              aria-invalid={ariaProps["aria-invalid"]}
+              aria-describedby={ariaProps["aria-describedby"]}
+            >
+              <SelectValue placeholder={
+                isApartmentSelectorEnabled 
+                  ? "🏢 아파트를 검색하고 선택하세요" 
+                  : "먼저 도시를 선택해주세요"
+              } />
+            </SelectTrigger>
+            <SelectContent>
+              {filteredApartments.map(apartment => (
+                <SelectItem key={apartment.id} value={apartment.id}>
+                  <div className="flex items-start gap-2">
+                    <Building size={14} className="text-gray-400 mt-0.5" />
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-medium text-sm truncate">
+                        {getApartmentDisplayName(apartment)}
+                      </span>
+                      {apartment.district && (
+                        <span className="text-xs text-gray-500 truncate">
+                          {apartment.district_ko || apartment.district}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Compact Selection Summary for Dialog */}
+        {selectedCityId && selectedApartmentId && (
+          <div className="p-2 bg-green-50 border border-green-200 rounded-md">
+            <div className="text-xs text-green-800">
+              <span className="font-medium">✓ 선택완료:</span>{" "}
+              {(() => {
+                const selectedApt = filteredApartments.find(apt => apt.id === selectedApartmentId);
+                const selectedCity = cityOptionsWithCounts.find(city => city.id === selectedCityId);
+                return selectedApt && selectedCity ? 
+                  `${selectedCity.name_ko || selectedCity.name} - ${getApartmentDisplayName(selectedApt)}` : 
+                  "";
+              })()}
             </div>
-          );
-        })}
-      </SelectContent>
-    </Select>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
