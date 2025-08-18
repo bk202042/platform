@@ -80,19 +80,19 @@ function CommentItem({
 
   return (
     <div
-      className={`${depth > 0 ? "ml-3 sm:ml-6 pl-2 sm:pl-4 border-l-2 border-gray-100" : ""}`}
+      className={`${depth > 0 ? "ml-3 sm:ml-6 pl-2 sm:pl-4 border-l-2 border-zinc-200/60" : ""}`}
     >
-      <div className="bg-gray-50 rounded-lg p-3 sm:p-4 mb-3">
+      <div className="bg-zinc-50/80 rounded-lg p-3 sm:p-4 mb-3 shadow-sm border border-zinc-100/50">
         {/* Comment header */}
         <div className="flex items-start justify-between mb-2 gap-2">
-          <div className="flex items-center gap-1.5 sm:gap-2 text-sm text-gray-600 min-w-0 flex-1">
-            <span className="font-medium text-gray-900 truncate">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-sm text-zinc-600 min-w-0 flex-1">
+            <span className="font-semibold text-zinc-900 truncate">
               {comment.user?.name || "익명"}
             </span>
             <span aria-hidden="true" className="flex-shrink-0">
               ·
             </span>
-            <span className="text-xs sm:text-sm whitespace-nowrap">
+            <span className="text-xs sm:text-sm text-zinc-500 whitespace-nowrap font-medium">
               {formatDate(comment.created_at)}
             </span>
           </div>
@@ -102,7 +102,7 @@ function CommentItem({
             {canReply && (
               <button
                 type="button"
-                className="text-blue-600 text-xs sm:text-sm font-medium hover:text-blue-700 transition-colors flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 min-h-[32px]"
+                className="text-blue-600 text-xs sm:text-sm font-semibold hover:text-blue-700 transition-colors flex items-center gap-1 px-2 py-1.5 rounded-md hover:bg-blue-50/80 min-h-[32px]"
                 onClick={() => onReply(comment)}
                 aria-label="답글 달기"
               >
@@ -113,7 +113,7 @@ function CommentItem({
             {isOwner && (
               <button
                 type="button"
-                className="text-red-500 text-xs sm:text-sm font-medium hover:text-red-600 transition-colors flex items-center gap-1 px-2 py-1 rounded hover:bg-red-50 min-h-[32px]"
+                className="text-red-500 text-xs sm:text-sm font-semibold hover:text-red-600 transition-colors flex items-center gap-1 px-2 py-1.5 rounded-md hover:bg-red-50/80 min-h-[32px]"
                 onClick={() => onDelete(comment)}
                 aria-label="댓글 삭제"
               >
@@ -125,7 +125,7 @@ function CommentItem({
         </div>
 
         {/* Comment content */}
-        <div className="text-gray-800 whitespace-pre-line leading-relaxed text-sm sm:text-base">
+        <div className="text-zinc-900 whitespace-pre-line leading-7 text-sm sm:text-base font-normal">
           {comment.body}
         </div>
       </div>
@@ -267,12 +267,13 @@ export function CommentSection({
 
       setIsDeleting(true);
       try {
-        const response = await fetch(
-          `/api/community/posts/${postId}/comments/${comment.id}`,
-          {
-            method: "DELETE",
+        const response = await fetch("/api/community/comments/delete", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify({ postId, commentId: comment.id }),
+        });
 
         const result = await response.json();
 
@@ -323,19 +324,19 @@ export function CommentSection({
   return (
     <section className="space-y-6">
       {/* Comment form */}
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">댓글 작성</h3>
+      <div className="bg-white border border-zinc-200/60 rounded-lg p-4 shadow-sm">
+        <h3 className="text-lg font-bold text-zinc-900 mb-4 tracking-tight">댓글 작성</h3>
         {currentUserId ? (
-          <CommentForm onSubmit={handleCommentSubmit} loading={isSubmitting} />
+          <CommentForm postId={postId} onSubmit={handleCommentSubmit} loading={isSubmitting} />
         ) : (
-          <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
-            <div className="w-12 h-12 mx-auto mb-3 bg-gray-200 rounded-full flex items-center justify-center">
-              <MessageCircle size={20} className="text-gray-400" />
+          <div className="text-center py-8 text-zinc-500 bg-zinc-50/60 rounded-lg border border-zinc-100/50">
+            <div className="w-12 h-12 mx-auto mb-3 bg-zinc-200/70 rounded-full flex items-center justify-center">
+              <MessageCircle size={20} className="text-zinc-400" />
             </div>
-            <p className="text-sm font-medium text-gray-600 mb-2">
+            <p className="text-sm font-semibold text-zinc-700 mb-2">
               로그인이 필요합니다
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-zinc-500 font-medium">
               댓글을 작성하려면 로그인해주세요.
             </p>
           </div>
@@ -345,7 +346,7 @@ export function CommentSection({
       {/* Comments list */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">
+          <h3 className="text-lg font-bold text-zinc-900 tracking-tight">
             댓글 {comments.length}개
           </h3>
         </div>
@@ -363,14 +364,14 @@ export function CommentSection({
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-lg">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-              <MessageCircle size={24} className="text-gray-400" />
+          <div className="text-center py-12 text-zinc-500 bg-zinc-50/60 rounded-lg border border-zinc-100/50">
+            <div className="w-16 h-16 mx-auto mb-4 bg-zinc-100/80 rounded-full flex items-center justify-center">
+              <MessageCircle size={24} className="text-zinc-400" />
             </div>
-            <p className="text-base font-medium text-gray-600 mb-2">
+            <p className="text-base font-semibold text-zinc-700 mb-2">
               아직 댓글이 없습니다
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-zinc-500 font-medium">
               첫 번째 댓글을 남겨서 대화를 시작해보세요!
             </p>
           </div>
@@ -389,19 +390,20 @@ export function CommentSection({
             </DialogHeader>
 
             {/* Original comment preview */}
-            <div className="bg-gray-50 rounded-lg p-3 mb-4">
-              <div className="text-sm text-gray-600 mb-1">
+            <div className="bg-zinc-50/80 rounded-lg p-3 mb-4 border border-zinc-100/50">
+              <div className="text-sm text-zinc-600 mb-1 font-medium">
                 <span className="font-medium">
                   {replyingTo.user?.name || "익명"}
                 </span>
               </div>
-              <div className="text-sm text-gray-800 line-clamp-3">
+              <div className="text-sm text-zinc-900 line-clamp-3 leading-6 font-normal">
                 {replyingTo.body}
               </div>
             </div>
 
             {currentUserId ? (
               <CommentForm
+                postId={postId}
                 onSubmit={(values) =>
                   handleCommentSubmit({ ...values, parent_id: replyingTo.id })
                 }
@@ -409,7 +411,7 @@ export function CommentSection({
                 defaultValue=""
               />
             ) : (
-              <div className="text-center py-4 text-gray-500">
+              <div className="text-center py-4 text-zinc-500">
                 <p className="text-sm">로그인이 필요합니다.</p>
               </div>
             )}
@@ -435,8 +437,8 @@ export function CommentSection({
             </DialogHeader>
 
             {/* Comment preview */}
-            <div className="bg-gray-50 rounded-lg p-3 mb-4">
-              <div className="text-sm text-gray-800 line-clamp-3">
+            <div className="bg-zinc-50/80 rounded-lg p-3 mb-4 border border-zinc-100/50">
+              <div className="text-sm text-zinc-900 line-clamp-3 leading-6 font-normal">
                 {deletingComment.body}
               </div>
             </div>

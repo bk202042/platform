@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { createCommentSchema } from "@/lib/validation/community";
 
 interface CommentFormProps {
+  postId: string;
   onSubmit: (values: { body: string; parent_id?: string | null }) => void;
   parentId?: string | null;
   loading?: boolean;
@@ -9,6 +10,7 @@ interface CommentFormProps {
 }
 
 export function CommentForm({
+  postId,
   onSubmit,
   parentId,
   loading,
@@ -20,7 +22,7 @@ export function CommentForm({
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const result = createCommentSchema.safeParse({
-      post_id: "dummy",
+      post_id: postId,
       body,
       parent_id: parentId,
     });
@@ -34,9 +36,9 @@ export function CommentForm({
   }
 
   return (
-    <form className="flex flex-col gap-2 mt-2" onSubmit={handleSubmit}>
+    <form className="flex flex-col gap-3 mt-2" onSubmit={handleSubmit}>
       <textarea
-        className="w-full border rounded-lg px-3 py-2 min-h-[48px] text-sm"
+        className="w-full border border-zinc-200/60 rounded-lg px-3 py-2.5 min-h-[72px] text-sm placeholder:text-zinc-500 text-zinc-900 leading-6 font-normal bg-white shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition-colors resize-none disabled:bg-zinc-50/50 disabled:text-zinc-500"
         placeholder="댓글을 입력하세요"
         value={body}
         onChange={(e) => setBody(e.target.value)}
@@ -45,11 +47,11 @@ export function CommentForm({
         aria-label="댓글 입력"
         disabled={loading}
       />
-      {error && <div className="text-red-500 text-xs">{error}</div>}
+      {error && <div className="text-red-500 text-xs font-medium bg-red-50/50 border border-red-100 rounded-md px-2.5 py-1.5">{error}</div>}
       <div className="flex justify-end">
         <button
           type="submit"
-          className="bg-blue-600 text-white font-semibold px-4 py-1.5 rounded-lg hover:bg-blue-700 transition-colors text-sm disabled:bg-gray-300"
+          className="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500/20 transition-all text-sm disabled:bg-zinc-300 disabled:text-zinc-500 shadow-sm hover:shadow-md"
           disabled={loading || !body.trim()}
         >
           {loading ? "등록 중..." : "등록"}

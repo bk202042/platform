@@ -40,17 +40,19 @@ export function CategoryTabs({
         return (
           <button
             key={category}
-            className={`flex items-center gap-1 px-4 py-2 rounded-lg whitespace-nowrap font-medium transition-colors ${
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl whitespace-nowrap font-medium transition-all duration-200 ease-out min-h-[44px] touch-manipulation ${
               isSelected
-                ? 'bg-[#007882] text-white shadow-sm' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-[#007882] text-white shadow-[0_2px_8px_rgba(0,120,130,0.25)] hover:bg-[#006670] hover:shadow-[0_4px_12px_rgba(0,120,130,0.3)] hover:-translate-y-0.5' 
+                : 'bg-white text-zinc-700 border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[0_1px_4px_rgba(0,0,0,0.08)]'
             }`}
             onClick={() => onCategoryChange(category === "전체" ? "" : category)}
           >
-            {CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS]}
+            <span>{CATEGORY_LABELS[category as keyof typeof CATEGORY_LABELS]}</span>
             {count && count > 0 && (
-              <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                isSelected ? 'bg-white/20' : 'bg-gray-200 text-gray-600'
+              <span className={`text-xs px-2 py-1 rounded-lg font-medium transition-colors ${
+                isSelected 
+                  ? 'bg-white/20 text-white backdrop-blur-sm' 
+                  : 'bg-zinc-100 text-zinc-600 border border-zinc-200'
               }`}>
                 {count}
               </span>

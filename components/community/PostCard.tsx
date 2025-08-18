@@ -342,7 +342,7 @@ export const PostCard = memo(function PostCard({
             />
 
             {/* Comments */}
-            <div className="flex items-center gap-1 text-zinc-400 hover:text-zinc-600 transition-all duration-200 min-w-[44px] min-h-[44px] -m-2 p-2 rounded-lg hover:bg-zinc-50">
+            <div className="flex items-center gap-1 text-zinc-400 hover:text-zinc-600 transition-all duration-200 min-w-[44px] min-h-[44px] -m-2 p-2 rounded-lg hover:bg-white hover:shadow-sm hover:border hover:border-zinc-200">
               <MessageCircle size={14} className="text-zinc-400" aria-label="댓글" />
               <span className="text-xs font-normal">
                 {post.comments_count}

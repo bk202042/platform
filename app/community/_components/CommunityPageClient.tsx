@@ -196,7 +196,7 @@ export function CommunityPageClient({
           {/* Main Content Area */}
           <div className="flex">
             {/* Left Sidebar - Desktop only */}
-            <aside className="hidden lg:block w-64 bg-white border-r border-gray-200 min-h-screen sticky top-[77px]">
+            <aside className="hidden lg:block w-64 bg-white border-r border-zinc-200 min-h-screen sticky top-[77px]">
               <ErrorBoundary>
                 <CategorySidebar postCounts={postCounts} />
               </ErrorBoundary>
@@ -210,10 +210,10 @@ export function CommunityPageClient({
               >
                 <div className="px-2 sm:px-3 lg:px-4 py-2">
                 <ErrorBoundary>
-                  {/* Simplified Controls Section - MVP style */}
-                  <div className="mb-4 bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                  {/* Enhanced Controls Section - Clean Trulia Style */}
+                  <div className="mb-4 bg-white rounded-xl border border-zinc-200 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden">
                     {/* Apartment Selection */}
-                    <div className="p-4 border-b border-gray-100">
+                    <div className="p-5 border-b border-zinc-100">
                       <ApartmentSelector
                         apartments={apartments}
                         selectedId={urlApartmentId || "all"}
@@ -229,27 +229,27 @@ export function CommunityPageClient({
                     />
                     
                     {/* Sort Controls */}
-                    <div className="flex justify-between items-center py-3 px-4 border-t border-gray-100 bg-gray-50">
-                      <div className="flex items-center gap-2">
+                    <div className="flex justify-between items-center py-4 px-5 border-t border-zinc-100 bg-white">
+                      <div className="flex items-center gap-3">
                         <div className="lg:hidden">
                           <Button
                             variant="outline"
                             size="sm"
-                            className="border-gray-300 text-gray-600 bg-white h-8 px-3 text-xs font-medium rounded-md touch-target"
+                            className="border-zinc-300 text-zinc-600 bg-white hover:bg-zinc-50 hover:border-zinc-400 h-9 px-4 text-xs font-medium rounded-lg touch-target transition-all duration-200 shadow-sm"
                           >
                             카테고리
                           </Button>
                         </div>
                         
-                        {/* View Toggle - Daangn style */}
+                        {/* View Toggle - Enhanced style */}
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => setListMode(!listMode)}
-                          className={`h-8 px-3 text-xs font-medium rounded-md touch-target transition-colors ${
+                          className={`h-9 px-4 text-xs font-medium rounded-lg touch-target transition-all duration-200 shadow-sm ${
                             listMode 
-                              ? 'bg-[#F0FDFA] text-[#007882] border-[#99F6E4] hover:bg-[#CCFBF1]' 
-                              : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                              ? 'bg-[#007882] text-white border-[#007882] hover:bg-[#006670] hover:border-[#006670] hover:shadow-md' 
+                              : 'bg-white text-zinc-600 border-zinc-300 hover:bg-zinc-50 hover:border-zinc-400'
                           }`}
                         >
                           {listMode ? '목록' : '카드'}
@@ -273,18 +273,18 @@ export function CommunityPageClient({
                     ) : (
                       <div className="text-center py-20 px-4">
                         <div className="max-w-sm mx-auto">
-                          <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-6 flex items-center justify-center">
-                            <Plus className="w-8 h-8 text-gray-400" />
+                          <div className="w-16 h-16 bg-white border-2 border-zinc-200 rounded-full mx-auto mb-6 flex items-center justify-center shadow-sm">
+                            <Plus className="w-8 h-8 text-zinc-400" />
                           </div>
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2 leading-tight">
+                          <h3 className="text-lg font-semibold text-zinc-900 mb-2 leading-tight">
                             아직 게시글이 없어요
                           </h3>
-                          <p className="text-sm text-gray-500 mb-8 leading-relaxed">
+                          <p className="text-sm text-zinc-500 mb-8 leading-relaxed">
                             우리 동네의 첫 번째 이야기를 들려주세요!
                           </p>
                           <Button
                             onClick={handleCreatePost}
-                            className="bg-[#007882] hover:bg-[#006670] text-white px-6 py-3 font-semibold rounded-lg transition-daangn touch-target"
+                            className="bg-gradient-to-r from-[#007882] to-[#00a0b0] hover:from-[#006670] hover:to-[#008b9a] text-white px-6 py-3 font-semibold rounded-xl transition-all duration-200 touch-target shadow-[0_4px_12px_rgba(0,120,130,0.25)] hover:shadow-[0_6px_20px_rgba(0,120,130,0.3)] hover:-translate-y-1"
                           >
                             첫 글 쓰기
                           </Button>
@@ -299,13 +299,13 @@ export function CommunityPageClient({
           </div>
         </div>
 
-        {/* Floating Action Button - Mobile with enhanced touch target */}
+        {/* Enhanced Floating Action Button - Mobile */}
         <div className="fixed bottom-6 right-6 sm:hidden z-50">
           <Button
             onClick={handleCreatePost}
-            className="w-16 h-16 rounded-full bg-[#007882] hover:bg-[#006670] active:bg-[#0F766E] text-white shadow-daangn-xl hover:shadow-daangn-xl hover:scale-105 active:scale-95 transition-daangn touch-target"
+            className="w-16 h-16 rounded-full bg-gradient-to-r from-[#007882] to-[#00a0b0] hover:from-[#006670] hover:to-[#008b9a] active:from-[#005660] active:to-[#007680] text-white shadow-[0_8px_32px_rgba(0,120,130,0.3)] hover:shadow-[0_12px_40px_rgba(0,120,130,0.4)] hover:scale-110 active:scale-95 transition-all duration-300 ease-out touch-target border-2 border-white/20 backdrop-blur-sm"
           >
-            <Plus size={24} strokeWidth={2.5} />
+            <Plus size={24} strokeWidth={2.5} className="drop-shadow-sm" />
           </Button>
         </div>
       </div>

@@ -76,31 +76,33 @@ export function ApartmentSelector({
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
-        <Building size={16} />
+      <div className="flex items-center gap-2 text-sm font-medium text-zinc-800">
+        <Building size={16} className="text-zinc-600" />
         아파트 선택
       </div>
 
       {/* Two-step selection container */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {/* Step 1: City Selection */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wide">
-            <span className="flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-blue-500 rounded-full">1</span>
-            도시 선택
+        <div className="space-y-3">
+          <div className="flex items-center gap-3 text-xs font-medium text-zinc-700 tracking-normal">
+            <div className="flex items-center justify-center w-6 h-6 text-xs font-semibold text-white bg-gradient-to-r from-[#007882] to-[#00a0b0] rounded-lg shadow-sm">
+              1
+            </div>
+            <span>도시 선택</span>
           </div>
           <Select value={selectedCityId} onValueChange={handleCitySelect}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full h-12 border-zinc-200 bg-white hover:border-zinc-300 focus:border-[#007882] focus:ring-2 focus:ring-[#007882]/20 transition-all duration-200">
               <SelectValue placeholder="도시를 먼저 선택해주세요" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="border-zinc-200 bg-white">
               {cityOptionsWithCounts.map(city => (
-                <SelectItem key={city.id} value={city.id}>
+                <SelectItem key={city.id} value={city.id} className="hover:bg-zinc-50 focus:bg-zinc-50">
                   <div className="flex items-center gap-2">
-                    <MapPin size={14} className="text-gray-400" />
-                    <span>{getCityDisplayName(city)}</span>
+                    <MapPin size={14} className="text-zinc-500" />
+                    <span className="text-zinc-800">{getCityDisplayName(city)}</span>
                   </div>
                 </SelectItem>
               ))}
@@ -109,22 +111,26 @@ export function ApartmentSelector({
         </div>
 
         {/* Step 2: Apartment Selection */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wide">
-            <span className={`flex items-center justify-center w-5 h-5 text-[10px] font-bold rounded-full ${
+        <div className="space-y-3">
+          <div className="flex items-center gap-3 text-xs font-medium text-zinc-700 tracking-normal">
+            <div className={`flex items-center justify-center w-6 h-6 text-xs font-semibold rounded-lg shadow-sm transition-all duration-200 ${
               isApartmentSelectorEnabled 
-                ? 'text-white bg-blue-500' 
-                : 'text-gray-400 bg-gray-200'
-            }`}>2</span>
-            아파트 선택
+                ? 'text-white bg-gradient-to-r from-[#007882] to-[#00a0b0]' 
+                : 'text-zinc-500 bg-white border-2 border-zinc-200'
+            }`}>
+              2
+            </div>
+            <span>아파트 선택</span>
           </div>
           <Select 
             value={selectedApartmentId} 
             onValueChange={handleApartmentSelect}
             disabled={!isApartmentSelectorEnabled}
           >
-            <SelectTrigger className={`w-full transition-opacity ${
-              isApartmentSelectorEnabled ? 'opacity-100' : 'opacity-50'
+            <SelectTrigger className={`w-full h-12 transition-all duration-200 ${
+              isApartmentSelectorEnabled 
+                ? 'border-zinc-200 bg-white hover:border-zinc-300 focus:border-[#007882] focus:ring-2 focus:ring-[#007882]/20' 
+                : 'border-zinc-200 bg-zinc-50 text-zinc-400 cursor-not-allowed'
             }`}>
               <SelectValue placeholder={
                 isApartmentSelectorEnabled 
@@ -132,15 +138,17 @@ export function ApartmentSelector({
                   : "먼저 도시를 선택해주세요"
               } />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="border-zinc-200 bg-white">
               {selectedCityId === "all" && (
-                <SelectItem value="all">전체 아파트</SelectItem>
+                <SelectItem value="all" className="hover:bg-zinc-50 focus:bg-zinc-50">
+                  <span className="text-zinc-800">전체 아파트</span>
+                </SelectItem>
               )}
               {filteredApartments.map(apt => (
-                <SelectItem key={apt.id} value={apt.id}>
+                <SelectItem key={apt.id} value={apt.id} className="hover:bg-zinc-50 focus:bg-zinc-50">
                   <div className="flex items-center gap-2">
-                    <Building size={14} className="text-gray-400" />
-                    <span>{getApartmentDisplayName(apt)}</span>
+                    <Building size={14} className="text-zinc-500" />
+                    <span className="text-zinc-800">{getApartmentDisplayName(apt)}</span>
                   </div>
                 </SelectItem>
               ))}
@@ -150,16 +158,18 @@ export function ApartmentSelector({
 
         {/* Selection Summary */}
         {selectedCityId && selectedApartmentId && selectedApartmentId !== "all" && (
-          <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="text-sm text-blue-800">
-              <span className="font-medium">선택됨:</span>{" "}
-              {(() => {
-                const selectedApt = filteredApartments.find(apt => apt.id === selectedApartmentId);
-                const selectedCity = cityOptionsWithCounts.find(city => city.id === selectedCityId);
-                return selectedApt && selectedCity ? 
-                  `${selectedCity.name_ko || selectedCity.name} - ${getApartmentDisplayName(selectedApt)}` : 
-                  "";
-              })()}
+          <div className="mt-4 p-4 bg-gradient-to-r from-[#007882]/5 to-[#00a0b0]/5 border border-[#007882]/20 rounded-xl">
+            <div className="text-sm text-[#006670]">
+              <span className="font-semibold">선택된 위치:</span>{" "}
+              <span className="font-medium">
+                {(() => {
+                  const selectedApt = filteredApartments.find(apt => apt.id === selectedApartmentId);
+                  const selectedCity = cityOptionsWithCounts.find(city => city.id === selectedCityId);
+                  return selectedApt && selectedCity ? 
+                    `${selectedCity.name_ko || selectedCity.name} - ${getApartmentDisplayName(selectedApt)}` : 
+                    "";
+                })()}
+              </span>
             </div>
           </div>
         )}
